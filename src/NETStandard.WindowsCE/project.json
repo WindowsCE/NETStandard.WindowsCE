@@ -30,9 +30,6 @@
         "mscorlib": "",
         "System": "",
         "System.Core": ""
-      },
-      "dependencies": {
-        "System.Runtime.Serialization.Formatters.WindowsCE": "1.0.2"
       }
     },
     "net35-client": {
