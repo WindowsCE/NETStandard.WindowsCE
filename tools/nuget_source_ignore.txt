@@ -1,0 +1,7 @@
+\obj\
+\bin\
+\Output\
+\Degub\
+\Release\
+.user
+.lock.json

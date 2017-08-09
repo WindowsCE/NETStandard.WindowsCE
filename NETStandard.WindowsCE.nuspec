@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>NETStandard.WindowsCE</id>
+    <version>$version$</version>
+    <title>NETStandard compatibility layer for WindowsCE</title>
+    <authors>Fabricio Godoy</authors>
+    <owners>skarllot,fgodoy-verion</owners>
+    <licenseUrl>https://github.com/skarllot/NETStandard.WindowsCE/blob/master/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/skarllot/NETStandard.WindowsCE</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <copyright>Copyright © Fabrício Godoy</copyright>
+    <summary>A set of standard .NET APIs that are prescribed to be used and supported together</summary>
+    <description>
+      A set of standard .NET APIs that are prescribed to be used and supported together. This includes most of the APIs in the NETStandard.Platform package built on top of WindowsCE platform.
+      Mimics the package NETStandard.Library.
+    </description>
+    <language>en-US</language>
+    <tags>net35-cf,windowsce,wince,netstandard,netstandard1.0</tags>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="mscorlib" targetFramework=".NETFramework3.5-CompactFramework" />
+      <frameworkAssembly assemblyName="System" targetFramework=".NETFramework3.5-CompactFramework" />
+      <frameworkAssembly assemblyName="System.Core" targetFramework=".NETFramework3.5-CompactFramework" />
+    </frameworkAssemblies>
+  </metadata>
+</package>
