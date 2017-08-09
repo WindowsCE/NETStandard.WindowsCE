@@ -15,10 +15,7 @@
 // =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 using System;
-using System.Runtime;
 using System.Runtime.InteropServices;
-using System.Security;
-using System.Security.Permissions;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Threading;
@@ -114,7 +111,7 @@ namespace Mock.System
         // LazyHelpers.PUBLICATION_ONLY_SENTINEL if PublicationOnly mode
         // object if ExecutionAndPublication mode (may be ALREADY_INVOKED_SENTINEL if the value is already initialized)
         [NonSerialized]
-        private object m_threadSafeObj;
+        private volatile object m_threadSafeObj;
 
 
         /// <summary>
@@ -270,9 +267,11 @@ namespace Mock.System
         {
             get
             {
-                if (m_threadSafeObj == null)
+                // cast away the volatility
+                object threadSafeObj = m_threadSafeObj;
+                if (threadSafeObj == null)
                     return LazyThreadSafetyMode.None;
-                if (m_threadSafeObj == LazyHelpers.PublicationOnlySentinel)
+                if (threadSafeObj == LazyHelpers.PublicationOnlySentinel)
                     return LazyThreadSafetyMode.PublicationOnly;
 
                 return LazyThreadSafetyMode.ExecutionAndPublication;
@@ -381,7 +380,7 @@ namespace Mock.System
             }
             else
             {
-                object threadSafeObj = Volatile.Read(ref m_threadSafeObj);
+                object threadSafeObj = m_threadSafeObj;
                 bool lockTaken = false;
                 try
                 {
@@ -394,7 +393,7 @@ namespace Mock.System
                     {
                         boxed = CreateValue();
                         m_boxed = boxed;
-                        Volatile.Write(ref m_threadSafeObj, ALREADY_INVOKED_SENTINEL);
+                        m_threadSafeObj = ALREADY_INVOKED_SENTINEL;
                     }
                     else // got the lock but the value is not null anymore, check if it is created by another thread or faulted and throw if so
                     {

@@ -32,7 +32,17 @@ namespace Mock.System.Threading
         [Obsolete(Consts.PlatformNotSupportedDescription)]
         public static bool IsEntered(object obj)
         {
-            throw new PlatformNotSupportedException();
+            bool lockTaken = false;
+            try
+            {
+                lockTaken = Monitor.TryEnter(obj);
+                return lockTaken;
+            }
+            finally
+            {
+                if (lockTaken)
+                    Monitor.Exit(obj);
+            }
         }
 
         public static void Pulse(object obj)
