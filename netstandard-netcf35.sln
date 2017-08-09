@@ -25,6 +25,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Runtime.Tests", "tes
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Concurrent.Tests", "test\Concurrent.Tests\Concurrent.Tests.csproj", "{1F117C36-5B92-4EB7-9C5C-94D04BC58575}"
+	ProjectSection(ProjectDependencies) = postProject
+		{24857E98-E634-4803-8CC6-172B8389D89D} = {24857E98-E634-4803-8CC6-172B8389D89D}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

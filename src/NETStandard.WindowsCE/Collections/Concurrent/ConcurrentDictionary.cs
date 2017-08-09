@@ -14,6 +14,8 @@
 **
 ===========================================================*/
 
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -27,7 +29,11 @@ using Mock.System.Collections.Generic;
 using Mock.System.Threading;
 #endif
 
+#if NET35_CF
 namespace System.Collections.Concurrent
+#else
+namespace Mock.System.Collections.Concurrent
+#endif
 {
     /// <summary>
     /// Represents a thread-safe collection of keys and values.

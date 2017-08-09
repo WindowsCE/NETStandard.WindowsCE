@@ -2,9 +2,9 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Mock.System.Collections.Concurrent;
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Tests
@@ -13,7 +13,7 @@ namespace Tests
     public class ConcurrentDictionaryTests
     {
         [TestMethod]
-        public void TestRemove3()
+        public void ConcurrentDictionary_TestRemove3()
         {
             ConcurrentDictionary<int, int> dict = new ConcurrentDictionary<int, int>();
 
@@ -43,7 +43,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void TestBugFix669376()
+        public void ConcurrentDictionary_TestBugFix669376()
         {
             var cd = new ConcurrentDictionary<string, int>(new OrdinalStringComparer());
             cd["test"] = 10;
@@ -66,7 +66,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void TestConstructor()
+        public void ConcurrentDictionary_TestConstructor()
         {
             var dictionary = new ConcurrentDictionary<int, int>(new[] { new KeyValuePair<int, int>(1, 1) });
             Assert.IsFalse(dictionary.IsEmpty);
@@ -75,7 +75,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void TestConstructor_Negative()
+        public void ConcurrentDictionary_TestConstructor_Negative()
         {
             AssertException.Throws<ArgumentNullException>(
                () => new ConcurrentDictionary<int, int>((ICollection<KeyValuePair<int, int>>)null));
@@ -122,7 +122,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void TestExceptions()
+        public void ConcurrentDictionary_TestExceptions()
         {
             var dictionary = new ConcurrentDictionary<string, int>();
             AssertException.Throws<ArgumentNullException>(
@@ -179,7 +179,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void TestIDictionary()
+        public void ConcurrentDictionary_TestIDictionary()
         {
             IDictionary dictionary = new ConcurrentDictionary<string, int>();
             Assert.IsFalse(dictionary.IsReadOnly);
@@ -233,7 +233,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void TestIDictionary_Negative()
+        public void ConcurrentDictionary_TestIDictionary_Negative()
         {
             IDictionary dictionary = new ConcurrentDictionary<string, int>();
             AssertException.Throws<ArgumentNullException>(
@@ -275,7 +275,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void TestICollection()
+        public void ConcurrentDictionary_TestICollection()
         {
             ICollection dictionary = new ConcurrentDictionary<int, int>();
             Assert.IsFalse(dictionary.IsSynchronized, "TestICollection:  FAILED.  IsSynchronized returned true!");
@@ -303,7 +303,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void TestICollection_Negative()
+        public void ConcurrentDictionary_TestICollection_Negative()
         {
             ICollection dictionary = new ConcurrentDictionary<int, int>();
             Assert.IsFalse(dictionary.IsSynchronized, "TestICollection:  FAILED.  IsSynchronized returned true!");
@@ -322,7 +322,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void TestClear()
+        public void ConcurrentDictionary_TestClear()
         {
             var dictionary = new ConcurrentDictionary<int, int>();
             for (int i = 0; i < 10; i++)
@@ -340,34 +340,7 @@ namespace Tests
 
         #region Helper Classes and Methods
 
-        private class ThreadData
-        {
-            public int ThreadIndex;
-            public bool Succeeded = true;
-            public List<string> Keys = new List<string>();
-        }
-
-        private struct Struct16 : IEqualityComparer<Struct16>
-        {
-            public long L1, L2;
-            public Struct16(long l1, long l2)
-            {
-                L1 = l1;
-                L2 = l2;
-            }
-
-            public bool Equals(Struct16 x, Struct16 y)
-            {
-                return x.L1 == y.L1 && x.L2 == y.L2;
-            }
-
-            public int GetHashCode(Struct16 obj)
-            {
-                return (int)L1;
-            }
-        }
-
-        static class AssertException
+        internal static class AssertException
         {
             public static void Throws<T>(Action action)
                 where T : Exception
