@@ -6,7 +6,7 @@
     <ProjectGuid>{F49933B4-0985-4253-94BD-073F63E25DB2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>System.Runtime.Tests</RootNamespace>
+    <RootNamespace>Tests</RootNamespace>
     <AssemblyName>System.Runtime.Tests</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -54,9 +54,11 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="AssertExtensions.cs" />
     <Compile Include="DateTimeOffsetTests.cs" />
     <Compile Include="EnumTests.cs" />
     <Compile Include="LazyTests.cs" />
+    <Compile Include="LazyTestsMS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringTests.cs" />
     <Compile Include="Threading\LazyInitializerTests.cs" />
