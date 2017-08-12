@@ -1,20 +1,5 @@
 ﻿{
-  "title": "NETStandard.WindowsCE",
   "version": "1.0.0-*",
-  "language": "en-US",
-  "authors": [ "Fabricio Godoy" ],
-  "packOptions": {
-    "summary": "A set of standard .NET APIs that are prescribed to be used and supported together",
-    "owners": [ "skarllot", "fgodoy-verion" ],
-    "tags": [ "net35-cf", "windowsce", "wince", "netstandard", "netstandard1.0" ],
-    "projectUrl": "https://github.com/skarllot/NETStandard.WindowsCE",
-    "licenseUrl": "https://github.com/skarllot/NETStandard.WindowsCE/blob/master/LICENSE.txt",
-    "requireLicenseAcceptance": false,
-    "repository": {
-      "type": "git",
-      "url": "https://github.com/skarllot/NETStandard.WindowsCE.git"
-    }
-  },
 
   "buildOptions": {
     "keyFile": "../../tools/keypair.snk",
