@@ -1047,11 +1047,11 @@ namespace Tests
 
         private static void ParseExact_String_String_FormatProvider_DateTimeStyles_R(DateTimeOffset dt, string expected)
         {
-            string actual = dt.ToString("r");
+            string actual = dt.ToString("r", DateTimeFormatInfo.InvariantInfo);
             Assert.AreEqual(expected, actual);
 
-            DateTimeOffset result = DateTimeOffset.ParseExact(actual, "r", null, DateTimeStyles.None);
-            Assert.AreEqual(expected, result.ToString("r"));
+            DateTimeOffset result = DateTimeOffset.ParseExact(actual, "r", DateTimeFormatInfo.InvariantInfo, DateTimeStyles.None);
+            Assert.AreEqual(expected, result.ToString("r", DateTimeFormatInfo.InvariantInfo));
         }
 
         private static IEnumerable<object[]> Format_String_TestData_R()

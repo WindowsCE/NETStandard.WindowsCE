@@ -32,6 +32,7 @@ namespace Mock.System
         internal const long UnixMinSeconds = DateTime2.MinTicks / TimeSpan.TicksPerSecond - UnixEpochSeconds;
         internal const long UnixMaxSeconds = DateTime2.MaxTicks / TimeSpan.TicksPerSecond - UnixEpochSeconds;
 
+        // TODO: Should accept time zone anywhere
         private const string OffsetRegexPattern = "(" +
             @"(?<UTC>Z)|" +
             @"(?<HOUR>[+-]\d{2}):(?<MINUTE>\d{2})|" +
@@ -39,6 +40,8 @@ namespace Mock.System
         private static readonly Regex OffsetRegex = new Regex(
             OffsetRegexPattern,
             RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+        private const string UtcFormatString = "yyyy-MM-dd HH:mm:ss";
+        private const string RUtcFormatString = "ddd, dd MMM yyyy HH:mm:ss";
 
         static DateTimeOffset()
         {
@@ -62,19 +65,36 @@ namespace Mock.System
         }
 
         public DateTimeOffset(DateTime dateTime, TimeSpan offset)
+            : this(dateTime, offset, true)
+        { }
+
+        private DateTimeOffset(DateTime dateTime, TimeSpan offset, bool validateKind)
         {
-            if (dateTime.Kind == DateTimeKind.Local)
+            if (validateKind)
             {
-                if (offset != TimeZone.CurrentTimeZone.GetUtcOffset(dateTime))
+                if (dateTime.Kind == DateTimeKind.Local)
                 {
-                    throw new ArgumentException("The UTC Offset of the local dateTime parameter does not match the offset argument.", "offset");
+                    if (offset != TimeZone.CurrentTimeZone.GetUtcOffset(dateTime))
+                        throw new ArgumentException("The UTC Offset of the local dateTime parameter does not match the offset argument.", "offset");
+                }
+                else if ((dateTime.Kind == DateTimeKind.Utc) && (offset != TimeSpan.Zero))
+                {
+                    throw new ArgumentException("The UTC Offset for Utc DateTime instances must be 0.", "offset");
                 }
             }
-            else if ((dateTime.Kind == DateTimeKind.Utc) && (offset != TimeSpan.Zero))
-            {
-                throw new ArgumentException("The UTC Offset for Utc DateTime instances must be 0.", "offset");
-            }
+
             _offsetMinutes = ValidateOffset(offset);
+
+            if (!validateKind)
+            {
+                if (dateTime.Kind == DateTimeKind.Local)
+                {
+                    var dtOffset = TimeZone.CurrentTimeZone.GetUtcOffset(dateTime);
+                    dateTime = new DateTime(dateTime.Ticks - dtOffset.Ticks, DateTimeKind.Unspecified);
+                }
+                offset = default(TimeSpan);
+            }
+
             _dateTime = ValidateDate(dateTime, offset);
         }
 
@@ -262,19 +282,17 @@ namespace Mock.System
         public static DateTimeOffset Parse(string input, IFormatProvider formatProvider, DateTimeStyles styles)
         {
             styles = ValidateStyles(styles, nameof(styles));
-            var dt = DateTime.Parse(input, DateTimeFormatInfo.GetInstance(formatProvider), styles);
+
             var inputOffset = ParseOffset(input);
+            if (inputOffset.HasValue || (styles & DateTimeStyles.AssumeUniversal) > 0)
+                styles |= DateTimeStyles.AdjustToUniversal;
+
+            var dt = DateTime.Parse(input, DateTimeFormatInfo.GetInstance(formatProvider), styles);
 
             if (!inputOffset.HasValue)
                 return new DateTimeOffset(dt);
 
-            var currentOffset = TimeZone.CurrentTimeZone.GetUtcOffset(dt);
-            if (currentOffset.Equals(inputOffset))
-                return new DateTimeOffset(dt);
-
-            var utcDate = dt.ToUniversalTime();
-            dt = new DateTime(utcDate.Ticks, DateTimeKind.Unspecified);
-            return new DateTimeOffset(dt, inputOffset.Value);
+            return new DateTimeOffset(dt, inputOffset.Value, false);
         }
 
         public static DateTimeOffset ParseExact(string input, string format, IFormatProvider formatProvider)
@@ -282,16 +300,65 @@ namespace Mock.System
 
         public static DateTimeOffset ParseExact(string input, string format, IFormatProvider formatProvider, DateTimeStyles styles)
         {
+            if (format == null)
+                throw new ArgumentNullException(nameof(format));
+
+            if (format.Equals("u", StringComparison.Ordinal))
+                format = UtcFormatString + "Z";
+            else if (format.Equals("r", StringComparison.OrdinalIgnoreCase))
+            {
+                format = RUtcFormatString + "z";
+                int gmtIndex = input.Length - 4;
+                if (input.IndexOf(" GMT") == gmtIndex)
+                    input = string.Concat(input.Remove(gmtIndex), "+0");
+            }
+
             styles = ValidateStyles(styles, nameof(styles));
+
+            var inputOffset = ParseOffset(input);
+            if (inputOffset.HasValue || (styles & DateTimeStyles.AssumeUniversal) > 0)
+                styles |= DateTimeStyles.AdjustToUniversal;
+
             var dt = DateTime.ParseExact(input, format, DateTimeFormatInfo.GetInstance(formatProvider), styles);
-            return new DateTimeOffset(dt);
+
+            if (!inputOffset.HasValue)
+                return new DateTimeOffset(dt);
+
+            return new DateTimeOffset(dt, inputOffset.Value, false);
         }
 
         public static DateTimeOffset ParseExact(string input, string[] formats, IFormatProvider formatProvider, DateTimeStyles styles)
         {
+            if (formats == null)
+                throw new ArgumentNullException(nameof(formats));
+            if (formats.Length == 0)
+                throw new FormatException("The list of formats cannot be empty");
+
+            for (int i = 0; i < formats.Length; i++)
+            {
+                if (formats[i].Equals("u", StringComparison.Ordinal))
+                    formats[i] = UtcFormatString + "Z";
+                else if (formats[i].Equals("r", StringComparison.OrdinalIgnoreCase))
+                {
+                    formats[i] = RUtcFormatString + "z";
+                    int gmtIndex = input.Length - 4;
+                    if (input.IndexOf(" GMT") == gmtIndex)
+                        input = string.Concat(input.Remove(gmtIndex), "+0");
+                }
+            }
+
             styles = ValidateStyles(styles, nameof(styles));
+
+            var inputOffset = ParseOffset(input);
+            if (inputOffset.HasValue || (styles & DateTimeStyles.AssumeUniversal) > 0)
+                styles |= DateTimeStyles.AdjustToUniversal;
+
             var dt = DateTime.ParseExact(input, formats, DateTimeFormatInfo.GetInstance(formatProvider), styles);
-            return new DateTimeOffset(dt);
+
+            if (!inputOffset.HasValue)
+                return new DateTimeOffset(dt);
+
+            return new DateTimeOffset(dt, inputOffset.Value, false);
         }
 
         private static TimeSpan? ParseOffset(string input)
@@ -365,24 +432,31 @@ namespace Mock.System
         }
 
         public override string ToString()
-        {
-            return ToString(null, DateTimeFormatInfo.CurrentInfo);
-        }
+            => ToString(null, DateTimeFormatInfo.CurrentInfo);
 
         public string ToString(string format)
-        {
-            return ToString(format, DateTimeFormatInfo.CurrentInfo);
-        }
+            => ToString(format, DateTimeFormatInfo.CurrentInfo);
 
         public string ToString(IFormatProvider formatProvider)
-        {
-            return ToString(null, DateTimeFormatInfo.CurrentInfo);
-        }
+            => ToString(null, DateTimeFormatInfo.CurrentInfo);
 
         public string ToString(string format, IFormatProvider formatProvider)
         {
             if (!string.IsNullOrEmpty(format))
             {
+                if (format.Equals("u", StringComparison.Ordinal))
+                {
+                    return string.Concat(
+                        _dateTime.ToString(UtcFormatString, formatProvider),
+                        "Z");
+                }
+                else if (format.Equals("r", StringComparison.OrdinalIgnoreCase))
+                {
+                    return string.Concat(
+                        _dateTime.ToString(RUtcFormatString, formatProvider),
+                        " GMT");
+                }
+
                 if (format.Equals("K", StringComparison.Ordinal))
                     throw new FormatException("The 'K' format specifier cannot appear as the single character in format");
 
@@ -396,7 +470,11 @@ namespace Mock.System
                     OffsetToString("K"));
             }
 
-            return ClockDateTime.ToString(format, formatProvider);
+            string result = ClockDateTime.ToString(format, formatProvider);
+            if (format.Equals("o", StringComparison.OrdinalIgnoreCase) && _dateTime.Kind == DateTimeKind.Unspecified)
+                result += OffsetToString("zzz");
+
+            return result;
         }
 
         private string OffsetToString(string format)
@@ -680,67 +758,99 @@ namespace Mock.System
         }
 
         public static bool TryParse(string input, out DateTimeOffset result)
-        {
-            result = MinValue;
-            DateTime dtParsed;
-            if (!DateTime2.TryParse(input, DateTimeFormatInfo.CurrentInfo, DateTimeStyles.None, out dtParsed))
-                return false;
-
-            result = new DateTimeOffset(dtParsed);
-            return true;
-        }
+            => TryParse(input, DateTimeFormatInfo.CurrentInfo, DateTimeStyles.None, out result);
 
         public static bool TryParse(string input, IFormatProvider formatProvider, DateTimeStyles styles, out DateTimeOffset result)
         {
             result = MinValue;
-            DateTimeStyles valStyle;
-            //int error;
-            //if (!InternalTryValidateStyles(styles, out valStyle, out error))
-            //    return false;
-            valStyle = ValidateStyles(styles, nameof(styles));
+            styles = ValidateStyles(styles, nameof(styles));
 
-            styles = valStyle;
+            var inputOffset = ParseOffset(input);
+            if (inputOffset.HasValue || (styles & DateTimeStyles.AssumeUniversal) > 0)
+                styles |= DateTimeStyles.AdjustToUniversal;
+
             DateTime dtParsed;
             if (!DateTime2.TryParse(input, DateTimeFormatInfo.GetInstance(formatProvider), styles, out dtParsed))
                 return false;
 
-            result = new DateTimeOffset(dtParsed);
+            if (inputOffset.HasValue)
+                result = new DateTimeOffset(dtParsed, inputOffset.Value, false);
+            else
+                result = new DateTimeOffset(dtParsed);
+
             return true;
         }
 
         public static bool TryParseExact(string input, string format, IFormatProvider formatProvider, DateTimeStyles styles, out DateTimeOffset result)
         {
-            result = MinValue;
-            DateTimeStyles valStyle;
-            //int error;
-            //if (!InternalTryValidateStyles(styles, out valStyle, out error))
-            //    return false;
-            valStyle = ValidateStyles(styles, nameof(styles));
+            if (format == null)
+                throw new ArgumentNullException(nameof(format));
 
-            styles = valStyle;
+            if (format.Equals("u", StringComparison.Ordinal))
+                format = UtcFormatString + "Z";
+            else if (format.Equals("r", StringComparison.OrdinalIgnoreCase))
+            {
+                format = RUtcFormatString + "z";
+                int gmtIndex = input.Length - 4;
+                if (input.IndexOf(" GMT") == gmtIndex)
+                    input = string.Concat(input.Remove(gmtIndex), "+0");
+            }
+
+            result = MinValue;
+            styles = ValidateStyles(styles, nameof(styles));
+
+            var inputOffset = ParseOffset(input);
+            if (inputOffset.HasValue || (styles & DateTimeStyles.AssumeUniversal) > 0)
+                styles |= DateTimeStyles.AdjustToUniversal;
+
             DateTime dtParsed;
             if (!DateTime2.TryParseExact(input, format, DateTimeFormatInfo.GetInstance(formatProvider), styles, out dtParsed))
                 return false;
 
-            result = new DateTimeOffset(dtParsed);
+            if (inputOffset.HasValue)
+                result = new DateTimeOffset(dtParsed, inputOffset.Value, false);
+            else
+                result = new DateTimeOffset(dtParsed);
+
             return true;
         }
 
         public static bool TryParseExact(string input, string[] formats, IFormatProvider formatProvider, DateTimeStyles styles, out DateTimeOffset result)
         {
-            result = MinValue;
-            DateTimeStyles valStyle;
-            //int error;
-            //if (!InternalTryValidateStyles(styles, out valStyle, out error))
-            //    return false;
-            valStyle = ValidateStyles(styles, nameof(styles));
+            if (formats == null)
+                throw new ArgumentNullException(nameof(formats));
+            if (formats.Length == 0)
+                throw new FormatException("The list of formats cannot be empty");
 
-            styles = valStyle;
+            for (int i = 0; i < formats.Length; i++)
+            {
+                if (formats[i].Equals("u", StringComparison.Ordinal))
+                    formats[i] = UtcFormatString + "Z";
+                else if (formats[i].Equals("r", StringComparison.OrdinalIgnoreCase))
+                {
+                    formats[i] = RUtcFormatString + "z";
+                    int gmtIndex = input.Length - 4;
+                    if (input.IndexOf(" GMT") == gmtIndex)
+                        input = string.Concat(input.Remove(gmtIndex), "+0");
+                }
+            }
+
+            result = MinValue;
+            styles = ValidateStyles(styles, nameof(styles));
+
+            var inputOffset = ParseOffset(input);
+            if (inputOffset.HasValue || (styles & DateTimeStyles.AssumeUniversal) > 0)
+                styles |= DateTimeStyles.AdjustToUniversal;
+
             DateTime dtParsed;
             if (!DateTime2.TryParseExact(input, formats, DateTimeFormatInfo.GetInstance(formatProvider), styles, out dtParsed))
                 return false;
 
-            result = new DateTimeOffset(dtParsed);
+            if (inputOffset.HasValue)
+                result = new DateTimeOffset(dtParsed, inputOffset.Value, false);
+            else
+                result = new DateTimeOffset(dtParsed);
+
             return true;
         }
 
