@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Runtime.Serialization;
 
 using System;
+using System.Text.RegularExpressions;
 
 #if NET35_CF
 namespace System
@@ -31,10 +32,18 @@ namespace Mock.System
         internal const long UnixMinSeconds = DateTime2.MinTicks / TimeSpan.TicksPerSecond - UnixEpochSeconds;
         internal const long UnixMaxSeconds = DateTime2.MaxTicks / TimeSpan.TicksPerSecond - UnixEpochSeconds;
 
+        private const string OffsetRegexPattern = "(" +
+            @"(?<UTC>Z)|" +
+            @"(?<HOUR>[+-]\d{2}):(?<MINUTE>\d{2})|" +
+            @"(?<HOUR>[+-]\d{1,2}))$";
+        private static readonly Regex OffsetRegex = new Regex(
+            OffsetRegexPattern,
+            RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.ExplicitCapture);
+
         static DateTimeOffset()
         {
-            MinValue = new DateTimeOffset(0L, TimeSpan.Zero);
-            MaxValue = new DateTimeOffset(0x2bca2875f4373fffL, TimeSpan.Zero);
+            MinValue = new DateTimeOffset(DateTime2.MinTicks, TimeSpan.Zero);
+            MaxValue = new DateTimeOffset(DateTime2.MaxTicks, TimeSpan.Zero);
         }
 
         public DateTimeOffset(DateTime dateTime)
@@ -245,36 +254,64 @@ namespace Mock.System
         }
 
         public static DateTimeOffset Parse(string input)
-        {
-            return new DateTimeOffset(DateTime.Parse(input, DateTimeFormatInfo.CurrentInfo, DateTimeStyles.None));
-        }
+            => Parse(input, DateTimeFormatInfo.CurrentInfo, DateTimeStyles.None);
 
         public static DateTimeOffset Parse(string input, IFormatProvider formatProvider)
-        {
-            return Parse(input, formatProvider, DateTimeStyles.None);
-        }
+            => Parse(input, formatProvider, DateTimeStyles.None);
 
         public static DateTimeOffset Parse(string input, IFormatProvider formatProvider, DateTimeStyles styles)
         {
-            styles = ValidateStyles(styles, "styles");
-            return new DateTimeOffset(DateTime.Parse(input, DateTimeFormatInfo.GetInstance(formatProvider), styles));
+            styles = ValidateStyles(styles, nameof(styles));
+            var dt = DateTime.Parse(input, DateTimeFormatInfo.GetInstance(formatProvider), styles);
+            var inputOffset = ParseOffset(input);
+
+            if (!inputOffset.HasValue)
+                return new DateTimeOffset(dt);
+
+            var currentOffset = TimeZone.CurrentTimeZone.GetUtcOffset(dt);
+            if (currentOffset.Equals(inputOffset))
+                return new DateTimeOffset(dt);
+
+            var utcDate = dt.ToUniversalTime();
+            dt = new DateTime(utcDate.Ticks, DateTimeKind.Unspecified);
+            return new DateTimeOffset(dt, inputOffset.Value);
         }
 
         public static DateTimeOffset ParseExact(string input, string format, IFormatProvider formatProvider)
-        {
-            return ParseExact(input, format, formatProvider, DateTimeStyles.None);
-        }
+            => ParseExact(input, format, formatProvider, DateTimeStyles.None);
 
         public static DateTimeOffset ParseExact(string input, string format, IFormatProvider formatProvider, DateTimeStyles styles)
         {
-            styles = ValidateStyles(styles, "styles");
-            return new DateTimeOffset(DateTime.ParseExact(input, format, DateTimeFormatInfo.GetInstance(formatProvider), styles));
+            styles = ValidateStyles(styles, nameof(styles));
+            var dt = DateTime.ParseExact(input, format, DateTimeFormatInfo.GetInstance(formatProvider), styles);
+            return new DateTimeOffset(dt);
         }
 
         public static DateTimeOffset ParseExact(string input, string[] formats, IFormatProvider formatProvider, DateTimeStyles styles)
         {
-            styles = ValidateStyles(styles, "styles");
-            return new DateTimeOffset(DateTime.ParseExact(input, formats, DateTimeFormatInfo.GetInstance(formatProvider), styles));
+            styles = ValidateStyles(styles, nameof(styles));
+            var dt = DateTime.ParseExact(input, formats, DateTimeFormatInfo.GetInstance(formatProvider), styles);
+            return new DateTimeOffset(dt);
+        }
+
+        private static TimeSpan? ParseOffset(string input)
+        {
+            var match = OffsetRegex.Match(input);
+            if (!match.Success)
+                return null;
+
+            if (match.Groups["UTC"].Success)
+                return default(TimeSpan);
+
+            int hour = 0, minute = 0;
+            var grpHour = match.Groups["HOUR"];
+            var grpMinute = match.Groups["MINUTE"];
+            if (grpHour.Success)
+                hour = int.Parse(grpHour.Value);
+            if (grpMinute.Success)
+                minute = int.Parse(grpMinute.Value);
+
+            return new TimeSpan(hour, minute, 0);
         }
 
         public TimeSpan Subtract(DateTimeOffset value)
@@ -329,7 +366,7 @@ namespace Mock.System
 
         public override string ToString()
         {
-            return ToString("G K", DateTimeFormatInfo.CurrentInfo);
+            return ToString(null, DateTimeFormatInfo.CurrentInfo);
         }
 
         public string ToString(string format)
@@ -339,20 +376,40 @@ namespace Mock.System
 
         public string ToString(IFormatProvider formatProvider)
         {
-            return ToString("G K", DateTimeFormatInfo.CurrentInfo);
+            return ToString(null, DateTimeFormatInfo.CurrentInfo);
         }
 
         public string ToString(string format, IFormatProvider formatProvider)
         {
             if (!string.IsNullOrEmpty(format))
             {
-                format = format.Replace("K", "zzz");
-                format = format.Replace("zzz", Offset.Hours.ToString("+00;-00", CultureInfo.InvariantCulture) + ":" + Offset.Minutes.ToString("00;00", CultureInfo.InvariantCulture));
-                format = format.Replace("zz", Offset.Hours.ToString("+00;-00", CultureInfo.InvariantCulture));
-                format = format.Replace("z", Offset.Hours.ToString("+0;-0", CultureInfo.InvariantCulture));
+                if (format.Equals("K", StringComparison.Ordinal))
+                    throw new FormatException("The 'K' format specifier cannot appear as the single character in format");
+
+                format = OffsetToString(format);
+            }
+            else
+            {
+                return string.Concat(
+                    ClockDateTime.ToString(formatProvider),
+                    " ",
+                    OffsetToString("K"));
             }
 
             return ClockDateTime.ToString(format, formatProvider);
+        }
+
+        private string OffsetToString(string format)
+        {
+            string dHours = Offset.Hours.ToString("+00;-00", CultureInfo.InvariantCulture);
+            string dMinutes = Offset.Minutes.ToString("00;00", CultureInfo.InvariantCulture);
+            string sHours = Offset.Hours.ToString("+0;-0", CultureInfo.InvariantCulture);
+
+            format = format.Replace("K", "zzz");
+            format = format.Replace("zzz", dHours + ":" + dMinutes);
+            format = format.Replace("zz", dHours);
+            format = format.Replace("z", sHours);
+            return format;
         }
 
         public DateTimeOffset ToUniversalTime()
@@ -637,9 +694,10 @@ namespace Mock.System
         {
             result = MinValue;
             DateTimeStyles valStyle;
-            int error;
-            if (!InternalTryValidateStyles(styles, out valStyle, out error))
-                return false;
+            //int error;
+            //if (!InternalTryValidateStyles(styles, out valStyle, out error))
+            //    return false;
+            valStyle = ValidateStyles(styles, nameof(styles));
 
             styles = valStyle;
             DateTime dtParsed;
@@ -654,9 +712,10 @@ namespace Mock.System
         {
             result = MinValue;
             DateTimeStyles valStyle;
-            int error;
-            if (!InternalTryValidateStyles(styles, out valStyle, out error))
-                return false;
+            //int error;
+            //if (!InternalTryValidateStyles(styles, out valStyle, out error))
+            //    return false;
+            valStyle = ValidateStyles(styles, nameof(styles));
 
             styles = valStyle;
             DateTime dtParsed;
@@ -671,9 +730,10 @@ namespace Mock.System
         {
             result = MinValue;
             DateTimeStyles valStyle;
-            int error;
-            if (!InternalTryValidateStyles(styles, out valStyle, out error))
-                return false;
+            //int error;
+            //if (!InternalTryValidateStyles(styles, out valStyle, out error))
+            //    return false;
+            valStyle = ValidateStyles(styles, nameof(styles));
 
             styles = valStyle;
             DateTime dtParsed;

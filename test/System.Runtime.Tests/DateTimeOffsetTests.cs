@@ -944,9 +944,9 @@ namespace Tests
             Assert.AreEqual(expectedString, result.ToString("g"));
         }
 
-        [TestMethod]
+        //[TestMethod]
         // The full .NET framework has a bug and incorrectly parses this date
-        public static void TryParse_TimeDesignators_NetCore()
+        public void TryParse_TimeDesignators_NetCore()
         {
             DateTimeOffset result;
             Assert.IsTrue(DateTimeOffset.TryParse("4/21 5am", new CultureInfo("en-US"), DateTimeStyles.None, out result));
@@ -966,7 +966,7 @@ namespace Tests
 
         [TestMethod]
         // The coreclr fixed a bug where the .NET framework incorrectly parses this date
-        public static void TryParse_TimeDesignators_Netfx()
+        public void TryParse_TimeDesignators_Netfx()
         {
             DateTimeOffset result;
             Assert.IsTrue(DateTimeOffset.TryParse("4/21 5am", new CultureInfo("en-US"), DateTimeStyles.None, out result));
@@ -1137,7 +1137,7 @@ namespace Tests
             Assert.AreEqual(default(DateTimeOffset), dateTimeOffset);
         }
 
-        private static void VerifyDateTimeOffset(Mock.System.DateTimeOffset dateTimeOffset, int year, int month, int day, int hour, int minute, int second, int millisecond, TimeSpan? offset)
+        private static void VerifyDateTimeOffset(DateTimeOffset dateTimeOffset, int year, int month, int day, int hour, int minute, int second, int millisecond, TimeSpan? offset)
         {
             Assert.AreEqual(year, dateTimeOffset.Year);
             Assert.AreEqual(month, dateTimeOffset.Month);
