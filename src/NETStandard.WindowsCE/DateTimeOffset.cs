@@ -24,6 +24,13 @@ namespace Mock.System
         internal const long MinOffset = -504000000000L;
         public static readonly DateTimeOffset MinValue;
 
+        private const long UnixEpochTicks = TimeSpan.TicksPerDay * DateTime2.DaysTo1970; // 621,355,968,000,000,000
+        private const long UnixEpochSeconds = UnixEpochTicks / TimeSpan.TicksPerSecond; // 62,135,596,800
+        private const long UnixEpochMilliseconds = UnixEpochTicks / TimeSpan.TicksPerMillisecond; // 62,135,596,800,000
+
+        internal const long UnixMinSeconds = DateTime2.MinTicks / TimeSpan.TicksPerSecond - UnixEpochSeconds;
+        internal const long UnixMaxSeconds = DateTime2.MaxTicks / TimeSpan.TicksPerSecond - UnixEpochSeconds;
+
         static DateTimeOffset()
         {
             MinValue = new DateTimeOffset(0L, TimeSpan.Zero);
@@ -675,6 +682,63 @@ namespace Mock.System
 
             result = new DateTimeOffset(dtParsed);
             return true;
+        }
+
+        public static DateTimeOffset FromUnixTimeSeconds(long seconds)
+        {
+            if (seconds < UnixMinSeconds || seconds > UnixMaxSeconds)
+            {
+                throw new ArgumentOutOfRangeException(nameof(seconds),
+                    $"The valid values should be between {UnixMinSeconds} and {UnixMaxSeconds} inclusive");
+            }
+
+            long ticks = seconds * TimeSpan.TicksPerSecond + UnixEpochTicks;
+            return new DateTimeOffset(ticks, TimeSpan.Zero);
+        }
+
+        public static DateTimeOffset FromUnixTimeMilliseconds(long milliseconds)
+        {
+            const long MinMilliseconds = DateTime2.MinTicks / TimeSpan.TicksPerMillisecond - UnixEpochMilliseconds;
+            const long MaxMilliseconds = DateTime2.MaxTicks / TimeSpan.TicksPerMillisecond - UnixEpochMilliseconds;
+
+            if (milliseconds < MinMilliseconds || milliseconds > MaxMilliseconds)
+            {
+                throw new ArgumentOutOfRangeException(nameof(milliseconds),
+                    $"The valid values should be between {MinMilliseconds} and {MaxMilliseconds} inclusive");
+            }
+
+            long ticks = milliseconds * TimeSpan.TicksPerMillisecond + UnixEpochTicks;
+            return new DateTimeOffset(ticks, TimeSpan.Zero);
+        }
+
+        public long ToUnixTimeSeconds()
+        {
+            // Truncate sub-second precision before offsetting by the Unix Epoch to avoid
+            // the last digit being off by one for dates that result in negative Unix times.
+            //
+            // For example, consider the DateTimeOffset 12/31/1969 12:59:59.001 +0
+            //   ticks            = 621355967990010000
+            //   ticksFromEpoch   = ticks - UnixEpochTicks                   = -9990000
+            //   secondsFromEpoch = ticksFromEpoch / TimeSpan.TicksPerSecond = 0
+            //
+            // Notice that secondsFromEpoch is rounded *up* by the truncation induced by integer division,
+            // whereas we actually always want to round *down* when converting to Unix time. This happens
+            // automatically for positive Unix time values. Now the example becomes:
+            //   seconds          = ticks / TimeSpan.TicksPerSecond = 62135596799
+            //   secondsFromEpoch = seconds - UnixEpochSeconds      = -1
+            //
+            // In other words, we want to consistently round toward the time 1/1/0001 00:00:00,
+            // rather than toward the Unix Epoch (1/1/1970 00:00:00).
+            long seconds = UtcDateTime.Ticks / TimeSpan.TicksPerSecond;
+            return seconds - UnixEpochSeconds;
+        }
+
+        public long ToUnixTimeMilliseconds()
+        {
+            // Truncate sub-millisecond precision before offsetting by the Unix Epoch to avoid
+            // the last digit being off by one for dates that result in negative Unix times
+            long milliseconds = UtcDateTime.Ticks / TimeSpan.TicksPerMillisecond;
+            return milliseconds - UnixEpochMilliseconds;
         }
     }
 }

@@ -26,6 +26,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -34,6 +35,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="NETStandard">
@@ -57,6 +59,7 @@
     <Compile Include="AssertExtensions.cs" />
     <Compile Include="DateTimeOffsetTests.cs" />
     <Compile Include="EnumTests.cs" />
+    <Compile Include="LazyOfTMetadataTests.cs" />
     <Compile Include="LazyTests.cs" />
     <Compile Include="LazyTestsMS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -66,6 +69,7 @@
     <Compile Include="Threading\VolatileTests.cs" />
     <Compile Include="TypeExTests.cs" />
     <Compile Include="WeakReferenceOfTTests.cs" />
+    <Compile Include="WeakReferenceTests.cs" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

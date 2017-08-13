@@ -14,7 +14,7 @@ namespace Tests
     public class LazyTestsMS
     {
         [TestMethod]
-        public void Ctor()
+        public void Lazy_Ctor()
         {
             var lazyString = new Lazy<string>();
             VerifyLazy(lazyString, "", hasValue: false, isValueCreated: false);
@@ -24,11 +24,11 @@ namespace Tests
         }
 
         [TestMethod]
-        public void Ctor_Bool_True()
+        public void Lazy_Ctor_Bool_True()
             => Ctor_Bool(true);
 
         [TestMethod]
-        public void Ctor_Bool_False()
+        public void Lazy_Ctor_Bool_False()
             => Ctor_Bool(false);
 
         private static void Ctor_Bool(bool isThreadSafe)
@@ -38,7 +38,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void Ctor_ValueFactory()
+        public void Lazy_Ctor_ValueFactory()
         {
             var lazyString = new Lazy<string>(() => "foo");
             VerifyLazy(lazyString, "foo", hasValue: true, isValueCreated: false);
@@ -48,31 +48,31 @@ namespace Tests
         }
 
         [TestMethod]
-        public void Ctor_ValueFactory_NullValueFactory_ThrowsArguentNullException()
+        public void Lazy_Ctor_ValueFactory_NullValueFactory_ThrowsArguentNullException()
         {
             AssertExtensions.Throws<ArgumentNullException>("valueFactory", () => new Lazy<object>(null)); // Value factory is null
         }
 
         [TestMethod]
-        public void Ctor_LazyThreadSafetyMode()
+        public void Lazy_Ctor_LazyThreadSafetyMode()
         {
             var lazyString = new Lazy<string>(LazyThreadSafetyMode.PublicationOnly);
             VerifyLazy(lazyString, "", hasValue: false, isValueCreated: false);
         }
 
         [TestMethod]
-        public void Ctor_LazyThreadSafetyMode_InvalidMode_ThrowsArgumentOutOfRangeException()
+        public void Lazy_Ctor_LazyThreadSafetyMode_InvalidMode_ThrowsArgumentOutOfRangeException()
         {
             AssertExtensions.Throws<ArgumentOutOfRangeException>("mode", () => new Lazy<string>(LazyThreadSafetyMode.None - 1)); // Invalid thread saftety mode
             AssertExtensions.Throws<ArgumentOutOfRangeException>("mode", () => new Lazy<string>(LazyThreadSafetyMode.ExecutionAndPublication + 1)); // Invalid thread saftety mode
         }
 
         [TestMethod]
-        public void Ctor_ValueFactor_Bool_True()
+        public void Lazy_Ctor_ValueFactor_Bool_True()
             => Ctor_ValueFactor_Bool(true);
 
         [TestMethod]
-        public void Ctor_ValueFactor_Bool_False()
+        public void Lazy_Ctor_ValueFactor_Bool_False()
             => Ctor_ValueFactor_Bool(false);
 
         private static void Ctor_ValueFactor_Bool(bool isThreadSafe)
@@ -82,13 +82,13 @@ namespace Tests
         }
 
         [TestMethod]
-        public void Ctor_ValueFactory_Bool_NullValueFactory_ThrowsArgumentNullException()
+        public void Lazy_Ctor_ValueFactory_Bool_NullValueFactory_ThrowsArgumentNullException()
         {
             AssertExtensions.Throws<ArgumentNullException>("valueFactory", () => new Lazy<object>(null, false)); // Value factory is null
         }
 
         [TestMethod]
-        public void Ctor_ValueFactor_LazyThreadSafetyMode()
+        public void Lazy_Ctor_ValueFactor_LazyThreadSafetyMode()
         {
             var lazyString = new Lazy<string>(() => "foo", LazyThreadSafetyMode.PublicationOnly);
             VerifyLazy(lazyString, "foo", hasValue: true, isValueCreated: false);
@@ -98,7 +98,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void Ctor_ValueFactor_LazyThreadSafetyMode_Invalid()
+        public void Lazy_Ctor_ValueFactor_LazyThreadSafetyMode_Invalid()
         {
             AssertExtensions.Throws<ArgumentNullException>("valueFactory", () => new Lazy<object>(null, LazyThreadSafetyMode.PublicationOnly)); // Value factory is null
 
@@ -107,7 +107,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void ToString_DoesntForceAllocation()
+        public void Lazy_ToString_DoesntForceAllocation()
         {
             var lazy = new Lazy<object>(() => 1);
             Assert.AreNotEqual("1", lazy.ToString());
@@ -124,7 +124,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void Value_Invalid()
+        public void Lazy_Value_Invalid()
         {
             Lazy<int> x = null;
             Func<int> f = () => x.Value;
@@ -173,7 +173,7 @@ namespace Tests
         // made by the test.
         //
         [TestMethod]
-        public void Ctor_ExceptionRecovery()
+        public void Lazy_Ctor_ExceptionRecovery()
         {
             foreach (Lazy<InitiallyExceptionThrowingCtor> lazy in Ctor_ExceptionRecovery_MemberData())
             {
@@ -212,7 +212,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void Value_ExceptionRecovery()
+        public void Lazy_Value_ExceptionRecovery()
         {
             int counter = 0; // set in test function
 
@@ -266,7 +266,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void Value_Func_Exception_MemberDataTests()
+        public void Lazy_Value_Func_Exception_MemberDataTests()
         {
             foreach (var md in Value_Func_Exception_MemberData())
                 Value_Func_Exception((Lazy<int>)(md[0]));
@@ -288,7 +288,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void Value_FuncCtor_Exception_MemberDataTests()
+        public void Lazy_Value_FuncCtor_Exception_MemberDataTests()
         {
             foreach (var md in Value_FuncCtor_Exception_MemberData())
                 Value_FuncCtor_Exception((Lazy<ExceptionInCtor>)(md[0]));
@@ -310,7 +310,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void Value_TargetInvocationException_MemberDataTests()
+        public void Lazy_Value_TargetInvocationException_MemberDataTests()
         {
             foreach (var md in Value_TargetInvocationException_MemberData())
                 Value_TargetInvocationException((Lazy<ExceptionInCtor>)(md[0]));
@@ -331,7 +331,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void Exceptions_Func_Idempotent_MemberDataTests()
+        public void Lazy_Exceptions_Func_Idempotent_MemberDataTests()
         {
             foreach (var md in Exceptions_Func_Idempotent_MemberData())
                 Exceptions_Func_Idempotent((Lazy<int>)(md[0]));
@@ -353,7 +353,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void Exceptions_Ctor_Idempotent_MemberDataTests()
+        public void Lazy_Exceptions_Ctor_Idempotent_MemberDataTests()
         {
             foreach (var md in Exceptions_Ctor_Idempotent_MemberData())
                 Exceptions_Ctor_Idempotent((Lazy<ExceptionInCtor>)(md[0]));
@@ -382,7 +382,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void Exceptions_Func_NotIdempotent_MemberDataTests()
+        public void Lazy_Exceptions_Func_NotIdempotent_MemberDataTests()
         {
             foreach (var md in Exceptions_Func_NotIdempotent_MemberData())
                 Exceptions_Func_NotIdempotent((Lazy<int>)(md[0]));
@@ -395,7 +395,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void Exceptions_Ctor_NotIdempotent_MemberDataTests()
+        public void Lazy_Exceptions_Ctor_NotIdempotent_MemberDataTests()
         {
             foreach (var md in Exceptions_Ctor_NotIdempotent_MemberData())
                 Exceptions_Ctor_NotIdempotent((Lazy<ExceptionInCtor>)(md[0]));
@@ -408,11 +408,11 @@ namespace Tests
         }
 
         [TestMethod]
-        public void Value_ThrownException_DoesntCreateValue_ExecutionAndPublication()
+        public void Lazy_Value_ThrownException_DoesntCreateValue_ExecutionAndPublication()
             => Value_ThrownException_DoesntCreateValue(LazyThreadSafetyMode.ExecutionAndPublication);
 
         [TestMethod]
-        public void Value_ThrownException_DoesntCreateValue_None()
+        public void Lazy_Value_ThrownException_DoesntCreateValue_None()
             => Value_ThrownException_DoesntCreateValue(LazyThreadSafetyMode.None);
 
         private static void Value_ThrownException_DoesntCreateValue(LazyThreadSafetyMode mode)
@@ -427,7 +427,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void Value_ThrownException_DoesntCreateValue_PublicationOnly()
+        public void Lazy_Value_ThrownException_DoesntCreateValue_PublicationOnly()
         {
             var lazy = new Lazy<string>(() => { throw new DivideByZeroException(); }, LazyThreadSafetyMode.PublicationOnly);
 
@@ -439,7 +439,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void EnsureInitalized_SimpleRefTypes()
+        public void Lazy_EnsureInitalized_SimpleRefTypes()
         {
             var hdcTemplate = new HasDefaultCtor();
             string strTemplate = "foo";
@@ -470,7 +470,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void EnsureInitalized_SimpleRefTypes_Invalid()
+        public void Lazy_EnsureInitalized_SimpleRefTypes_Invalid()
         {
             // Func based initialization (nulls not permitted).
             string e = null;
@@ -482,7 +482,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void EnsureInitialized_ComplexRefTypes()
+        public void Lazy_EnsureInitialized_ComplexRefTypes()
         {
             string strTemplate = "foo";
             var hdcTemplate = new HasDefaultCtor();
@@ -538,7 +538,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void EnsureInitalized_ComplexRefTypes_Invalid()
+        public void Lazy_EnsureInitalized_ComplexRefTypes_Invalid()
         {
             // Activator.CreateInstance (for a type without a default ctor).
             NoDefaultCtor ndc = null;
@@ -548,7 +548,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void LazyInitializerComplexValueTypes()
+        public void Lazy_LazyInitializerComplexValueTypes()
         {
             var empty = new LIX();
             var template = new LIX(33);
