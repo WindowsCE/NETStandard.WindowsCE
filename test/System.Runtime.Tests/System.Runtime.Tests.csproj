@@ -67,6 +67,7 @@
     <Compile Include="StringTests.cs" />
     <Compile Include="Threading\LazyInitializerTests.cs" />
     <Compile Include="Threading\MonitorTests.cs" />
+    <Compile Include="Threading\MonitorTestsMS.cs" />
     <Compile Include="Threading\VolatileTests.cs" />
     <Compile Include="TypeExTests.cs" />
     <Compile Include="WeakReferenceOfTTests.cs" />

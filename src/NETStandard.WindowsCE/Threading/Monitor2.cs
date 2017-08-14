@@ -15,21 +15,36 @@ namespace Mock.System.Threading
             = new Dictionary<object, List<AutoResetEvent>>();
 
         public static void Enter(object obj)
-            => Monitor.Enter(obj);
+        {
+            if (obj == null)
+                throw new ArgumentNullException(nameof(obj));
+
+            Monitor.Enter(obj);
+        }
 
         public static void Enter(object obj, ref bool lockTaken)
         {
+            if (obj == null)
+                throw new ArgumentNullException(nameof(obj));
             if (lockTaken)
+            {
+                lockTaken = false;
                 ThrowLockTakenException();
+            }
 
             Monitor.Enter(obj);
             lockTaken = true;
         }
 
         public static void Exit(object obj)
-            => Monitor.Exit(obj);
+        {
+            if (obj == null)
+                throw new ArgumentNullException(nameof(obj));
 
-        [Obsolete(Consts.PlatformNotSupportedDescription)]
+            Monitor.Exit(obj);
+        }
+
+        [Obsolete(Consts.PlatformNotSupportedDescription, true)]
         public static bool IsEntered(object obj)
         {
             bool lockTaken = false;
@@ -86,18 +101,31 @@ namespace Mock.System.Threading
         }
 
         public static bool TryEnter(object obj)
-            => Monitor.TryEnter(obj);
+        {
+            if (obj == null)
+                throw new ArgumentNullException(nameof(obj));
+
+            return Monitor.TryEnter(obj);
+        }
 
         public static void TryEnter(object obj, ref bool lockTaken)
         {
+            if (obj == null)
+                throw new ArgumentNullException(nameof(obj));
             if (lockTaken)
+            {
+                lockTaken = false;
                 ThrowLockTakenException();
+            }
 
             lockTaken = Monitor.TryEnter(obj);
         }
 
         public static bool TryEnter(object obj, int millisecondsTimeout)
         {
+            if (obj == null)
+                throw new ArgumentNullException(nameof(obj));
+
             bool lockTaken = false;
             TryEnter(obj, millisecondsTimeout, ref lockTaken);
             return lockTaken;
@@ -105,8 +133,13 @@ namespace Mock.System.Threading
 
         public static void TryEnter(object obj, int millisecondsTimeout, ref bool lockTaken)
         {
+            if (obj == null)
+                throw new ArgumentNullException(nameof(obj));
             if (lockTaken)
+            {
+                lockTaken = false;
                 ThrowLockTakenException();
+            }
 
             if (millisecondsTimeout == Timeout.Infinite)
             {
@@ -147,6 +180,9 @@ namespace Mock.System.Threading
 
         public static bool Wait(object obj, int millisecondsTimeout)
         {
+            if (obj == null)
+                throw new ArgumentNullException(nameof(obj));
+
             bool objUnlocked = false;
             bool waitersLocked = false;
             AutoResetEvent waitHandle = null;
