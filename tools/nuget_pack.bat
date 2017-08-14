@@ -3,6 +3,7 @@ set ScriptDir=%~dp0
 set SolutionDir=%~1
 set PackageName=%~2
 set AssemblyName=%~3
+set AssemblyVersion=%~4
 
 set NuGetCommand=%ScriptDir%NuGet.exe
 set VersionInfoCommand=%ScriptDir%VersionInfo.vbs
@@ -37,8 +38,10 @@ if not exist %nuget_nuspec% (
     EXIT /B 1
 )
 
-REM for /f %%i in ('cscript //nologo %VersionInfoCommand% %AssemblyDir%\%AssemblyFile%') do set AssemblyVersion=%%i
-for /f %%i in ('cscript //nologo %ProdVersionInfoCommand% %AssemblyDir% %AssemblyFile%') do set AssemblyVersion=%%i
+if "%AssemblyVersion%" == "" (
+    REM for /f %%i in ('cscript //nologo %VersionInfoCommand% %AssemblyDir%\%AssemblyFile%') do set AssemblyVersion=%%i
+    for /f %%i in ('cscript //nologo %ProdVersionInfoCommand% %AssemblyDir% %AssemblyFile%') do set AssemblyVersion=%%i
+)
 
 mkdir "%nuget_folder%" > nul 2>&1
 del "%nuget_folder%\%PackageName%.nuspec" > nul 2>&1
