@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1F117C36-5B92-4EB7-9C5C-94D04BC58575}</ProjectGuid>
+    <ProjectGuid>{C7A8DFD3-937B-4B73-98E5-4FA4A3C52CF9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Tests</RootNamespace>
-    <AssemblyName>Concurrent.Tests</AssemblyName>
+    <AssemblyName>Tasks.Tests</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -16,7 +16,6 @@
     <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -39,13 +38,16 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>..\..\tools\keypair.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>$(SolutionDir)tools\keypair.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="NETStandard">
       <HintPath>..\..\src\NETStandard.WindowsCE\bin\Debug\net35-client\NETStandard.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -60,14 +62,20 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="AsyncTests.cs" />
-    <Compile Include="ConcurrentDictionaryTests.cs" />
+    <Compile Include="BasicAsyncTest.cs" />
+    <Compile Include="CancellationTokenSourceTest.cs" />
+    <Compile Include="CancellationTokenTests.cs" />
+    <Compile Include="ContinueWithTests.cs" />
+    <Compile Include="FromAsyncTests.cs" />
+    <Compile Include="FutureMembersTests.cs" />
+    <Compile Include="ParallelTestHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TaskBasicTests.cs" />
+    <Compile Include="TaskCancellation.cs" />
+    <Compile Include="TaskMembersTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\tools\keypair.snk">
-      <Link>keypair.snk</Link>
-    </None>
+    <None Include="$(SolutionDir)tools\keypair.snk" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
