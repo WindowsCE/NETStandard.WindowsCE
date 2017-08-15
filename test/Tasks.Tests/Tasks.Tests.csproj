@@ -70,6 +70,7 @@
     <Compile Include="ContinueWithTests.cs" />
     <Compile Include="FromAsyncTests.cs" />
     <Compile Include="FutureMembersTests.cs" />
+    <Compile Include="OperationCanceledExceptionTests.cs" />
     <Compile Include="ParallelTestHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TaskBasicTests.cs" />
