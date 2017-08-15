@@ -45,7 +45,10 @@
 
         public override int GetHashCode()
         {
-            return _id;
+            if (_source != null)
+                return _source.GetHashCode() ^ _id;
+            else
+                return _id;
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Threading;
 namespace Tests
 {
     [TestClass]
-    public class CancellationTokenTests
+    public partial class CancellationTokenTests
     {
         [TestMethod]
         public void CancellationToken_InitedWithFalseToken()

@@ -18,7 +18,7 @@ namespace System.Threading
         private ConcurrentDictionary<CancellationTokenRegistration, Action> _callbacks;
         private volatile int _cancelRequested;
         private int _currentId = int.MaxValue;
-        private int _disposeRequested;
+        private volatile int _disposeRequested;
         private CancellationTokenRegistration[] _linkedTokens;
         private Timer _timeout;
 
@@ -144,23 +144,29 @@ namespace System.Threading
         public void CancelAfter(int millisecondsDelay)
         {
             if (millisecondsDelay < -1)
-            {
                 throw new ArgumentOutOfRangeException(nameof(millisecondsDelay));
-            }
+
             CheckDisposed();
-            if (_cancelRequested == 0 && millisecondsDelay != Timeout.Infinite)
+
+            if (_cancelRequested != 0)
+                return;
+
+            if (_timeout == null)
             {
-                if (_timeout == null)
-                {
-                    // Have to be careful not to create secondary background timer
-                    var newTimer = new Timer(TimerCallback, this, Timeout.Infinite, -1);
-                    var oldTimer = Interlocked.CompareExchange(ref _timeout, newTimer, null);
-                    if (!ReferenceEquals(oldTimer, null))
-                    {
-                        newTimer.Dispose();
-                    }
-                    _timeout.Change(millisecondsDelay, -1);
-                }
+                // Have to be careful not to create secondary background timer
+                var newTimer = new Timer(TimerCallback, this, Timeout.Infinite, -1);
+                var oldTimer = Interlocked.CompareExchange(ref _timeout, newTimer, null);
+                if (!ReferenceEquals(oldTimer, null))
+                    newTimer.Dispose();
+            }
+
+            try
+            {
+                _timeout.Change(millisecondsDelay, -1);
+            }
+            catch (ObjectDisposedException)
+            {
+                // Just eat the exception.
             }
         }
 
@@ -171,7 +177,7 @@ namespace System.Threading
 
         internal void CheckDisposed()
         {
-            if (Volatile.Read(ref _disposeRequested) == 1)
+            if (_disposeRequested == 1)
             {
                 throw new ObjectDisposedException(GetType().Name);
             }
@@ -180,7 +186,7 @@ namespace System.Threading
         internal ConcurrentDictionary<CancellationTokenRegistration, Action> CheckDisposedGetCallbacks()
         {
             var result = _callbacks;
-            if (result == null || Volatile.Read(ref _disposeRequested) == 1)
+            if (result == null || _disposeRequested == 1)
             {
                 throw new ObjectDisposedException(GetType().Name);
             }
@@ -191,16 +197,17 @@ namespace System.Threading
         {
             // NOTICE this method has no null check
             var callbacks = CheckDisposedGetCallbacks();
-            var tokenReg = new CancellationTokenRegistration(Interlocked.Decrement(ref _currentId), this);
             // If the source is already canceled run the callback in-line.
             // if not, we try to add it to the queue and if it is currently being processed.
             // we try to execute it back ourselves to be sure the callback is ran.
             if (_cancelRequested == 1)
             {
                 callback();
+                return default(CancellationTokenRegistration);
             }
             else
             {
+                var tokenReg = new CancellationTokenRegistration(Interlocked.Decrement(ref _currentId), this);
                 // Capture execution contexts if the callback may not run in-line.
                 if (useSynchronizationContext)
                 {
@@ -215,14 +222,14 @@ namespace System.Threading
                 {
                     callback();
                 }
+                return tokenReg;
             }
-            return tokenReg;
         }
 
         internal bool RemoveCallback(CancellationTokenRegistration reg)
         {
             // Ignore call if the source has been disposed
-            if (Volatile.Read(ref _disposeRequested) == 0)
+            if (_disposeRequested == 0)
             {
                 var callbacks = _callbacks;
                 if (callbacks != null)
@@ -303,35 +310,18 @@ namespace System.Threading
                 }
                 UnregisterLinkedTokens();
                 List<Exception> exceptions = null;
-                try
+                var id = _currentId;
+                do
                 {
-                    var id = _currentId;
                     var regComparee = new CancellationTokenRegistration(id, this);
-                    do
-                    {
-                        Action callback;
-                        var checkId = id;
-                        if (callbacks.TryRemove(regComparee, out callback) && callback != null)
-                        {
-                            RunCallback(throwOnFirstException, callback, ref exceptions);
-                        }
-                    } while (id++ != int.MaxValue);
-                }
-                finally
-                {
-                    // Whatever was added after the cancellation process started,
-                    // it should run in-line in Register... if they don't, handle then here.
                     Action callback;
-                    while (callbacks.Count > 0)
+                    //var checkId = id;
+                    if (callbacks.TryRemove(regComparee, out callback) && callback != null)
                     {
-                        var keys = callbacks.Keys;
-                        foreach (var k in keys)
-                        {
-                            if (callbacks.TryRemove(k, out callback))
-                                RunCallback(throwOnFirstException, callback, ref exceptions);
-                        }
+                        RunCallback(throwOnFirstException, callback, ref exceptions);
                     }
-                }
+                } while (id++ != int.MaxValue);
+
                 if (exceptions != null)
                 {
                     throw new AggregateException(exceptions);
@@ -342,7 +332,7 @@ namespace System.Threading
         private void SafeLinkedCancel()
         {
             var callbacks = _callbacks;
-            if (callbacks == null || Volatile.Read(ref _disposeRequested) == 1)
+            if (callbacks == null || _disposeRequested == 1)
             {
                 return;
             }

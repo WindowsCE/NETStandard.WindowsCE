@@ -30,7 +30,7 @@ namespace System.Threading
             => source?.IsCancellationRequested ?? false;
 
         public WaitHandle WaitHandle
-            => source.WaitHandle;
+            => source?.WaitHandle ?? CancellationTokenSource.NoneSource.WaitHandle;
 
         private CancellationTokenSource Source
             => source ?? CancellationTokenSource.NoneSource;

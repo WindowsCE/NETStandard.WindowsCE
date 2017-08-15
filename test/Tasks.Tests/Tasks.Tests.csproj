@@ -62,8 +62,10 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="AggregateExceptionTests.cs" />
     <Compile Include="BasicAsyncTest.cs" />
     <Compile Include="CancellationTokenSourceTest.cs" />
+    <Compile Include="CancellationTokenTests.core.cs" />
     <Compile Include="CancellationTokenTests.cs" />
     <Compile Include="ContinueWithTests.cs" />
     <Compile Include="FromAsyncTests.cs" />
@@ -76,6 +78,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(SolutionDir)tools\keypair.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common.Tests\Common.Tests.csproj">
+      <Project>{11362ef6-8335-4739-9ab0-2fff56589661}</Project>
+      <Name>Common.Tests</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

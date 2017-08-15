@@ -21,7 +21,8 @@ namespace System.Runtime.Tests.Threading
             Thread.Sleep(1);
             Assert.IsFalse(Monitor.TryEnter(lockObj));
 
-            Assert.IsTrue(Mock.System.Threading.Monitor2.TryEnter(lockObj, 15));
+            //Assert.IsTrue(Mock.System.Threading.Monitor2.TryEnter(lockObj, 15));
+            Assert.IsTrue(Mock.System.Threading.Monitor2.TryEnter(lockObj, 30));
             Monitor.Exit(lockObj);
 
             Assert.IsTrue(thread.Join(250));

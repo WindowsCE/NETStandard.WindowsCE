@@ -29,37 +29,37 @@ namespace Tests
             }
         }
 
-        //[TestMethod]
-        //public void CancellationTokenSource_Cancel_ExceptionOrder()
-        //{
-        //    using (var cts = new CancellationTokenSource())
-        //    {
-        //        cts.Token.Register(() =>
-        //        {
-        //            throw new ApplicationException("1");
-        //        });
-        //        cts.Token.Register(() =>
-        //        {
-        //            throw new ApplicationException("2");
-        //        });
-        //        cts.Token.Register(() =>
-        //        {
-        //            throw new ApplicationException("3");
-        //        });
+        [TestMethod]
+        public void CancellationTokenSource_Cancel_ExceptionOrder()
+        {
+            using (var cts = new CancellationTokenSource())
+            {
+                cts.Token.Register(() =>
+                {
+                    throw new ApplicationException("1");
+                });
+                cts.Token.Register(() =>
+                {
+                    throw new ApplicationException("2");
+                });
+                cts.Token.Register(() =>
+                {
+                    throw new ApplicationException("3");
+                });
 
-        //        try
-        //        {
-        //            cts.Cancel();
-        //        }
-        //        catch (AggregateException e)
-        //        {
-        //            Assert.AreEqual(3, e.InnerExceptions.Count, "#2");
-        //            Assert.AreEqual("3", e.InnerExceptions[0].Message, "#3");
-        //            Assert.AreEqual("2", e.InnerExceptions[1].Message, "#4");
-        //            Assert.AreEqual("1", e.InnerExceptions[2].Message, "#5");
-        //        }
-        //    }
-        //}
+                try
+                {
+                    cts.Cancel();
+                }
+                catch (AggregateException e)
+                {
+                    Assert.AreEqual(3, e.InnerExceptions.Count, "#2");
+                    Assert.AreEqual("3", e.InnerExceptions[0].Message, "#3");
+                    Assert.AreEqual("2", e.InnerExceptions[1].Message, "#4");
+                    Assert.AreEqual("1", e.InnerExceptions[2].Message, "#5");
+                }
+            }
+        }
 
         [TestMethod]
         public void CancellationTokenSource_Cancel_MultipleException_Recursive()
@@ -179,24 +179,24 @@ namespace Tests
             }
         }
 
-        //[TestMethod]
-        //public void CancellationTokenSource_Cancel_Order()
-        //{
-        //    using (var cts = new CancellationTokenSource())
-        //    {
-        //        var current = 0;
-        //        Action<object> a = x =>
-        //        {
-        //            Assert.AreEqual(current, x);
-        //            current++;
-        //        };
+        [TestMethod]
+        public void CancellationTokenSource_Cancel_Order()
+        {
+            using (var cts = new CancellationTokenSource())
+            {
+                var current = 0;
+                Action<object> a = x =>
+                {
+                    Assert.AreEqual(current, x);
+                    current++;
+                };
 
-        //        cts.Token.Register(a, 2);
-        //        cts.Token.Register(a, 1);
-        //        cts.Token.Register(a, 0);
-        //        cts.Cancel();
-        //    }
-        //}
+                cts.Token.Register(a, 2);
+                cts.Token.Register(a, 1);
+                cts.Token.Register(a, 0);
+                cts.Cancel();
+            }
+        }
 
         [TestMethod]
         public void CancellationTokenSource_Cancel_SingleException()
@@ -405,7 +405,6 @@ namespace Tests
                 GC.KeepAlive(ex);
             }
 
-#if NET20 || NET30 || NET35 || NET_45
             try
             {
                 cts.CancelAfter(1);
@@ -415,7 +414,6 @@ namespace Tests
             {
                 GC.KeepAlive(ex);
             }
-#endif
         }
 
         [TestMethod]
