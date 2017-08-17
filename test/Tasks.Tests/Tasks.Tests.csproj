@@ -76,6 +76,7 @@
     <Compile Include="TaskBasicTests.cs" />
     <Compile Include="TaskCancellation.cs" />
     <Compile Include="TaskMembersTests.cs" />
+    <Compile Include="UnwrapTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(SolutionDir)tools\keypair.snk" />

@@ -168,6 +168,11 @@ namespace System.Threading.Tasks
             }
         }
 
+        public bool IsCompletedSuccessfully
+        {
+            get { return (_stateFlags & TASK_STATE_COMPLETED_MASK) == TASK_STATE_RAN_TO_COMPLETION; }
+        }
+
         /// <summary>
         /// Gets whether the <see cref="Task"/> completed due to an unhandled exception.
         /// </summary>
@@ -237,11 +242,17 @@ namespace System.Threading.Tasks
         /// <summary>
         /// Internal constructor to create an already-completed task.
         /// </summary>
-        internal Task(Exception ex)
+        internal Task(Exception ex, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (ex == null)
             {
-                _stateFlags = TASK_STATE_RAN_TO_COMPLETION;
+                if (!cancellationToken.IsCancellationRequested)
+                    _stateFlags = TASK_STATE_RAN_TO_COMPLETION;
+                else
+                {
+                    _stateFlags = TASK_STATE_CANCELED;
+                    m_cancellationToken = cancellationToken;
+                }
             }
             else if (ex is InternalOCE)
             {
@@ -1500,7 +1511,7 @@ namespace System.Threading.Tasks
 
         #endregion
 
-        #region FromResult / FromException
+        #region FromResult / FromException / FromCanceled
 
         /// <summary>
         /// Creates a <see cref="Task{TResult}"/> that's completed
@@ -1535,6 +1546,29 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException("exception");
 
             return new Task<TResult>(default(TResult), exception);
+        }
+
+        /// <summary>Creates a <see cref="Task"/> that's completed due to cancellation with the specified token.</summary>
+        /// <param name="cancellationToken">The token with which to complete the task.</param>
+        /// <returns>The canceled task.</returns>
+        public static Task FromCanceled(CancellationToken cancellationToken)
+        {
+            if (!cancellationToken.IsCancellationRequested)
+                throw new ArgumentOutOfRangeException(nameof(cancellationToken));
+
+            return new Task((Exception)null, cancellationToken);
+        }
+
+        /// <summary>Creates a <see cref="Task{TResult}"/> that's completed due to cancellation with the specified token.</summary>
+        /// <typeparam name="TResult">The type of the result returned by the task.</typeparam>
+        /// <param name="cancellationToken">The token with which to complete the task.</param>
+        /// <returns>The canceled task.</returns>
+        public static Task<TResult> FromCanceled<TResult>(CancellationToken cancellationToken)
+        {
+            if (!cancellationToken.IsCancellationRequested)
+                throw new ArgumentOutOfRangeException(nameof(cancellationToken));
+
+            return new Task<TResult>(default(TResult), (Exception)null, cancellationToken);
         }
 
         #endregion

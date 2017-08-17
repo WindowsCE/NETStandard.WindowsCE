@@ -58,8 +58,8 @@ namespace System.Threading.Tasks
         /// <summary>
         /// Internal constructor to create an already-completed task.
         /// </summary>
-        internal Task(TResult result, Exception ex)
-            : base(ex)
+        internal Task(TResult result, Exception ex, CancellationToken cancellationToken = default(CancellationToken))
+            : base(ex, cancellationToken)
         {
             _result = result;
         }
