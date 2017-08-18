@@ -10,13 +10,15 @@
     <projectUrl>https://github.com/skarllot/NETStandard.WindowsCE</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <copyright>Copyright © Fabrício Godoy</copyright>
-    <summary>A set of standard .NET APIs that are prescribed to be used and supported together</summary>
+    <summary>Library that implements NETStandard specification onto Windows CE platform</summary>
     <description>
-      A set of standard .NET APIs that are prescribed to be used and supported together. This includes most of the APIs in the NETStandard.Platform package built on top of WindowsCE platform.
-      Mimics the package NETStandard.Library.
+      This library includes most of the APIs from the NETStandard specification built on top of Windows CE platform
     </description>
     <language>en-US</language>
     <tags>net35-cf,windowsce,wince,netstandard,netstandard1.0</tags>
+    <dependencies>
+      <group targetFramework="net35-cf" />
+    </dependencies>
     <frameworkAssemblies>
       <frameworkAssembly assemblyName="mscorlib" targetFramework=".NETFramework3.5-CompactFramework" />
       <frameworkAssembly assemblyName="System" targetFramework=".NETFramework3.5-CompactFramework" />
