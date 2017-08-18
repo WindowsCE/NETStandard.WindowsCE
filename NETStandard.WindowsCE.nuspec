@@ -15,7 +15,7 @@
       This library includes most of the APIs from the NETStandard specification built on top of Windows CE platform
     </description>
     <language>en-US</language>
-    <tags>net35-cf,windowsce,wince,netstandard,netstandard1.0</tags>
+    <tags>net35-cf,windowsce,wince,netstandard,netstandard1.0,backport</tags>
     <dependencies>
       <group targetFramework="net35-cf" />
     </dependencies>

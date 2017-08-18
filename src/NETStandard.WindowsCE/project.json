@@ -2,6 +2,7 @@
   "version": "1.0.0-*",
 
   "buildOptions": {
+    "allowUnsafe": true,
     "keyFile": "../../tools/keypair.snk",
     "nowarn": [ "CS1591" ],
     "outputName": "NETStandard",
