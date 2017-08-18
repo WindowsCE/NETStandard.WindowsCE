@@ -543,24 +543,23 @@ namespace Tests
         //}
 
         // TODO: More efficient Unwrap
-        /// <summary>
-        /// Test that a long chain of Unwraps can execute without overflowing the stack.
-        /// </summary>
-        [TestMethod]
-        public void TaskUnwrap_RunStackGuardTests()
-        {
-            Assert.Inconclusive("Should not overflow the stack");
-            //const int DiveDepth = 12000;
+        ///// <summary>
+        ///// Test that a long chain of Unwraps can execute without overflowing the stack.
+        ///// </summary>
+        //[TestMethod]
+        //public void TaskUnwrap_RunStackGuardTests()
+        //{
+        //    const int DiveDepth = 12000;
 
-            //Func<int, Task<int>> func = null;
-            //func = count =>
-            //    ++count < DiveDepth ?
-            //        Task.Factory.StartNew(() => func(count), CancellationToken.None/*, TaskCreationOptions.None, TaskScheduler.Default*/).Unwrap() :
-            //        Task.FromResult(count);
+        //    Func<int, Task<int>> func = null;
+        //    func = count =>
+        //        ++count < DiveDepth ?
+        //            Task.Factory.StartNew(() => func(count), CancellationToken.None/*, TaskCreationOptions.None, TaskScheduler.Default*/).Unwrap() :
+        //            Task.FromResult(count);
 
-            //// This test will overflow if it fails.
-            //Assert.AreEqual(DiveDepth, func(0).Result);
-        }
+        //    // This test will overflow if it fails.
+        //    Assert.AreEqual(DiveDepth, func(0).Result);
+        //}
 
         /// <summary>Gets an enumerable of already completed non-generic tasks.</summary>
         private static IEnumerable<object[]> CompletedNonGenericTasks
