@@ -5,7 +5,7 @@
     <version>$version$</version>
     <title>NETStandard compatibility layer for WindowsCE</title>
     <authors>Fabricio Godoy</authors>
-    <owners>skarllot,fgodoy-verion</owners>
+    <owners>skarllot</owners>
     <licenseUrl>https://github.com/skarllot/NETStandard.WindowsCE/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/skarllot/NETStandard.WindowsCE</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
