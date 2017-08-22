@@ -4,3 +4,4 @@
 - MonoTouch sample of Facebook integration: https://github.com/conceptdev/Facebook/tree/master/iOS/Newtonsoft.Json
 - NET Legacy: https://github.com/SaladLab/NetLegacySupport
 - Nonblocking Synchronization: http://www.albahari.com/threading/part4.aspx
+- OpenNETCF: https://github.com/ctacke/sdf
