@@ -38,12 +38,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="NETStandard">
-      <HintPath>..\..\src\NETStandard.WindowsCE\bin\Debug\net35-client\NETStandard.dll</HintPath>
+    <Reference Include="NETStandard.WindowsCE">
+      <HintPath>..\..\src\NETStandard.WindowsCE\bin\Debug\net35-client\NETStandard.WindowsCE.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssertExtensions.cs" />

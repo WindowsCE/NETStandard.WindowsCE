@@ -42,8 +42,8 @@
     <AssemblyOriginatorKeyFile>..\..\tools\keypair.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NETStandard">
-      <HintPath>..\..\src\NETStandard.WindowsCE\bin\Debug\net35-client\NETStandard.dll</HintPath>
+    <Reference Include="NETStandard.WindowsCE">
+      <HintPath>..\..\src\NETStandard.WindowsCE\bin\Debug\net35-client\NETStandard.WindowsCE.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>

@@ -5,7 +5,6 @@
     "allowUnsafe": true,
     "keyFile": "../../tools/keypair.snk",
     "nowarn": [ "CS1591" ],
-    "outputName": "NETStandard",
     "xmlDoc": true,
     "warningsAsErrors": true
   },
