@@ -2,8 +2,8 @@
 
 set SolutionDir=%~dp0
 set PackageVersion=%~1
-set AssemblyName=NETStandard
-set PackageName=%AssemblyName%.WindowsCE
+set AssemblyName=NETStandard.WindowsCE
+set PackageName=%AssemblyName%
 set SourceCodePath=%SolutionDir%\src
 
 echo Copying source files...
