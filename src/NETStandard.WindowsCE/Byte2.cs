@@ -26,30 +26,29 @@ namespace Mock.System
 
         public static bool TryParse(string s, out byte result)
         {
-            bool retVal = false;
-            try
-            {
-                result = byte.Parse(s);
-                retVal = true;
-            }
-            catch (FormatException) { result = 0; }
-            catch (InvalidCastException) { result = 0; }
-
-            return retVal;
+            return TryParse(s, NumberStyles.Integer, NumberFormatInfo.CurrentInfo, out result);
         }
 
         public static bool TryParse(string s, NumberStyles style, IFormatProvider provider, out byte result)
         {
-            bool retVal = false;
-            try
-            {
-                result = byte.Parse(s, style, provider);
-                retVal = true;
-            }
-            catch (FormatException) { result = 0; }
-            catch (InvalidCastException) { result = 0; }
+            NumberFormatInfo2.ValidateParseStyleInteger(style);
+            return TryParse(s, style, NumberFormatInfo.GetInstance(provider), out result);
+        }
 
-            return retVal;
+        private static bool TryParse(string s, NumberStyles style, NumberFormatInfo info, out byte result)
+        {
+            result = 0;
+            int i;
+            if (!Number.TryParseInt32(s, style, info, out i))
+            {
+                return false;
+            }
+            if (i < MinValue || i > MaxValue)
+            {
+                return false;
+            }
+            result = (byte)i;
+            return true;
         }
     }
 }

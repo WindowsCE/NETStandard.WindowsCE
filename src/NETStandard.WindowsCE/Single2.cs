@@ -60,5 +60,34 @@ namespace Mock.System
 
             return retVal;
         }
+
+        //private static bool TryParse(string s, NumberStyles style, NumberFormatInfo info, out float result)
+        //{
+        //    if (s == null)
+        //    {
+        //        result = 0;
+        //        return false;
+        //    }
+        //    bool success = Number.TryParseSingle(s, style, info, out result);
+        //    if (!success)
+        //    {
+        //        string sTrim = s.Trim();
+        //        if (sTrim.Equals(info.PositiveInfinitySymbol))
+        //        {
+        //            result = float.PositiveInfinity;
+        //        }
+        //        else if (sTrim.Equals(info.NegativeInfinitySymbol))
+        //        {
+        //            result = float.NegativeInfinity;
+        //        }
+        //        else if (sTrim.Equals(info.NaNSymbol))
+        //        {
+        //            result = float.NaN;
+        //        }
+        //        else
+        //            return false; // We really failed
+        //    }
+        //    return true;
+        //}
     }
 }

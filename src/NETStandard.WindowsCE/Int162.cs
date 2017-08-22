@@ -23,30 +23,42 @@ namespace Mock.System
 
         public static bool TryParse(string s, out short result)
         {
-            bool retVal = false;
-            try
-            {
-                result = short.Parse(s);
-                retVal = true;
-            }
-            catch (FormatException) { result = 0; }
-            catch (InvalidCastException) { result = 0; }
-
-            return retVal;
+            return TryParse(s, NumberStyles.Integer, NumberFormatInfo.CurrentInfo, out result);
         }
 
         public static bool TryParse(string s, NumberStyles style, IFormatProvider provider, out short result)
         {
-            bool retVal = false;
-            try
-            {
-                result = short.Parse(s, style, provider);
-                retVal = true;
-            }
-            catch (FormatException) { result = 0; }
-            catch (InvalidCastException) { result = 0; }
+            NumberFormatInfo2.ValidateParseStyleInteger(style);
+            return TryParse(s, style, NumberFormatInfo.GetInstance(provider), out result);
+        }
 
-            return retVal;
+        private static bool TryParse(string s, NumberStyles style, NumberFormatInfo info, out short result)
+        {
+            result = 0;
+            int i;
+            if (!Number.TryParseInt32(s, style, info, out i))
+            {
+                return false;
+            }
+
+            // We need this check here since we don't allow signs to specified in hex numbers. So we fixup the result
+            // for negative numbers
+            if ((style & NumberStyles.AllowHexSpecifier) != 0)
+            { // We are parsing a hexadecimal number
+                if ((i < 0) || i > ushort.MaxValue)
+                {
+                    return false;
+                }
+                result = (short)i;
+                return true;
+            }
+
+            if (i < short.MinValue || i > short.MaxValue)
+            {
+                return false;
+            }
+            result = (short)i;
+            return true;
         }
     }
 }

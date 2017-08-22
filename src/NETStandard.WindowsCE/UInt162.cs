@@ -24,30 +24,29 @@ namespace Mock.System
 
         public static bool TryParse(string s, out ushort result)
         {
-            bool retVal = false;
-            try
-            {
-                result = ushort.Parse(s);
-                retVal = true;
-            }
-            catch (FormatException) { result = 0; }
-            catch (InvalidCastException) { result = 0; }
-
-            return retVal;
+            return TryParse(s, NumberStyles.Integer, NumberFormatInfo.CurrentInfo, out result);
         }
 
         public static bool TryParse(string s, NumberStyles style, IFormatProvider provider, out ushort result)
         {
-            bool retVal = false;
-            try
-            {
-                result = ushort.Parse(s, style, provider);
-                retVal = true;
-            }
-            catch (FormatException) { result = 0; }
-            catch (InvalidCastException) { result = 0; }
+            NumberFormatInfo2.ValidateParseStyleInteger(style);
+            return TryParse(s, style, NumberFormatInfo.GetInstance(provider), out result);
+        }
 
-            return retVal;
+        private static bool TryParse(string s, NumberStyles style, NumberFormatInfo info, out ushort result)
+        {
+            result = 0;
+            uint i;
+            if (!Number.TryParseUInt32(s, style, info, out i))
+            {
+                return false;
+            }
+            if (i > ushort.MaxValue)
+            {
+                return false;
+            }
+            result = (ushort)i;
+            return true;
         }
     }
 }
