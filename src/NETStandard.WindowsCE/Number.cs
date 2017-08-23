@@ -8,7 +8,7 @@ using System.Text;
 
 namespace System
 {
-    internal static class Number
+    internal static partial class Number
     {
         private static bool IsWhite(char ch)
         {
@@ -221,9 +221,9 @@ namespace System
                 groupSep = numfmt.NumberGroupSeparator;
             }
 
-            Int32 state = 0;
-            Boolean bigNumber = (sb != null); // When a StringBuilder is provided then we use it in place of the number.digits char[50]
-            Int32 maxParseDigits = bigNumber ? Int32.MaxValue : NumberMaxDigits;
+            int state = 0;
+            bool bigNumber = (sb != null); // When a StringBuilder is provided then we use it in place of the number.digits char[50]
+            int maxParseDigits = bigNumber ? int.MaxValue : NumberMaxDigits;
 
             char* p = str;
             char ch = *p;
@@ -416,6 +416,24 @@ namespace System
             return true;
         }
 
+        internal unsafe static bool TryParseDouble(string value, NumberStyles options, NumberFormatInfo numfmt, out double result)
+        {
+            byte* numberBufferBytes = stackalloc byte[NumberBuffer.NumberBufferBytes];
+            NumberBuffer number = new NumberBuffer(numberBufferBytes);
+            result = 0;
+
+
+            if (!TryStringToNumber(value, options, ref number, numfmt, false))
+            {
+                return false;
+            }
+            if (!NumberBufferToDouble(ref number, ref result))
+            {
+                return false;
+            }
+            return true;
+        }
+
         internal unsafe static bool TryParseInt32(string s, NumberStyles style, NumberFormatInfo info, out int result)
         {
             byte* numberBufferBytes = stackalloc byte[NumberBuffer.NumberBufferBytes];
@@ -472,30 +490,30 @@ namespace System
             return true;
         }
 
-        //internal unsafe static bool TryParseSingle(string value, NumberStyles options, NumberFormatInfo numfmt, out float result)
-        //{
-        //    Byte* numberBufferBytes = stackalloc Byte[NumberBuffer.NumberBufferBytes];
-        //    NumberBuffer number = new NumberBuffer(numberBufferBytes);
-        //    result = 0;
-        //    Double d = 0;
+        internal unsafe static bool TryParseSingle(string value, NumberStyles options, NumberFormatInfo numfmt, out float result)
+        {
+            byte* numberBufferBytes = stackalloc byte[NumberBuffer.NumberBufferBytes];
+            NumberBuffer number = new NumberBuffer(numberBufferBytes);
+            result = 0;
+            double d = 0;
 
-        //    if (!TryStringToNumber(value, options, ref number, numfmt, false))
-        //    {
-        //        return false;
-        //    }
-        //    if (!NumberBufferToDouble(number.PackForNative(), ref d))
-        //    {
-        //        return false;
-        //    }
-        //    Single castSingle = (Single)d;
-        //    if (Single.IsInfinity(castSingle))
-        //    {
-        //        return false;
-        //    }
+            if (!TryStringToNumber(value, options, ref number, numfmt, false))
+            {
+                return false;
+            }
+            if (!NumberBufferToDouble(ref number, ref d))
+            {
+                return false;
+            }
+            float castSingle = (float)d;
+            if (float.IsInfinity(castSingle))
+            {
+                return false;
+            }
 
-        //    result = castSingle;
-        //    return true;
-        //}
+            result = castSingle;
+            return true;
+        }
 
         internal unsafe static bool TryParseUInt32(string s, NumberStyles style, NumberFormatInfo info, out uint result)
         {

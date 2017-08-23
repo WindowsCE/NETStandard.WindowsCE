@@ -35,59 +35,42 @@ namespace Mock.System
 
         public static bool TryParse(string s, NumberStyles style, IFormatProvider provider, out float result)
         {
-            bool retVal = false;
-            try
-            {
-                result = float.Parse(s, style, provider);
-                retVal = true;
-            }
-            catch (FormatException) { result = 0; }
-            catch (InvalidCastException) { result = 0; }
-
-            return retVal;
+            NumberFormatInfo2.ValidateParseStyleFloatingPoint(style);
+            return TryParse(s, style, NumberFormatInfo.GetInstance(provider), out result);
         }
 
         public static bool TryParse(string s, out float result)
         {
-            bool retVal = false;
-            try
-            {
-                result = float.Parse(s);
-                retVal = true;
-            }
-            catch (FormatException) { result = 0; }
-            catch (InvalidCastException) { result = 0; }
-
-            return retVal;
+            return TryParse(s, NumberStyles.Float | NumberStyles.AllowThousands, NumberFormatInfo.CurrentInfo, out result);
         }
 
-        //private static bool TryParse(string s, NumberStyles style, NumberFormatInfo info, out float result)
-        //{
-        //    if (s == null)
-        //    {
-        //        result = 0;
-        //        return false;
-        //    }
-        //    bool success = Number.TryParseSingle(s, style, info, out result);
-        //    if (!success)
-        //    {
-        //        string sTrim = s.Trim();
-        //        if (sTrim.Equals(info.PositiveInfinitySymbol))
-        //        {
-        //            result = float.PositiveInfinity;
-        //        }
-        //        else if (sTrim.Equals(info.NegativeInfinitySymbol))
-        //        {
-        //            result = float.NegativeInfinity;
-        //        }
-        //        else if (sTrim.Equals(info.NaNSymbol))
-        //        {
-        //            result = float.NaN;
-        //        }
-        //        else
-        //            return false; // We really failed
-        //    }
-        //    return true;
-        //}
+        private static bool TryParse(string s, NumberStyles style, NumberFormatInfo info, out float result)
+        {
+            if (s == null)
+            {
+                result = 0;
+                return false;
+            }
+            bool success = Number.TryParseSingle(s, style, info, out result);
+            if (!success)
+            {
+                string sTrim = s.Trim();
+                if (sTrim.Equals(info.PositiveInfinitySymbol))
+                {
+                    result = float.PositiveInfinity;
+                }
+                else if (sTrim.Equals(info.NegativeInfinitySymbol))
+                {
+                    result = float.NegativeInfinity;
+                }
+                else if (sTrim.Equals(info.NaNSymbol))
+                {
+                    result = float.NaN;
+                }
+                else
+                    return false; // We really failed
+            }
+            return true;
+        }
     }
 }

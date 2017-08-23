@@ -18,14 +18,28 @@ namespace System.Globalization
             // Check for undefined flags
             if ((style & InvalidNumberStyles) != 0)
             {
-                throw new ArgumentException("Using invalid value for NumberStyles", nameof(style));
+                throw new ArgumentException("An undefined NumberStyles value is being used", nameof(style));
             }
             if ((style & NumberStyles.AllowHexSpecifier) != 0)
             { // Check for hex number
                 if ((style & ~NumberStyles.HexNumber) != 0)
                 {
-                    throw new ArgumentException("Invalid bit set for AllowHexSpecifier");
+                    throw new ArgumentException("With the AllowHexSpecifier bit set in the enum bit field, the only other valid bits that can be combined into the enum value must be a subset of those in HexNumber");
                 }
+            }
+        }
+
+        internal static void ValidateParseStyleFloatingPoint(NumberStyles style)
+        {
+            // Check for undefined flags
+            if ((style & InvalidNumberStyles) != 0)
+            {
+                throw new ArgumentException("An undefined NumberStyles value is being used", nameof(style));
+            }
+
+            if ((style & NumberStyles.AllowHexSpecifier) != 0)
+            { // Check for hex number
+                throw new ArgumentException("The number style AllowHexSpecifier is not supported on floating point data types");
             }
         }
     }
