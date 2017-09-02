@@ -67,6 +67,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runtime\Serialization\FormatterConverterTests.cs" />
     <Compile Include="Runtime\Serialization\SerializationInfoTests.cs" />
+    <Compile Include="SingleTests.cs" />
     <Compile Include="StringTests.cs" />
     <Compile Include="Threading\LazyInitializerTests.cs" />
     <Compile Include="Threading\MonitorTests.cs" />

@@ -136,7 +136,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void Parse_Theory()
+        public void Int32_Parse_Theory()
         {
             foreach (var fact in Parse_Valid_TestData())
                 Parse((string)fact[0], (NumberStyles)fact[1], (IFormatProvider)fact[2], (int)fact[3]);
@@ -309,7 +309,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void Parse_Invalid_Theory()
+        public void Int32_Parse_Invalid_Theory()
         {
             foreach (var fact in Parse_Invalid_TestData())
                 Parse_Invalid((string)fact[0], (NumberStyles)fact[1], (IFormatProvider)fact[2], (Type)fact[3]);
@@ -351,7 +351,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void TryParse_InvalidNumberStyle_ThrowsArgumentException_Theory()
+        public void Int32_TryParse_InvalidNumberStyle_ThrowsArgumentException_Theory()
         {
             TryParse_InvalidNumberStyle_ThrowsArgumentException(NumberStyles.HexNumber | NumberStyles.AllowParentheses, null);
             TryParse_InvalidNumberStyle_ThrowsArgumentException(unchecked((NumberStyles)0xFFFFFC00), "style");
