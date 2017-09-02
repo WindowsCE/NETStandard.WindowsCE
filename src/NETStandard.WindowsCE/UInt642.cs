@@ -10,6 +10,9 @@ namespace Mock.System
     [CLSCompliant(false)]
     public static class UInt642
     {
+        public const ulong MaxValue = ulong.MaxValue;
+        public const ulong MinValue = ulong.MinValue;
+
         public static ulong Parse(string s)
             => ulong.Parse(s);
 

@@ -10,6 +10,9 @@ namespace Mock.System
     [CLSCompliant(false)]
     public static class UInt162
     {
+        public const ushort MaxValue = ushort.MaxValue;
+        public const ushort MinValue = ushort.MinValue;
+
         public static ushort Parse(string s)
             => ushort.Parse(s);
 

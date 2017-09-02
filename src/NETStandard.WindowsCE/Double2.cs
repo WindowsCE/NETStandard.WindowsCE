@@ -9,6 +9,9 @@ namespace Mock.System
 {
     public static class Double2
     {
+        public const double MaxValue = double.MaxValue;
+        public const double MinValue = double.MinValue;
+
         public static bool IsInfinity(double d)
             => double.IsInfinity(d);
 

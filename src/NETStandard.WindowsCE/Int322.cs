@@ -9,6 +9,9 @@ namespace Mock.System
 {
     public static class Int322
     {
+        public const int MaxValue = int.MaxValue;
+        public const int MinValue = int.MinValue;
+
         public static int Parse(string s)
             => int.Parse(s);
 

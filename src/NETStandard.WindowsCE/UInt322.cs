@@ -10,6 +10,9 @@ namespace Mock.System
     [CLSCompliant(false)]
     public static class UInt322
     {
+        public const uint MaxValue = uint.MaxValue;
+        public const uint MinValue = uint.MinValue;
+
         public static uint Parse(string s)
             => uint.Parse(s);
 

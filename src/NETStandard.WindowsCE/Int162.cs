@@ -9,6 +9,9 @@ namespace Mock.System
 {
     public static class Int162
     {
+        public const short MaxValue = short.MaxValue;
+        public const short MinValue = short.MinValue;
+
         public static short Parse(string s)
             => short.Parse(s);
 
@@ -53,7 +56,7 @@ namespace Mock.System
                 return true;
             }
 
-            if (i < short.MinValue || i > short.MaxValue)
+            if (i < MinValue || i > MaxValue)
             {
                 return false;
             }

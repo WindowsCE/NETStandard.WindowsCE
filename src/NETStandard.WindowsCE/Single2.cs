@@ -9,6 +9,9 @@ namespace Mock.System
 {
     public static class Single2
     {
+        public const float MaxValue = float.MaxValue;
+        public const float MinValue = float.MinValue;
+
         public static bool IsInfinity(float f)
             => float.IsInfinity(f);
 
