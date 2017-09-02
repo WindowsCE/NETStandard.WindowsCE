@@ -41,6 +41,26 @@ namespace Tests
             where T : Exception
             => Throws<T>(new Action(() => testCode()));
 
+        public static Exception Throws(Type exceptionType, Action action)
+        {
+            try { action(); }
+            catch (Exception ex)
+            {
+                if (ex.GetType() != exceptionType)
+                {
+                    Assert.Fail(
+                        "An exception is caught but was unexpected type: {0}",
+                        ex.GetType());
+                    return null;
+                }
+
+                return ex;
+            }
+
+            Assert.Fail("No exception was caught");
+            return null;
+        }
+
         public static T ThrowsAny<T>(Action action)
             where T : Exception
         {

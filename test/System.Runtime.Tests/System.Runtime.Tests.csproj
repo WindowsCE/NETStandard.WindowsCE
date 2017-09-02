@@ -58,7 +58,9 @@
   <ItemGroup>
     <Compile Include="ActivatorTests.cs" />
     <Compile Include="DateTimeOffsetTests.cs" />
+    <Compile Include="DoubleTests.cs" />
     <Compile Include="EnumTests.cs" />
+    <Compile Include="Int32Tests.cs" />
     <Compile Include="LazyOfTMetadataTests.cs" />
     <Compile Include="LazyTests.cs" />
     <Compile Include="LazyTestsMS.cs" />
