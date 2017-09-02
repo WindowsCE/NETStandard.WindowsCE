@@ -5,6 +5,10 @@
 // File: Number.cpp
 //
 
+// References:
+// - https://github.com/dotnet/coreclr/blob/54891e0650e69f08832f75a40dc102efc6115d38/src/classlibnative/bcltype/number.cpp
+// - https://gist.github.com/pieceofsummer/a555baa83a3c6f71925dac9f2d8b2d86
+
 #if NET35_CF
 // Windows CE supports little-endian format only
 // Ref: https://msdn.microsoft.com/en-us/library/ms905093.aspx
@@ -155,6 +159,7 @@ namespace System
 
         private unsafe static void NumberToDouble(ref NumberBuffer number, ref double value)
         {
+            ulong val;
             char* src = number.digits;
             Debug.Assert(src != null, "");
 
@@ -170,14 +175,14 @@ namespace System
 
             if (remaining == 0)
             {
-                value = 0;
+                val = 0;
                 goto done;
             }
 
             int count = remaining < 9 ? remaining : 9;
             remaining -= count;
 
-            ulong val = (ulong)DigitsToInt(src, count);
+            val = (ulong)DigitsToInt(src, count);
 
             if (remaining > 0)
             {
@@ -194,7 +199,7 @@ namespace System
             if (absscale >= 22 * 16)
             {
                 // overflow / underflow
-                value = UInt64ToDouble(scale > 0 ? 0x7FF0000000000000UL : 0UL);
+                val = scale > 0 ? 0x7FF0000000000000UL : 0UL;
                 goto done;
             }
 
@@ -208,14 +213,25 @@ namespace System
             if ((val & 0xC000000000000000UL) == 0) { val <<= 2; exp -= 2; }
             if ((val & 0x8000000000000000UL) == 0) { val <<= 1; exp -= 1; }
 
-            int index = absscale >> 4;
+            int index = absscale & 15;
+            if (index != 0)
+            {
+                int multexp = rgexp64Power10[index - 1];
+                // the exponents are shared between the inverted and regular table
+                exp += scale < 0 ? (-multexp + 1) : multexp;
+
+                ulong multval = rgval64Power10[index + (scale < 0 ? 15 : 0) - 1];
+                val = Mul64Lossy(val, multval, ref exp);
+            }
+
+            index = absscale >> 4;
             if (index != 0)
             {
                 int multexp = rgexp64Power10By16[index - 1];
                 // the exponents are shared between the inverted and regular table
                 exp += scale < 0 ? (-multexp + 1) : multexp;
 
-                ulong multval = rgval64Power10By16[index + ((scale < 0) ? 21 : 0) - 1];
+                ulong multval = rgval64Power10By16[index + (scale < 0 ? 21 : 0) - 1];
                 val = Mul64Lossy(val, multval, ref exp);
             }
 
@@ -223,12 +239,12 @@ namespace System
             if ((val & (1 << 10)) != 0)
             {
                 // IEEE round to even
-                ulong tmp = val + ((1 << 10) - 1) + (((uint)val >> 11) & 1);
+                ulong tmp = val + ((1UL << 10) - 1) + (((uint)val >> 11) & 1);
                 if (tmp < val)
                 {
                     // overflow
                     tmp = (tmp >> 1) | 0x8000000000000000UL;
-                    exp += 1;
+                    exp++;
                 }
                 val = tmp;
             }
@@ -266,10 +282,11 @@ namespace System
                 val = ((ulong)exp << 52) + ((val >> 11) & 0x000FFFFFFFFFFFFFUL);
             }
 
-            value = UInt64ToDouble(val);
-
         done:
-            if (number.sign) value = UInt64ToDouble(DoubleToUInt64(value) | 0x8000000000000000UL);
+            if (number.sign)
+                val |= 0x8000000000000000UL;
+
+            value = UInt64ToDouble(val);
         }
 
         private static bool NumberBufferToDouble(ref NumberBuffer number, ref double value)
@@ -278,12 +295,11 @@ namespace System
             NumberToDouble(ref number, ref d);
             var decomposeDouble = new FPDOUBLE(d);
             int e = decomposeDouble.exp;
-            int fmntLow = decomposeDouble.mantLo;
-            int fmntHigh = decomposeDouble.mantHi;
+            ulong fmnt = decomposeDouble.mantissa;
             if (e == 0x7ff)
                 return false;
 
-            if (e == 0 && fmntLow == 0 && fmntHigh == 0)
+            if (e == 0 && fmnt == 0)
                 d = 0d;
 
             value = d;
@@ -318,14 +334,24 @@ namespace System
             // it's ok to losse some precision here - Mul64 will be called
             // at most twice during the conversion, so the error won't propagate
             // to any of the 53 significant bits of the result
-            ulong val = ((a >> 32) * (b >> 32)) +
-                (((a >> 32) * b) >> 32) +
-                ((a * (b >> 32)) >> 32);
+            ulong a_hi = (a >> 32); uint a_lo = (uint)a;
+            ulong b_hi = (b >> 32); uint b_lo = (uint)b;
+
+            var result = a_hi * b_hi;
+
+            // save some multiplications if lo-parts aren't big enough to produce carry
+            // (hi-parts will be always big enough, since a and b are normalized)
+
+            if ((b_lo & 0xFFFF0000) != 0)
+                result += (a_hi * b_lo) >> 32;
+
+            if ((a_lo & 0xFFFF0000) != 0)
+                result += (a_lo * b_hi) >> 32;
 
             // normalize
-            if ((val & 0x8000000000000000UL) == 0) { val <<= 1; pexp -= 1; }
+            if ((result & 0x8000000000000000UL) == 0) { result <<= 1; pexp--; }
 
-            return val;
+            return result;
         }
 
         private static unsafe ulong DoubleToUInt64(double d)
@@ -349,14 +375,8 @@ namespace System
             public int exp
                 => (int)((value >> 52) & 0x7ffUL);
 
-            public int mantHi
-                => (int)((value >> 32) & 0xfffffUL);
-
-            public int mantLo
-                => unchecked((int)value);
-
-            public int mantissa
-                => (int)(value & 0xfffffffffffffUL);
+            public ulong mantissa
+                => value & 0xfffffffffffffUL;
         }
 
         //private static ulong DoubleToUInt64(double d)
