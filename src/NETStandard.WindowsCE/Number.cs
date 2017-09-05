@@ -416,6 +416,24 @@ namespace System
             return true;
         }
 
+        internal unsafe static bool TryParseDecimal(string value, NumberStyles options, NumberFormatInfo numfmt, out decimal result)
+        {
+            byte* numberBufferBytes = stackalloc byte[NumberBuffer.NumberBufferBytes];
+            NumberBuffer number = new NumberBuffer(numberBufferBytes);
+            result = 0;
+
+            if (!TryStringToNumber(value, options, ref number, numfmt, true))
+            {
+                return false;
+            }
+
+            if (!NumberBufferToDecimal(ref number, ref result))
+            {
+                return false;
+            }
+            return true;
+        }
+
         internal unsafe static bool TryParseDouble(string value, NumberStyles options, NumberFormatInfo numfmt, out double result)
         {
             byte* numberBufferBytes = stackalloc byte[NumberBuffer.NumberBufferBytes];

@@ -93,30 +93,26 @@ namespace Mock.System
 
         public static bool TryParse(string s, out decimal result)
         {
-            bool retVal = false;
-            try
+            if (s == null)
             {
-                result = decimal.Parse(s);
-                retVal = true;
+                result = 0;
+                return false;
             }
-            catch (FormatException) { result = 0; }
-            catch (InvalidCastException) { result = 0; }
 
-            return retVal;
+            return Number.TryParseDecimal(s, NumberStyles.Number, NumberFormatInfo.CurrentInfo, out result);
         }
 
         public static bool TryParse(string s, NumberStyles style, IFormatProvider provider, out decimal result)
         {
-            bool retVal = false;
-            try
-            {
-                result = decimal.Parse(s, style, provider);
-                retVal = true;
-            }
-            catch (FormatException) { result = 0; }
-            catch (InvalidCastException) { result = 0; }
+            NumberFormatInfo2.ValidateParseStyleFloatingPoint(style);
 
-            return retVal;
+            if (s == null)
+            {
+                result = 0;
+                return false;
+            }
+
+            return Number.TryParseDecimal(s, style, NumberFormatInfo.GetInstance(provider), out result);
         }
     }
 }

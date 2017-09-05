@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="ActivatorTests.cs" />
     <Compile Include="DateTimeOffsetTests.cs" />
+    <Compile Include="DecimalTests.cs" />
     <Compile Include="DoubleTests.cs" />
     <Compile Include="EnumTests.cs" />
     <Compile Include="Int32Tests.cs" />
