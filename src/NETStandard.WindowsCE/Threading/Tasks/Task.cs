@@ -1725,34 +1725,23 @@ namespace System.Threading.Tasks
         public static Task WhenAll(params Task[] tasks)
         {
             if (tasks == null)
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
 
-            foreach (var task in tasks)
-            {
-                if (task == null)
-                    throw new ArgumentException("One task from provided task array is null");
-            }
-
-            if (tasks.Length == 0)
+            int length = tasks.Length;
+            if (length == 0)
                 return new Task((Exception)null);
 
-            var resultTask = new Task(() =>
+            Task[] tasksCopy = new Task[length];
+            for (int i = 0; i < length; i++)
             {
-                var exceptions = new List<Exception>();
-                foreach (var task in tasks)
-                {
-                    try { task.Wait(); }
-                    catch (Exception e)
-                    {
-                        exceptions.Add(e);
-                    }
-                }
+                Task t = tasks[i];
+                if (t == null)
+                    throw new ArgumentException("One task from provided task array is null");
 
-                if (exceptions.Count() > 0)
-                    throw new AggregateException(exceptions.ToArray());
-            });
-            resultTask.Start();
-            return resultTask;
+                tasksCopy[i] = t;
+            }
+
+            return new WhenAllPromise(tasksCopy);
         }
 
         /// <summary>
@@ -1792,40 +1781,21 @@ namespace System.Threading.Tasks
             if (tasks == null)
                 throw new ArgumentNullException("tasks");
 
-            foreach (var task in tasks)
-            {
-                if (task == null)
-                    throw new ArgumentException("One task from provided task array is null");
-            }
-
-            if (tasks.Length == 0)
+            int length = tasks.Length;
+            if (length == 0)
                 return new Task<TResult[]>(new TResult[0], null);
 
-            var resultTask = new Task<TResult[]>(() =>
+            Task<TResult>[] tasksCopy = new Task<TResult>[length];
+            for (int i = 0; i < length; i++)
             {
-                var exceptions = new List<Exception>();
-                var results = new List<TResult>(tasks.Length);
-                foreach (var task in tasks)
-                {
-                    try
-                    {
-                        task.Wait();
-                        results.Add(task.Result);
-                    }
-                    catch (Exception e)
-                    {
-                        exceptions.Add(e);
-                        results.Add(default(TResult));
-                    }
-                }
+                var t = tasks[i];
+                if (t == null)
+                    throw new ArgumentException("One task from provided task array is null");
 
-                if (exceptions.Count() > 0)
-                    throw new AggregateException(exceptions.ToArray());
+                tasksCopy[i] = t;
+            }
 
-                return results.ToArray();
-            });
-            resultTask.Start();
-            return resultTask;
+            return new WhenAllPromise<TResult>(tasksCopy);
         }
 
         #endregion
@@ -1868,37 +1838,22 @@ namespace System.Threading.Tasks
         {
             if (tasks == null)
                 throw new ArgumentNullException("tasks");
-            if (tasks.Length == 0)
+
+            int length = tasks.Length;
+            if (length == 0)
                 throw new ArgumentException("At least one task is required to wait for completion");
 
-            foreach (var task in tasks)
+            Task[] tasksCopy = new Task[length];
+            for (int i = 0; i < length; i++)
             {
-                if (task == null)
+                var t = tasks[i];
+                if (t == null)
                     throw new ArgumentException("One task from provided task array is null");
+
+                tasksCopy[i] = t;
             }
 
-            var resultTask = new Task<Task>(() =>
-            {
-                while (true)
-                {
-                    foreach (var task in tasks)
-                    {
-                        try
-                        {
-                            if (task.Wait(0))
-                                return task;
-                        }
-                        catch (Exception)
-                        {
-                            return task;
-                        }
-                    }
-
-                    Thread.Sleep(1);
-                }
-            });
-            resultTask.Start();
-            return resultTask;
+            return new WhenAnyPromise(tasksCopy);
         }
 
         /// <summary>
@@ -1937,37 +1892,22 @@ namespace System.Threading.Tasks
         {
             if (tasks == null)
                 throw new ArgumentNullException("tasks");
-            if (tasks.Length == 0)
+
+            int length = tasks.Length;
+            if (length == 0)
                 throw new ArgumentException("At least one task is required to wait for completion");
 
-            foreach (var task in tasks)
+            Task<TResult>[] tasksCopy = new Task<TResult>[length];
+            for (int i = 0; i < length; i++)
             {
-                if (task == null)
+                var t = tasks[i];
+                if (t == null)
                     throw new ArgumentException("One task from provided task array is null");
+
+                tasksCopy[i] = t;
             }
 
-            var resultTask = new Task<Task<TResult>>(() =>
-            {
-                while (true)
-                {
-                    foreach (var task in tasks)
-                    {
-                        try
-                        {
-                            if (task.Wait(0))
-                                return task;
-                        }
-                        catch (Exception)
-                        {
-                            return task;
-                        }
-                    }
-
-                    Thread.Sleep(1);
-                }
-            });
-            resultTask.Start();
-            return resultTask;
+            return new WhenAnyPromise<TResult>(tasksCopy);
         }
 
         #endregion
@@ -2002,6 +1942,196 @@ namespace System.Threading.Tasks
             {
                 m_taskCompletedEvent?.Close();
                 m_cancelRegistration.Dispose();
+            }
+        }
+
+        #endregion
+
+        #region Promises
+
+        private sealed class WhenAllPromise : Task
+        {
+            private readonly Task[] tasks;
+            private int count;
+
+            public WhenAllPromise(Task[] tasks)
+                : base()
+            {
+                _stateFlags = TASK_STATE_WAITINGFORACTIVATION;
+                this.tasks = tasks;
+                count = tasks.Length;
+
+                foreach (var task in tasks)
+                {
+                    if (task.IsCompleted)
+                        Invoke(task);
+                    else
+                        task.ContinueWith(Invoke);
+                }
+            }
+
+            private void Invoke(Task completedTask)
+            {
+                if (Interlocked.Decrement(ref count) != 0)
+                    return;
+
+                List<Exception> exceptionList = null;
+                Task canceledTask = null;
+                for (int i = 0; i < tasks.Length; ++i)
+                {
+                    Task task = tasks[i];
+                    if (task.IsFaulted)
+                    {
+                        if (exceptionList == null)
+                            exceptionList = new List<System.Exception>();
+                        exceptionList.AddRange(task.m_exceptions);
+                    }
+                    else if (task.IsCanceled && canceledTask == null)
+                    {
+                        canceledTask = task;
+                    }
+
+                    tasks[i] = null;
+                }
+
+                if (exceptionList != null)
+                    TrySetException(new AggregateException(exceptionList));
+                else if (canceledTask != null)
+                    TrySetCanceled(canceledTask.m_cancellationToken);
+                else
+                    TrySetCompleted();
+            }
+        }
+
+        private sealed class WhenAllPromise<T> : Task<T[]>
+        {
+            private readonly Task<T>[] tasks;
+            private int count;
+
+            public WhenAllPromise(Task<T>[] tasks)
+                : base()
+            {
+                _stateFlags = TASK_STATE_WAITINGFORACTIVATION;
+                this.tasks = tasks;
+                count = tasks.Length;
+
+                foreach (var task in tasks)
+                {
+                    if (task.IsCompleted)
+                        Invoke(task);
+                    else
+                        task.ContinueWith(Invoke);
+                }
+            }
+
+            private void Invoke(Task ignored)
+            {
+                if (Interlocked.Decrement(ref count) != 0)
+                    return;
+
+                T[] result = new T[tasks.Length];
+                List<Exception> exceptionList = null;
+                Task canceledTask = null;
+                for (int i = 0; i < tasks.Length; ++i)
+                {
+                    Task<T> task = tasks[i];
+                    if (task.IsFaulted)
+                    {
+                        if (exceptionList == null)
+                            exceptionList = new List<System.Exception>();
+                        exceptionList.AddRange(task.m_exceptions);
+                    }
+                    else if (task.IsCanceled)
+                    {
+                        if (canceledTask == null)
+                            canceledTask = task;
+                    }
+                    else
+                    {
+                        result[i] = task.Result;
+                    }
+
+                    tasks[i] = null;
+                }
+
+                if (exceptionList != null)
+                    TrySetException(new AggregateException(exceptionList));
+                else if (canceledTask != null)
+                    TrySetCanceled(canceledTask.m_cancellationToken);
+                else
+                    TrySetResult(result);
+            }
+        }
+
+        private sealed class WhenAnyPromise : Task<Task>
+        {
+            private readonly Task[] tasks;
+            private int count;
+
+            public WhenAnyPromise(Task[] tasks)
+            {
+                _stateFlags = TASK_STATE_WAITINGFORACTIVATION;
+                this.tasks = tasks;
+                count = 0;
+
+                for (int i = 0; i < tasks.Length; i++)
+                {
+                    var t = tasks[i];
+                    if (t == null)
+                        return;
+
+                    if (t.IsCompleted)
+                        Invoke(t);
+                    else
+                        t.ContinueWith(Invoke);
+                }
+            }
+
+            private void Invoke(Task completedTask)
+            {
+                if (Interlocked.Increment(ref count) != 1)
+                    return;
+
+                for (int i = 0; i < tasks.Length; i++)
+                    tasks[i] = null;
+
+                TrySetResult(completedTask);
+            }
+        }
+
+        private sealed class WhenAnyPromise<T> : Task<Task<T>>
+        {
+            private readonly Task<T>[] tasks;
+            private int count;
+
+            public WhenAnyPromise(Task<T>[] tasks)
+            {
+                _stateFlags = TASK_STATE_WAITINGFORACTIVATION;
+                this.tasks = tasks;
+                count = 0;
+
+                for (int i = 0; i < tasks.Length; i++)
+                {
+                    var t = tasks[i];
+                    if (t == null)
+                        return;
+
+                    if (t.IsCompleted)
+                        Invoke(t);
+                    else
+                        t.ContinueWith(Invoke);
+                }
+            }
+
+            private void Invoke(Task completedTask)
+            {
+                if (Interlocked.Increment(ref count) != 1)
+                    return;
+
+                for (int i = 0; i < tasks.Length; i++)
+                    tasks[i] = null;
+
+                TrySetResult((Task<T>)completedTask);
             }
         }
 

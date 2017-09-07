@@ -125,21 +125,111 @@ namespace Tests
         public void TaskWhenAllTest()
         {
             int counter = 0;
-            var whenAll = Task.WhenAll(
-                Task.Run(() =>
-                {
-                    Thread.Sleep(10);
-                    Interlocked.Increment(ref counter);
-                }),
-                Task.Run(() =>
-                {
-                    Thread.Sleep(8);
-                    Interlocked.Increment(ref counter);
-                    Interlocked.Increment(ref counter);
-                }));
+            var t1 = Task.Run(() =>
+            {
+                Thread.Sleep(10);
+                Interlocked.Increment(ref counter);
+            });
+            var t2 = Task.Run(() =>
+            {
+                Thread.Sleep(8);
+                Interlocked.Increment(ref counter);
+                Interlocked.Increment(ref counter);
+            });
+            var whenAll = Task.WhenAll(t1, t2);
 
             whenAll.Wait();
             Assert.AreEqual(3, counter);
+            Assert.AreEqual(TaskStatus.RanToCompletion, whenAll.Status);
+        }
+
+        [TestMethod]
+        public void TaskWhenAllSteps()
+        {
+            var tcsList = new[]
+            {
+                new TaskCompletionSource<int>(),
+                new TaskCompletionSource<int>(),
+                new TaskCompletionSource<int>(),
+                new TaskCompletionSource<int>(),
+                new TaskCompletionSource<int>(),
+                new TaskCompletionSource<int>(),
+                new TaskCompletionSource<int>(),
+                new TaskCompletionSource<int>(),
+                new TaskCompletionSource<int>(),
+                new TaskCompletionSource<int>(),
+            };
+
+            Task[] tasks = new Task[tcsList.Length];
+            for (int i = 0; i < tcsList.Length; i++)
+                tasks[i] = tcsList[i].Task;
+
+            var whenAll = Task.WhenAll(tasks);
+
+            foreach (var tcs in tcsList)
+            {
+                Assert.AreEqual(TaskStatus.WaitingForActivation, whenAll.Status);
+                tcs.SetResult(0);
+            }
+
+            Assert.AreEqual(TaskStatus.RanToCompletion, whenAll.Status);
+        }
+
+        [TestMethod]
+        [Timeout(Timeout)]
+        public void TaskWhenAnyTest()
+        {
+            int counter = 0;
+            var t1 = Task.Run(() =>
+            {
+                Thread.Sleep(10);
+                Interlocked.Increment(ref counter);
+            });
+            var t2 = Task.Run(() =>
+            {
+                Thread.Sleep(1000);
+                Interlocked.Increment(ref counter);
+                Interlocked.Increment(ref counter);
+            });
+            var whenAny = Task.WhenAny(t1, t2);
+
+            whenAny.Wait();
+            Assert.AreEqual(t1, whenAny.Result);
+            Assert.AreEqual(1, counter);
+            Assert.AreEqual(TaskStatus.RanToCompletion, whenAny.Status);
+        }
+
+        [TestMethod]
+        public void TaskWhenAnySteps()
+        {
+            var tcsList = new[]
+            {
+                new TaskCompletionSource<int>(),
+                new TaskCompletionSource<int>(),
+                new TaskCompletionSource<int>(),
+                new TaskCompletionSource<int>(),
+                new TaskCompletionSource<int>(),
+                new TaskCompletionSource<int>(),
+                new TaskCompletionSource<int>(),
+                new TaskCompletionSource<int>(),
+                new TaskCompletionSource<int>(),
+                new TaskCompletionSource<int>(),
+            };
+
+            Task[] tasks = new Task[tcsList.Length];
+            for (int i = 0; i < tcsList.Length; i++)
+                tasks[i] = tcsList[i].Task;
+
+            var whenAny = Task.WhenAny(tasks);
+            Assert.AreEqual(TaskStatus.WaitingForActivation, whenAny.Status);
+
+            for (int i = tcsList.Length - 1; i >= 0; --i)
+            {
+                tcsList[i].SetResult(0);
+                Assert.AreEqual(TaskStatus.RanToCompletion, whenAny.Status);
+            }
+
+            Assert.AreEqual(tcsList[tcsList.Length - 1].Task, whenAny.Result);
         }
     }
 }
