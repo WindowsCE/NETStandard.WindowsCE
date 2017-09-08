@@ -20,7 +20,8 @@
     "net35-client": {
       "buildOptions": {
         "nowarn": [ "CS0436", "CS0114" ],
-        "warningsAsErrors": false
+        "warningsAsErrors": false,
+        "xmlDoc": false
       }
     }
   }

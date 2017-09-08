@@ -319,8 +319,10 @@ namespace System.Threading
 
                 if (checkDups)
                 {
+#pragma warning disable 0618    // Obsolete
                     if (!dups.Add(waitHandles[i].Handle.GetHashCode()))
                         throw new DuplicateWaitObjectException(nameof(waitHandles));
+#pragma warning restore 0618
                 }
             }
 
