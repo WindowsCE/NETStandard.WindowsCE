@@ -9,7 +9,7 @@ namespace System
 namespace Mock.System
 #endif
 {
-    public static class TypeEx
+    public static class Type2
     {
         public static readonly char Delimiter = Type.Delimiter;
         public static readonly Type[] EmptyTypes = new Type[0];
@@ -87,10 +87,48 @@ namespace Mock.System
                 return fMInfos.ToArray();
         }
 
+        internal static bool IsIntegerNumber(Type type)
+        {
+            var typeCode = Type.GetTypeCode(type);
+            return typeCode >= TypeCode.SByte
+                && typeCode <= TypeCode.UInt64;
+        }
+
         public static bool IsSerializable(this Type t)
         {
             return (t.Attributes & TypeAttributes.Serializable)
                 == TypeAttributes.Serializable;
+        }
+
+        internal static bool IsSignedNumber(Type type)
+        {
+            switch (Type.GetTypeCode(type))
+            {
+                case TypeCode.SByte:
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
+                case TypeCode.Single:
+                case TypeCode.Double:
+                case TypeCode.Decimal:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        internal static bool IsUnsignedNumber(Type type)
+        {
+            switch (Type.GetTypeCode(type))
+            {
+                case TypeCode.Byte:
+                case TypeCode.UInt16:
+                case TypeCode.UInt32:
+                case TypeCode.UInt64:
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         public static Type MakeArrayType(this Type t)

@@ -2,12 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
-namespace System.Runtime.Tests
+namespace Tests
 {
     [TestClass]
-    public class EnumTests
+    public partial class EnumTests
     {
         private IEnumerable<int> GetTypeCodeValues(bool extended)
         {
@@ -340,11 +341,11 @@ namespace System.Runtime.Tests
                 AttributeTargets.Class));
 
             Assert.IsFalse(Mock.System.Enum2.HasFlag(
-                Reflection.MemberTypes.Method,
-                Reflection.MemberTypes.All));
+                MemberTypes.Method,
+                MemberTypes.All));
             Assert.IsTrue(Mock.System.Enum2.HasFlag(
-                Reflection.MemberTypes.All,
-                Reflection.MemberTypes.Method));
+                MemberTypes.All,
+                MemberTypes.Method));
         }
 
         [TestMethod]

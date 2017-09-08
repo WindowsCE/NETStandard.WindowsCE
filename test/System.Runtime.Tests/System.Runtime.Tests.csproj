@@ -60,7 +60,9 @@
     <Compile Include="DateTimeOffsetTests.cs" />
     <Compile Include="DecimalTests.cs" />
     <Compile Include="DoubleTests.cs" />
+    <Compile Include="EnumTests.core.cs" />
     <Compile Include="EnumTests.cs" />
+    <Compile Include="EnumTypes.cs" />
     <Compile Include="Int32Tests.cs" />
     <Compile Include="LazyOfTMetadataTests.cs" />
     <Compile Include="LazyTests.cs" />
@@ -75,7 +77,7 @@
     <Compile Include="Threading\MonitorTestsMS.cs" />
     <Compile Include="Threading\SpinWaitTests.cs" />
     <Compile Include="Threading\VolatileTests.cs" />
-    <Compile Include="TypeExTests.cs" />
+    <Compile Include="TypeTests.cs" />
     <Compile Include="WeakReferenceOfTTests.cs" />
     <Compile Include="WeakReferenceTests.cs" />
   </ItemGroup>
