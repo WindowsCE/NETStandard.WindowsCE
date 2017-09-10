@@ -64,6 +64,7 @@
     <Compile Include="EnumTests.cs" />
     <Compile Include="EnumTypes.cs" />
     <Compile Include="Int32Tests.cs" />
+    <Compile Include="IO\Stream.AsyncTests.cs" />
     <Compile Include="LazyOfTMetadataTests.cs" />
     <Compile Include="LazyTests.cs" />
     <Compile Include="LazyTestsMS.cs" />
