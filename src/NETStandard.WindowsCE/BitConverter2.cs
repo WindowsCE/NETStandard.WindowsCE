@@ -6,11 +6,9 @@ namespace System
     {
         public static readonly bool IsLittleEndian = BitConverter.IsLittleEndian;
 
-        public static long DoubleToInt64Bits(double value)
+        public static unsafe long DoubleToInt64Bits(double value)
         {
-            byte[] bytes = BitConverter.GetBytes(value);
-            long result = BitConverter.ToInt64(bytes, 0);
-            return result;
+            return *((long*)&value);
         }
 
         public static byte[] GetBytes(bool value)
@@ -46,11 +44,19 @@ namespace System
         public static byte[] GetBytes(ulong value)
             => BitConverter.GetBytes(value);
 
-        public static double Int64BitsToDouble(long value)
+        public static unsafe float Int32BitsToSingle(int value)
         {
-            byte[] bytes = BitConverter.GetBytes(value);
-            double result = BitConverter.ToDouble(bytes, 0);
-            return result;
+            return *((float*)&value);
+        }
+
+        public static unsafe double Int64BitsToDouble(long value)
+        {
+            return *((double*)&value);
+        }
+
+        public static unsafe int SingleToInt32Bits(float value)
+        {
+            return *((int*)&value);
         }
 
         public static bool ToBoolean(byte[] value, int startIndex)

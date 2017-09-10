@@ -157,9 +157,8 @@ namespace System
             /*21*/ 1117,
         };
 
-        private unsafe static void NumberToDouble(ref NumberBuffer number, ref double value)
+        private unsafe static double NumberToDouble(NumberBuffer number)
         {
-            ulong val;
             char* src = number.digits;
             Debug.Assert(src != null, "");
 
@@ -174,15 +173,12 @@ namespace System
             }
 
             if (remaining == 0)
-            {
-                val = 0;
-                goto done;
-            }
+                return 0d;
 
             int count = remaining < 9 ? remaining : 9;
             remaining -= count;
 
-            val = (ulong)DigitsToInt(src, count);
+            ulong val = (ulong)DigitsToInt(src, count);
 
             if (remaining > 0)
             {
@@ -200,7 +196,9 @@ namespace System
             {
                 // overflow / underflow
                 val = scale > 0 ? 0x7FF0000000000000UL : 0UL;
-                goto done;
+                if (number.sign)
+                    val |= 0x8000000000000000;
+                return UInt64ToDouble(val);
             }
 
             int exp = 64;
@@ -282,24 +280,21 @@ namespace System
                 val = ((ulong)exp << 52) + ((val >> 11) & 0x000FFFFFFFFFFFFFUL);
             }
 
-        done:
             if (number.sign)
                 val |= 0x8000000000000000UL;
 
-            value = UInt64ToDouble(val);
+            return UInt64ToDouble(val);
         }
 
-        private static bool NumberBufferToDouble(ref NumberBuffer number, ref double value)
+        private static bool NumberBufferToDouble(NumberBuffer number, ref double value)
         {
-            double d = 0d;
-            NumberToDouble(ref number, ref d);
-            var decomposeDouble = new FPDOUBLE(d);
-            int e = decomposeDouble.exp;
-            ulong fmnt = decomposeDouble.mantissa;
-            if (e == 0x7ff)
+            double d = NumberToDouble(number);
+            uint e = DoubleHelper.Exponent(d);
+            ulong m = DoubleHelper.Mantissa(d);
+            if (e == 0x7ffu)
                 return false;
 
-            if (e == 0 && fmnt == 0)
+            if (e == 0u && m == 0UL)
                 d = 0d;
 
             value = d;
@@ -360,23 +355,22 @@ namespace System
         private static unsafe double UInt64ToDouble(ulong i)
             => *((double*)&i);
 
-        struct FPDOUBLE
+        private static class DoubleHelper
         {
-            private readonly ulong value;
-
-            public FPDOUBLE(double value)
+            public static unsafe uint Exponent(double d)
             {
-                this.value = DoubleToUInt64(value);
+                return (*((uint*)&d + 1) >> 20) & 0x000007ff;
             }
 
-            public int sign
-                => (int)(value >> 63);
+            public static unsafe ulong Mantissa(double d)
+            {
+                return (ulong)*((uint*)&d) | ((ulong)(*((uint*)&d + 1) & 0x000fffff) << 32);
+            }
 
-            public int exp
-                => (int)((value >> 52) & 0x7ffUL);
-
-            public ulong mantissa
-                => value & 0xfffffffffffffUL;
+            public static unsafe bool Sign(double d)
+            {
+                return (*((uint*)&d + 1) >> 31) != 0;
+            }
         }
 
         //private static ulong DoubleToUInt64(double d)

@@ -17,12 +17,7 @@ namespace System
     {
         private const int DECIMAL_PRECISION = 29;
 
-        private static bool NumberBufferToDecimal(ref NumberBuffer number, ref decimal value)
-        {
-            return NumberToDecimal(ref number, ref value);
-        }
-
-        private unsafe static bool NumberToDecimal(ref NumberBuffer number, ref decimal value)
+        private static unsafe bool NumberBufferToDecimal(NumberBuffer number, ref decimal value)
         {
             uint low = 0, mid = 0, high = 0;
             byte scale;
@@ -38,14 +33,17 @@ namespace System
             }
             else
             {
-                if (e > DECIMAL_PRECISION) return false;
+                if (e > DECIMAL_PRECISION)
+                    return false;
+
                 while ((e > 0 || (*p != 0 && e > -28)) &&
                     (high < 0x19999999 || (high == 0x19999999 &&
                     (mid < 0x99999999 || (mid == 0x99999999 &&
                     (low < 0x99999999 || (low == 0x99999999 && *p <= '5')))))))
                 {
                     DecMul10(ref low, ref mid, ref high);
-                    if (*p != 0) DecAddInt32(ref low, ref mid, ref high, unchecked((uint)(*p++ - '0')));
+                    if (*p != 0)
+                        DecAddInt32(ref low, ref mid, ref high, (uint)(*p++ - '0'));
                     e--;
                 }
                 if (*p++ >= '5')
@@ -79,12 +77,13 @@ namespace System
                 }
             }
 
-            if (e > 0) return false;
+            if (e > 0)
+                return false;
+
             if (e <= -DECIMAL_PRECISION)
             {
                 // Parsing a large scale zero can give you more precision than fits in the decimal.
                 // This should only happen for actual zeros or very small numbers that round to zero.
-                scale = 0;
                 high = 0;
                 low = 0;
                 mid = 0;
@@ -97,7 +96,7 @@ namespace System
 
             unchecked
             {
-                var d = new decimal((int)low, (int)mid, (int)high, number.sign, unchecked((byte)-e));
+                var d = new decimal((int)low, (int)mid, (int)high, number.sign, scale);
                 value = d;
             }
 

@@ -427,7 +427,7 @@ namespace System
                 return false;
             }
 
-            if (!NumberBufferToDecimal(ref number, ref result))
+            if (!NumberBufferToDecimal(number, ref result))
             {
                 return false;
             }
@@ -445,7 +445,7 @@ namespace System
             {
                 return false;
             }
-            if (!NumberBufferToDouble(ref number, ref result))
+            if (!NumberBufferToDouble(number, ref result))
             {
                 return false;
             }
@@ -519,7 +519,7 @@ namespace System
             {
                 return false;
             }
-            if (!NumberBufferToDouble(ref number, ref d))
+            if (!NumberBufferToDouble(number, ref d))
             {
                 return false;
             }
