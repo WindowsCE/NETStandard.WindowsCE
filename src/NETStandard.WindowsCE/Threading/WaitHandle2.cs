@@ -1,6 +1,12 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 
+#if NET35_CF
+using HashSetOfInt32 = System.Collections.Generic.HashSet<int>;
+#else
+using HashSetOfInt32 = Mock.System.Collections.Generic.HashSet<int>;
+#endif
+
 namespace System.Threading
 {
     /// <summary>
@@ -308,9 +314,9 @@ namespace System.Threading
 
         private static void ValidateHandles(WaitHandle[] waitHandles, bool checkDups)
         {
-            Collections.Generic.HashSet<int> dups = null;
+            HashSetOfInt32 dups = null;
             if (checkDups)
-                dups = new Collections.Generic.HashSet<int>(waitHandles.Length);
+                dups = new HashSetOfInt32(waitHandles.Length);
 
             for (int i = 0; i < waitHandles.Length; i++)
             {

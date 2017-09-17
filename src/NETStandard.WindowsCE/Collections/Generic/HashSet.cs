@@ -2,6 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
@@ -11,7 +14,11 @@ using System.Runtime.Serialization;
 using Mock.System.Collections.Generic;
 #endif
 
+#if NET35_CF
 namespace System.Collections.Generic
+#else
+namespace Mock.System.Collections.Generic
+#endif
 {
     /// <summary>
     /// Implementation notes:
