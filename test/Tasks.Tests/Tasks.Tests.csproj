@@ -68,6 +68,7 @@
     <Compile Include="CancellationTokenTests.core.cs" />
     <Compile Include="CancellationTokenTests.cs" />
     <Compile Include="ContinueWithTests.cs" />
+    <Compile Include="CountdownEventTests.cs" />
     <Compile Include="FromAsyncTests.cs" />
     <Compile Include="FutureMembersTests.cs" />
     <Compile Include="ManualResetEventSlimTests.cs" />
