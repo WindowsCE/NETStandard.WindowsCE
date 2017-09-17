@@ -15,7 +15,7 @@ namespace Tests.IO
         protected virtual Stream CreateStream() => new MemoryStream();
 
         [TestMethod]
-        public void CopyToAsyncTest()
+        public void Stream_CopyToAsyncTest()
         {
             CopyToAsyncTestInternal().Wait();
         }

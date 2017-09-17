@@ -12,31 +12,14 @@ namespace System.IO
         // We pick a value that is multiple of 4096.
         // The CopyTo/CopyToAsync buffer is short-lived and is likely to be collected at Gen0, and it offers a significant
         // improvement in Copy performance.
-        internal const int DefaultCopyBufferSize = 8192;
+        internal const int DefaultCopyBufferSize = 40960;
 
         public static void CopyTo(this Stream source, Stream destination)
         {
-            int bufferSize = DefaultCopyBufferSize;
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
 
-            if (source.CanSeek)
-            {
-                long length = source.Length;
-                long position = source.Position;
-                if (length <= position) // Handles negative overflows
-                {
-                    // No bytes left in stream
-                    // Call the other overload with a bufferSize of 1,
-                    // in case it's made virtual in the future
-                    bufferSize = 1;
-                }
-                else
-                {
-                    long remaining = length - position;
-                    if (remaining > 0) // In the case of a positive overflow, stick to the default size
-                        bufferSize = (int)Math.Min(bufferSize, remaining);
-                }
-            }
-
+            int bufferSize = ResolveBufferSize(source);
             CopyTo(source, destination, bufferSize);
         }
         public static void CopyTo(this Stream source, Stream destination, int bufferSize)
@@ -46,6 +29,11 @@ namespace System.IO
 
             ValidateCopyToArgs(source, destination, bufferSize);
 
+            CopyToInternal(source, destination, bufferSize);
+        }
+
+        internal static void CopyToInternal(Stream source, Stream destination, int bufferSize)
+        {
             byte[] buffer = new byte[bufferSize];
             int read;
             while ((read = source.Read(buffer, 0, buffer.Length)) != 0)
@@ -59,38 +47,8 @@ namespace System.IO
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
 
-            int bufferSize = DefaultCopyBufferSize;
-
-            if (source.CanSeek)
-            {
-                long length = source.Length;
-                long position = source.Position;
-                if (length <= position) // Handles negative overflows
-                {
-                    // If we go down this branch, it means there are
-                    // no bytes left in this stream.
-
-                    // Ideally we would just return Task.CompletedTask here,
-                    // but CopyToAsync(Stream, int, CancellationToken) was already
-                    // virtual at the time this optimization was introduced. So
-                    // if it does things like argument validation (checking if destination
-                    // is null and throwing an exception), then await fooStream.CopyToAsync(null)
-                    // would no longer throw if there were no bytes left. On the other hand,
-                    // we also can't roll our own argument validation and return Task.CompletedTask,
-                    // because it would be a breaking change if the stream's override didn't throw before,
-                    // or in a different order. So for simplicity, we just set the bufferSize to 1
-                    // (not 0 since the default implementation throws for 0) and forward to the virtual method.
-                    bufferSize = 1;
-                }
-                else
-                {
-                    long remaining = length - position;
-                    if (remaining > 0) // In the case of a positive overflow, stick to the default size
-                        bufferSize = (int)Math.Min(bufferSize, remaining);
-                }
-            }
-
-            return CopyToAsync(source, destination, bufferSize);
+            int bufferSize = ResolveBufferSize(source);
+            return CopyToAsync(source, destination, bufferSize, default(CancellationToken));
         }
 
         public static Task CopyToAsync(this Stream source, Stream destination, int bufferSize)
@@ -106,22 +64,71 @@ namespace System.IO
                 return asyncSource.CopyToAsync(destination, bufferSize, cancellationToken);
 
             ValidateCopyToArgs(source, destination, bufferSize);
-            return CopyToAsyncInternal(source, destination, bufferSize, cancellationToken);
+            return CopyToInternalAsync(source, destination, bufferSize, cancellationToken);
         }
 
-        internal static async Task CopyToAsyncInternal(Stream source, Stream destination, int bufferSize, CancellationToken cancellationToken)
+        internal static Task CopyToInternalAsync(Stream source, Stream destination, int bufferSize, CancellationToken cancellationToken)
         {
             Debug.Assert(destination != null);
             Debug.Assert(bufferSize > 0);
             Debug.Assert(source.CanRead);
             Debug.Assert(destination.CanWrite);
 
+            var asyncSource = source as AsyncStream;
+            var asyncDestination = destination as AsyncStream;
+            bool isSourceAsync = asyncSource != null;
+            bool isDestAsync = asyncDestination != null;
+            if (isSourceAsync && isDestAsync)
+                return CopyToFullAsync(asyncSource, asyncDestination, bufferSize, cancellationToken);
+            else if (isSourceAsync)
+                return CopyToHalfAsync(asyncSource, destination, bufferSize, cancellationToken);
+            else if (isDestAsync)
+                return CopyToHalfAsync(source, asyncDestination, bufferSize, cancellationToken);
+            else
+                return CopyToNoAsync(source, destination, bufferSize, cancellationToken);
+        }
+
+        private static async Task CopyToFullAsync(AsyncStream source, AsyncStream destination, int bufferSize, CancellationToken cancellationToken)
+        {
             byte[] buffer = new byte[bufferSize];
             while (true)
             {
                 int bytesRead = await source.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
                 if (bytesRead == 0) break;
                 await destination.WriteAsync(buffer, 0, bytesRead, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        private static async Task CopyToHalfAsync(AsyncStream source, Stream destination, int bufferSize, CancellationToken cancellationToken)
+        {
+            byte[] buffer = new byte[bufferSize];
+            while (true)
+            {
+                int bytesRead = await source.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
+                if (bytesRead == 0) break;
+                await WriteAsyncInternal(destination, buffer, 0, bytesRead, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        private static async Task CopyToHalfAsync(Stream source, AsyncStream destination, int bufferSize, CancellationToken cancellationToken)
+        {
+            byte[] buffer = new byte[bufferSize];
+            while (true)
+            {
+                int bytesRead = await ReadAsyncInternal(source, buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
+                if (bytesRead == 0) break;
+                await destination.WriteAsync(buffer, 0, bytesRead, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        private static async Task CopyToNoAsync(Stream source, Stream destination, int bufferSize, CancellationToken cancellationToken)
+        {
+            byte[] buffer = new byte[bufferSize];
+            while (true)
+            {
+                int bytesRead = await ReadAsyncInternal(source, buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
+                if (bytesRead == 0) break;
+                await WriteAsyncInternal(destination, buffer, 0, bytesRead, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -239,6 +246,32 @@ namespace System.IO
             {
                 throw new NotSupportedException("Stream does not support writing.");
             }
+        }
+
+        internal static int ResolveBufferSize(Stream source)
+        {
+            int bufferSize = DefaultCopyBufferSize;
+
+            if (source.CanSeek)
+            {
+                long length = source.Length;
+                long position = source.Position;
+                if (length <= position) // Handles negative overflows
+                {
+                    // No bytes left in stream
+                    // Call the other overload with a bufferSize of 1,
+                    // in case it's made virtual in the future
+                    bufferSize = 1;
+                }
+                else
+                {
+                    long remaining = length - position;
+                    if (remaining > 0) // In the case of a positive overflow, stick to the default size
+                        bufferSize = (int)Math.Min(bufferSize, remaining);
+                }
+            }
+
+            return bufferSize;
         }
     }
 }
