@@ -8,6 +8,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 
+#if WindowsCE
+using Single = System.Single2;
+#else
+using Single = Mock.System.Single2;
+#endif
+
 namespace Tests
 {
     [TestClass]
@@ -76,7 +82,7 @@ namespace Tests
                 // Use Parse(string) or Parse(string, IFormatProvider)
                 if (isDefaultProvider)
                 {
-                    Assert.IsTrue(float.TryParse(value, out result));
+                    Assert.IsTrue(Single.TryParse(value, out result));
                     Assert.AreEqual(expected, result);
 
                     Assert.AreEqual(expected, float.Parse(value));
@@ -86,7 +92,7 @@ namespace Tests
             }
 
             // Use Parse(string, NumberStyles, IFormatProvider)
-            Assert.IsTrue(float.TryParse(value, style, provider, out result));
+            Assert.IsTrue(Single.TryParse(value, style, provider, out result));
             Assert.AreEqual(expected, result);
 
             Assert.AreEqual(expected, float.Parse(value, style, provider));
@@ -94,7 +100,7 @@ namespace Tests
             if (isDefaultProvider)
             {
                 // Use Parse(string, NumberStyles) or Parse(string, NumberStyles, IFormatProvider)
-                Assert.IsTrue(float.TryParse(value, style, NumberFormatInfo.InvariantInfo, out result));
+                Assert.IsTrue(Single.TryParse(value, style, NumberFormatInfo.InvariantInfo, out result));
                 Assert.AreEqual(expected, result);
 
                 //Assert.AreEqual(expected, float.Parse(value, style));
@@ -147,7 +153,7 @@ namespace Tests
                 // Use Parse(string) or Parse(string, IFormatProvider)
                 if (isDefaultProvider)
                 {
-                    //Assert.IsFalse(float.TryParse(value, out result));
+                    //Assert.IsFalse(Single.TryParse(value, out result));
                     //Assert.AreEqual(default(float), result);
 
                     //AssertExtensions.Throws(exceptionType, () => float.Parse(value));
@@ -157,7 +163,7 @@ namespace Tests
             }
 
             // Use Parse(string, NumberStyles, IFormatProvider)
-            Assert.IsFalse(float.TryParse(value, style, provider, out result));
+            Assert.IsFalse(Single.TryParse(value, style, provider, out result));
             Assert.AreEqual(default(float), result);
 
             AssertExtensions.Throws(exceptionType, () => float.Parse(value, style, provider));
@@ -165,7 +171,7 @@ namespace Tests
             if (isDefaultProvider)
             {
                 // Use Parse(string, NumberStyles) or Parse(string, NumberStyles, IFormatProvider)
-                Assert.IsFalse(float.TryParse(value, style, NumberFormatInfo.InvariantInfo, out result));
+                Assert.IsFalse(Single.TryParse(value, style, NumberFormatInfo.InvariantInfo, out result));
                 Assert.AreEqual(default(float), result);
 
                 //AssertExtensions.Throws(exceptionType, () => float.Parse(value, style));

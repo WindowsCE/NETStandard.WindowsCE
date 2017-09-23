@@ -3,11 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Mock.System;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+
+#if !WindowsCE
+using Mock.System;
+#endif
 
 namespace Tests
 {
@@ -32,7 +35,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void GetBits_Theory()
+        public void Decimal_GetBits_Theory()
         {
             foreach (var fact in GetBits_TestData())
                 GetBits((decimal)fact[0], (int[])fact[1]);
@@ -97,7 +100,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void Parse_Theory()
+        public void Decimal_Parse_Theory()
         {
             foreach (var fact in Parse_Valid_TestData())
                 Parse((string)fact[0], (NumberStyles)fact[1], (IFormatProvider)fact[2], (decimal)fact[3]);
@@ -169,7 +172,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void Parse_Invalid_Theory()
+        public void Decimal_Parse_Invalid_Theory()
         {
             foreach (var fact in Parse_Invalid_TestData())
                 Parse_Invalid((string)fact[0], (NumberStyles)fact[1], (IFormatProvider)fact[2], (Type)fact[3]);

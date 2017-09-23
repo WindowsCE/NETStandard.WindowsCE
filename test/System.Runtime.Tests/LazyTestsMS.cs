@@ -3,10 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Mock.System;
-using Mock.System.Threading;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+
+#if !WindowsCE
+using Mock.System;
+using Mock.System.Threading;
+#endif
 
 namespace Tests
 {
@@ -17,34 +21,38 @@ namespace Tests
         public void Lazy_Ctor()
         {
             var lazyString = new Lazy<string>();
-            VerifyLazy(lazyString, "", hasValue: false, isValueCreated: false);
+            VerifyLazy(lazyString, "", false, false);
 
             var lazyObject = new Lazy<int>();
-            VerifyLazy(lazyObject, 0, hasValue: true, isValueCreated: false);
+            VerifyLazy(lazyObject, 0, true, false);
         }
 
         [TestMethod]
         public void Lazy_Ctor_Bool_True()
-            => Ctor_Bool(true);
+        {
+            Ctor_Bool(true);
+        }
 
         [TestMethod]
         public void Lazy_Ctor_Bool_False()
-            => Ctor_Bool(false);
+        {
+            Ctor_Bool(false);
+        }
 
         private static void Ctor_Bool(bool isThreadSafe)
         {
             var lazyString = new Lazy<string>(isThreadSafe);
-            VerifyLazy(lazyString, "", hasValue: false, isValueCreated: false);
+            VerifyLazy(lazyString, "", false, false);
         }
 
         [TestMethod]
         public void Lazy_Ctor_ValueFactory()
         {
             var lazyString = new Lazy<string>(() => "foo");
-            VerifyLazy(lazyString, "foo", hasValue: true, isValueCreated: false);
+            VerifyLazy(lazyString, "foo", true, false);
 
             var lazyInt = new Lazy<int>(() => 1);
-            VerifyLazy(lazyInt, 1, hasValue: true, isValueCreated: false);
+            VerifyLazy(lazyInt, 1, true, false);
         }
 
         [TestMethod]
@@ -57,7 +65,7 @@ namespace Tests
         public void Lazy_Ctor_LazyThreadSafetyMode()
         {
             var lazyString = new Lazy<string>(LazyThreadSafetyMode.PublicationOnly);
-            VerifyLazy(lazyString, "", hasValue: false, isValueCreated: false);
+            VerifyLazy(lazyString, "", false, false);
         }
 
         [TestMethod]
@@ -69,16 +77,20 @@ namespace Tests
 
         [TestMethod]
         public void Lazy_Ctor_ValueFactor_Bool_True()
-            => Ctor_ValueFactor_Bool(true);
+        {
+            Ctor_ValueFactor_Bool(true);
+        }
 
         [TestMethod]
         public void Lazy_Ctor_ValueFactor_Bool_False()
-            => Ctor_ValueFactor_Bool(false);
+        {
+            Ctor_ValueFactor_Bool(false);
+        }
 
         private static void Ctor_ValueFactor_Bool(bool isThreadSafe)
         {
             var lazyString = new Lazy<string>(() => "foo", isThreadSafe);
-            VerifyLazy(lazyString, "foo", hasValue: true, isValueCreated: false);
+            VerifyLazy(lazyString, "foo", true, false);
         }
 
         [TestMethod]
@@ -91,10 +103,10 @@ namespace Tests
         public void Lazy_Ctor_ValueFactor_LazyThreadSafetyMode()
         {
             var lazyString = new Lazy<string>(() => "foo", LazyThreadSafetyMode.PublicationOnly);
-            VerifyLazy(lazyString, "foo", hasValue: true, isValueCreated: false);
+            VerifyLazy(lazyString, "foo", true, false);
 
             var lazyInt = new Lazy<int>(() => 1, LazyThreadSafetyMode.PublicationOnly);
-            VerifyLazy(lazyInt, 1, hasValue: true, isValueCreated: false);
+            VerifyLazy(lazyInt, 1, true, false);
         }
 
         [TestMethod]
@@ -150,7 +162,7 @@ namespace Tests
                     return counter;
             }
 
-            public int Value { get; }
+            public int Value { get; set; }
 
             public InitiallyExceptionThrowingCtor()
             {
@@ -195,7 +207,8 @@ namespace Tests
             int result = 0;
             for (var i = 0; i < 10; ++i)
             {
-                try { result = lazy.Value; } catch (Exception) { }
+                try { result = lazy.Value; }
+                catch (Exception) { }
             }
             Assert.AreEqual(result, expected);
         }
@@ -206,7 +219,8 @@ namespace Tests
             var result = default(string);
             for (var i = 0; i < 10; ++i)
             {
-                try { result = lazy.Value; } catch (Exception) { }
+                try { result = lazy.Value; }
+                catch (Exception) { }
             }
             Assert.AreEqual(expected, result);
         }
@@ -237,7 +251,7 @@ namespace Tests
         class MyException
             : Exception
         {
-            public int Value { get; }
+            public int Value { get; set; }
 
             public MyException(int value)
             {
@@ -409,11 +423,15 @@ namespace Tests
 
         [TestMethod]
         public void Lazy_Value_ThrownException_DoesntCreateValue_ExecutionAndPublication()
-            => Value_ThrownException_DoesntCreateValue(LazyThreadSafetyMode.ExecutionAndPublication);
+        {
+            Value_ThrownException_DoesntCreateValue(LazyThreadSafetyMode.ExecutionAndPublication);
+        }
 
         [TestMethod]
         public void Lazy_Value_ThrownException_DoesntCreateValue_None()
-            => Value_ThrownException_DoesntCreateValue(LazyThreadSafetyMode.None);
+        {
+            Value_ThrownException_DoesntCreateValue(LazyThreadSafetyMode.None);
+        }
 
         private static void Value_ThrownException_DoesntCreateValue(LazyThreadSafetyMode mode)
         {
@@ -614,9 +632,9 @@ namespace Tests
             public int f;
             public LIX(int f) { this.f = f; }
 
-            public override bool Equals(object other) => other is LIX && ((LIX)other).f == f;
-            public override int GetHashCode() => f.GetHashCode();
-            public override string ToString() => "LIX<" + f + ">";
+            public override bool Equals(object other) { return other is LIX && ((LIX)other).f == f; }
+            public override int GetHashCode() { return f.GetHashCode(); }
+            public override string ToString() { return "LIX<" + f + ">"; }
         }
     }
 }

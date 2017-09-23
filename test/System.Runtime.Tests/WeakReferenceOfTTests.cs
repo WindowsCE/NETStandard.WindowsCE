@@ -27,9 +27,12 @@
 //
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Mock.System;
 using System;
 using System.IO;
+
+#if !WindowsCE
+using Mock.System;
+#endif
 
 namespace MonoTests.System
 {

@@ -27,9 +27,15 @@
 //
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Threading;
+
+#if WindowsCE
+using Monitor = System.Threading.Monitor2;
+#else
 using Mock.System;
 using Mock.System.Threading;
-using System.Threading;
+#endif
 
 // The variable 'ex' is declared but never used
 #pragma warning disable 0168
@@ -345,7 +351,7 @@ namespace System.Runtime.Tests
             });
             thread.Start();
 
-            Assert.IsTrue(init.WaitOne(3000), "#1");
+            Assert.IsTrue(init.WaitOne(3000, false), "#1");
 
             Exception e2 = null;
             try
@@ -367,7 +373,7 @@ namespace System.Runtime.Tests
                 e3 = ex;
             }
 
-            Assert.IsTrue(e1_set.WaitOne(3000), "#2");
+            Assert.IsTrue(e1_set.WaitOne(3000, false), "#2");
             Assert.AreSame(e1, e2, "#3");
             Assert.AreSame(e1, e3, "#4");
         }

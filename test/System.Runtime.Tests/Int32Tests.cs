@@ -3,10 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Mock.System;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+
+#if !WindowsCE
+using Mock.System;
+#endif
 
 namespace Tests
 {

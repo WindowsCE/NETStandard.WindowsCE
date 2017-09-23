@@ -7,7 +7,10 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
+
+#if !WindowsCE
 using DateTimeOffset = Mock.System.DateTimeOffset;
+#endif
 
 // Regex to replace theories with member data
 // \[Theory\]\r\n        \[MemberData\(nameof\(([A-z0-9_]+)\)\)\]\r\n        public static void ([A-z0-9_]+)\(
@@ -902,6 +905,9 @@ namespace Tests
         }
 
         [TestMethod]
+#if WindowsCE
+        [ExpectedException(typeof(PlatformNotSupportedException))]
+#endif
         public void DateTimeOffset_Parse_Japanese()
         {
             var expected = new DateTimeOffset(new DateTime(2012, 12, 21, 10, 8, 6));
@@ -966,7 +972,7 @@ namespace Tests
 
         [TestMethod]
         // The coreclr fixed a bug where the .NET framework incorrectly parses this date
-        public void TryParse_TimeDesignators_Netfx()
+        public void DateTimeOffset_TryParse_TimeDesignators_Netfx()
         {
             DateTimeOffset result;
             Assert.IsTrue(DateTimeOffset.TryParse("4/21 5am", new CultureInfo("en-US"), DateTimeStyles.None, out result));
@@ -1118,11 +1124,15 @@ namespace Tests
 
         [TestMethod]
         public void DateTimeOffset_Parse_InvalidDateTimeStyle_ThrowsArgumentException_Data1()
-            => Parse_InvalidDateTimeStyle_ThrowsArgumentException(~(DateTimeStyles.AllowLeadingWhite | DateTimeStyles.AllowTrailingWhite | DateTimeStyles.AllowInnerWhite | DateTimeStyles.NoCurrentDateDefault | DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeLocal | DateTimeStyles.AssumeUniversal | DateTimeStyles.RoundtripKind));
+        {
+            Parse_InvalidDateTimeStyle_ThrowsArgumentException(~(DateTimeStyles.AllowLeadingWhite | DateTimeStyles.AllowTrailingWhite | DateTimeStyles.AllowInnerWhite | DateTimeStyles.NoCurrentDateDefault | DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeLocal | DateTimeStyles.AssumeUniversal | DateTimeStyles.RoundtripKind));
+        }
 
         [TestMethod]
         public void DateTimeOffset_Parse_InvalidDateTimeStyle_ThrowsArgumentException_Data2()
-            => Parse_InvalidDateTimeStyle_ThrowsArgumentException(DateTimeStyles.NoCurrentDateDefault);
+        {
+            Parse_InvalidDateTimeStyle_ThrowsArgumentException(DateTimeStyles.NoCurrentDateDefault);
+        }
 
         private static void Parse_InvalidDateTimeStyle_ThrowsArgumentException(DateTimeStyles style)
         {
@@ -1206,7 +1216,7 @@ namespace Tests
         public void DateTimeOffset_ToString()
         {
             const string testFormat = "yyyy-MM-ddTHH:mm:ss.fffffffzzz";
-            var dtOffset = new Mock.System.DateTimeOffset(
+            var dtOffset = new DateTimeOffset(
                 new DateTime(2017, 2, 11, 19, 11, 20, 228),
                 new TimeSpan(-2, 0, 0));
 

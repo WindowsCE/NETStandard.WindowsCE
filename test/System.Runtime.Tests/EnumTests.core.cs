@@ -1,9 +1,13 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Mock.System;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
+#if WindowsCE
+#else
+using Mock.System;
+#endif
 
 namespace Tests
 {
@@ -39,20 +43,20 @@ namespace Tests
         [TestMethod]
         public void Enum_Format_Invalid()
         {
-            AssertExtensions.Throws<ArgumentNullException>("enumType", () => Enum.Format(null, (Int32Enum)1, "F")); // Enum type is null
-            AssertExtensions.Throws<ArgumentNullException>("value", () => Enum.Format(typeof(SimpleEnum), null, "F")); // Value is null
-            AssertExtensions.Throws<ArgumentNullException>("format", () => Enum.Format(typeof(SimpleEnum), SimpleEnum.Red, null)); // Format is null
+            AssertExtensions.Throws<ArgumentNullException>("enumType", () => Enum2.Format(null, (Int32Enum)1, "F")); // Enum type is null
+            AssertExtensions.Throws<ArgumentNullException>("value", () => Enum2.Format(typeof(SimpleEnum), null, "F")); // Value is null
+            AssertExtensions.Throws<ArgumentNullException>("format", () => Enum2.Format(typeof(SimpleEnum), SimpleEnum.Red, null)); // Format is null
 
-            AssertExtensions.Throws<ArgumentException>("enumType", () => Enum.Format(typeof(object), 1, "F")); // Enum type is not an enum type
+            AssertExtensions.Throws<ArgumentException>("enumType", () => Enum2.Format(typeof(object), 1, "F")); // Enum type is not an enum type
 
-            AssertExtensions.Throws<ArgumentException>(null, () => Enum.Format(typeof(SimpleEnum), (Int32Enum)1, "F")); // Value is of the wrong enum type
+            AssertExtensions.Throws<ArgumentException>(null, () => Enum2.Format(typeof(SimpleEnum), (Int32Enum)1, "F")); // Value is of the wrong enum type
 
-            AssertExtensions.Throws<ArgumentException>(null, () => Enum.Format(typeof(SimpleEnum), (short)1, "F")); // Value is of the wrong integral
-            AssertExtensions.Throws<ArgumentException>(null, () => Enum.Format(typeof(SimpleEnum), "Red", "F")); // Value is of the wrong integral
+            AssertExtensions.Throws<ArgumentException>(null, () => Enum2.Format(typeof(SimpleEnum), (short)1, "F")); // Value is of the wrong integral
+            AssertExtensions.Throws<ArgumentException>(null, () => Enum2.Format(typeof(SimpleEnum), "Red", "F")); // Value is of the wrong integral
 
-            AssertExtensions.Throws<FormatException>(() => Enum.Format(typeof(SimpleEnum), SimpleEnum.Red, "")); // Format is empty
-            AssertExtensions.Throws<FormatException>(() => Enum.Format(typeof(SimpleEnum), SimpleEnum.Red, "   \t")); // Format is whitespace
-            AssertExtensions.Throws<FormatException>(() => Enum.Format(typeof(SimpleEnum), SimpleEnum.Red, "t")); // No such format
+            AssertExtensions.Throws<FormatException>(() => Enum2.Format(typeof(SimpleEnum), SimpleEnum.Red, "")); // Format is empty
+            AssertExtensions.Throws<FormatException>(() => Enum2.Format(typeof(SimpleEnum), SimpleEnum.Red, "   \t")); // Format is whitespace
+            AssertExtensions.Throws<FormatException>(() => Enum2.Format(typeof(SimpleEnum), SimpleEnum.Red, "t")); // No such format
         }
 
         private static IEnumerable<object[]> GetName_TestData()

@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7D6F6C55-586F-4B00-A4FF-5963ECFA5556}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>System.Runtime.Tests</RootNamespace>
+    <AssemblyName>System.Runtime.Tests</AssemblyName>
+    <PlatformFamilyName>WindowsCE</PlatformFamilyName>
+    <PlatformID>E2BECB1F-8C8C-41ba-B736-9BE7D946A398</PlatformID>
+    <OSVersion>5.0</OSVersion>
+    <DeployDirSuffix>System.Runtime.Tests</DeployDirSuffix>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FormFactorID>
+    </FormFactorID>
+    <WarningLevel>4</WarningLevel>
+    <ProjectTypeGuids>{73A5A715-AF05-47af-9C33-47A864AF9AE7};{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <NativePlatformName>Windows CE</NativePlatformName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <DefineConstants>DEBUG;TRACE;$(PlatformFamilyName)</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;$(PlatformFamilyName)</DefineConstants>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <ErrorReport>prompt</ErrorReport>
+    <FileAlignment>512</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualStudio.SmartDevice.UnitTestFramework, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="NETStandard.WindowsCE, Version=1.0.0.0, Culture=neutral, PublicKeyToken=961e8a38a128a442, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\NETStandard.WindowsCE\lib\net35-cf\NETStandard.WindowsCE.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\test\System.Runtime.Tests\ActivatorTests.cs">
+      <Link>ActivatorTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\DateTimeOffsetTests.cs">
+      <Link>DateTimeOffsetTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\DecimalTests.cs">
+      <Link>DecimalTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\DoubleTests.cs">
+      <Link>DoubleTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\EnumTests.core.cs">
+      <Link>EnumTests.core.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\EnumTests.cs">
+      <Link>EnumTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\EnumTypes.cs">
+      <Link>EnumTypes.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\Int32Tests.cs">
+      <Link>Int32Tests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\LazyOfTMetadataTests.cs">
+      <Link>LazyOfTMetadataTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\LazyTests.cs">
+      <Link>LazyTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\LazyTestsMS.cs">
+      <Link>LazyTestsMS.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\SingleTests.cs">
+      <Link>SingleTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\StringTests.cs">
+      <Link>StringTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\TypeTests.cs">
+      <Link>TypeTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\WeakReferenceOfTTests.cs">
+      <Link>WeakReferenceOfTTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\WeakReferenceTests.cs">
+      <Link>WeakReferenceTests.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AuthoringTests.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common.Tests\Common.Tests.csproj">
+      <Project>{CB63FC16-695D-4277-B980-90363DA370CF}</Project>
+      <Name>Common.Tests</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+  <PropertyGroup Condition="'$(BuildingInsideVisualStudio)'=='true' ">
+    <DeviceTestAssemblySearchPath>$(DevEnvDir)PublicAssemblies</DeviceTestAssemblySearchPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblySearchPaths>$(DeviceTestAssemblySearchPath);$(AssemblySearchPaths)</AssemblySearchPaths>
+  </PropertyGroup>
+</Project>

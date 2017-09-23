@@ -39,7 +39,9 @@ namespace Tests
 
         public static T Throws<T>(Func<object> testCode)
             where T : Exception
-            => Throws<T>(new Action(() => testCode()));
+        {
+            return Throws<T>(new Action(() => testCode()));
+        }
 
         public static Exception Throws(Type exceptionType, Action action)
         {
@@ -83,7 +85,9 @@ namespace Tests
 
         public static T ThrowsAny<T>(Func<object> testCode)
             where T : Exception
-            => ThrowsAny<T>(new Action(() => testCode()));
+        {
+            return ThrowsAny<T>(new Action(() => testCode()));
+        }
 
         public static void Throws<T>(Action action, string message)
             where T : Exception
@@ -112,11 +116,14 @@ namespace Tests
         }
 #endif
 
+
         public static T Throws<T>(string paramName, Action action)
             where T : ArgumentException
         {
             T exception = Throws<T>(action);
+#if !WindowsCE
             Assert.AreEqual(paramName, exception.ParamName);
+#endif
 
             return exception;
         }

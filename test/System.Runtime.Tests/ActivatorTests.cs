@@ -6,7 +6,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Globalization;
 using System.Reflection;
+
+#if WindowsCE
+using Activator = System.Activator2;
+#else
 using Activator = Mock.System.Activator2;
+#endif
 
 namespace Tests
 {
@@ -192,11 +197,17 @@ namespace Tests
             {
                 I = 3;
             }
-
+#if !WindowsCE
             public Choice1(double d, string optionalS = "Hey")
             {
                 I = 4;
             }
+#else
+            public Choice1(double d, string optionalS)
+            {
+                I = 4;
+            }
+#endif
 
             public Choice1(VarArgs varArgs, params object[] parameters)
             {

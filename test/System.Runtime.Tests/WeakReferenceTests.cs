@@ -3,9 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Mock.System;
 using System;
 using System.Runtime.CompilerServices;
+
+#if !WindowsCE
+using Mock.System;
+#endif
 
 namespace Tests
 {
@@ -17,15 +20,15 @@ namespace Tests
         // accidentally keeping the object alive due to lifetime extension by the JIT.
         //
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static WeakReference MakeWeakReference(Func<object> valueFactory, bool trackResurrection = false)
+        private static WeakReference MakeWeakReference(Func<object> valueFactory, bool? trackResurrection)
         {
-            return new WeakReference(valueFactory(), trackResurrection);
+            return new WeakReference(valueFactory(), trackResurrection ?? false);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static WeakReference<object> MakeWeakReferenceOfObject(Func<object> valueFactory, bool trackResurrection = false)
+        private static WeakReference<object> MakeWeakReferenceOfObject(Func<object> valueFactory, bool? trackResurrection)
         {
-            return new WeakReference<object>(valueFactory(), trackResurrection);
+            return new WeakReference<object>(valueFactory(), trackResurrection ?? false);
         }
 
         [TestMethod]
@@ -45,7 +48,7 @@ namespace Tests
             GC.KeepAlive(o2);
 
             Latch l = new Latch();
-            w = MakeWeakReference(() => new C(l));
+            w = MakeWeakReference(() => new C(l), null);
             GC.Collect();
             VerifyIsDead(w);
 
@@ -97,7 +100,7 @@ namespace Tests
             GC.KeepAlive(o2);
 
             Latch l = new Latch();
-            w = MakeWeakReferenceOfObject(() => new C(l));
+            w = MakeWeakReferenceOfObject(() => new C(l), null);
             GC.Collect();
             VerifyIsDead(w);
 

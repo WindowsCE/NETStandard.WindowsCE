@@ -1,5 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Reflection;
+
+#if !WindowsCE
+using Mock.System;
+#endif
 
 namespace System.Runtime.Tests
 {
@@ -12,23 +17,23 @@ namespace System.Runtime.Tests
             Type typeBar = typeof(Bar);
             Type typeFoo = typeof(Foo);
 
-            Type foundType = Mock.System.Type2.GetInterface(typeBar, "Foo");
+            Type foundType = Type2.GetInterface(typeBar, "Foo");
             Assert.IsNotNull(foundType);
             Assert.AreEqual(typeFoo.FullName, foundType.FullName);
             Assert.IsTrue(foundType.IsInterface);
 
-            foundType = Mock.System.Type2.GetInterface(typeBar, "foo");
+            foundType = Type2.GetInterface(typeBar, "foo");
             Assert.IsNull(foundType);
 
-            foundType = Mock.System.Type2.GetInterface(typeBar, "Qux");
+            foundType = Type2.GetInterface(typeBar, "Qux");
             Assert.IsNull(foundType);
 
-            foundType = Mock.System.Type2.GetInterface(typeBar, "foo", true);
+            foundType = Type2.GetInterface(typeBar, "foo", true);
             Assert.IsNotNull(foundType);
             Assert.AreEqual(typeFoo.FullName, foundType.FullName);
             Assert.IsTrue(foundType.IsInterface);
 
-            foundType = Mock.System.Type2.GetInterface(typeBar, "qux", true);
+            foundType = Type2.GetInterface(typeBar, "qux", true);
             Assert.IsNull(foundType);
         }
 
@@ -100,7 +105,7 @@ namespace System.Runtime.Tests
 
             foreach (var item in expectedFields)
             {
-                var members = Mock.System.Type2.GetMember(
+                var members = Type2.GetMember(
                     typeBar, item.Name, item.MemberType, item.Flags);
 
                 Assert.IsNotNull(members);
@@ -131,46 +136,46 @@ namespace System.Runtime.Tests
         [TestMethod]
         public void Type_IsSerializable()
         {
-            Assert.IsTrue(Mock.System.Type2.IsSerializable(typeof(Bar)));
-            Assert.IsFalse(Mock.System.Type2.IsSerializable(typeof(NotSerializableClass)));
-            Assert.IsFalse(Mock.System.Type2.IsSerializable(typeof(Foo)));
-            Assert.IsFalse(Mock.System.Type2.IsSerializable(typeof(Qux)));
+            Assert.IsTrue(Type2.IsSerializable(typeof(Bar)));
+            Assert.IsFalse(Type2.IsSerializable(typeof(NotSerializableClass)));
+            Assert.IsFalse(Type2.IsSerializable(typeof(Foo)));
+            Assert.IsFalse(Type2.IsSerializable(typeof(Qux)));
         }
 
         [TestMethod]
         public void Type_MakeArrayType()
         {
-            Assert.AreEqual(typeof(int[]), Mock.System.Type2.MakeArrayType(typeof(int)));
-            Assert.AreEqual(typeof(long[]), Mock.System.Type2.MakeArrayType(typeof(long)));
-            Assert.AreEqual(typeof(string[]), Mock.System.Type2.MakeArrayType(typeof(string)));
-            Assert.AreEqual(typeof(int[,]), Mock.System.Type2.MakeArrayType(typeof(int), 2));
-            Assert.AreEqual(typeof(int[,,]), Mock.System.Type2.MakeArrayType(typeof(int), 3));
-            Assert.AreEqual(typeof(int[,,,]), Mock.System.Type2.MakeArrayType(typeof(int), 4));
-            Assert.AreEqual(typeof(int[,,,,]), Mock.System.Type2.MakeArrayType(typeof(int), 5));
-            Assert.AreEqual(typeof(long[,]), Mock.System.Type2.MakeArrayType(typeof(long), 2));
-            Assert.AreEqual(typeof(long[,,]), Mock.System.Type2.MakeArrayType(typeof(long), 3));
-            Assert.AreEqual(typeof(long[,,,]), Mock.System.Type2.MakeArrayType(typeof(long), 4));
-            Assert.AreEqual(typeof(long[,,,,]), Mock.System.Type2.MakeArrayType(typeof(long), 5));
-            Assert.AreEqual(typeof(string[,]), Mock.System.Type2.MakeArrayType(typeof(string), 2));
-            Assert.AreEqual(typeof(string[,,]), Mock.System.Type2.MakeArrayType(typeof(string), 3));
-            Assert.AreEqual(typeof(string[,,,]), Mock.System.Type2.MakeArrayType(typeof(string), 4));
-            Assert.AreEqual(typeof(string[,,,,]), Mock.System.Type2.MakeArrayType(typeof(string), 5));
+            Assert.AreEqual(typeof(int[]), Type2.MakeArrayType(typeof(int)));
+            Assert.AreEqual(typeof(long[]), Type2.MakeArrayType(typeof(long)));
+            Assert.AreEqual(typeof(string[]), Type2.MakeArrayType(typeof(string)));
+            Assert.AreEqual(typeof(int[,]), Type2.MakeArrayType(typeof(int), 2));
+            Assert.AreEqual(typeof(int[, ,]), Type2.MakeArrayType(typeof(int), 3));
+            Assert.AreEqual(typeof(int[, , ,]), Type2.MakeArrayType(typeof(int), 4));
+            Assert.AreEqual(typeof(int[, , , ,]), Type2.MakeArrayType(typeof(int), 5));
+            Assert.AreEqual(typeof(long[,]), Type2.MakeArrayType(typeof(long), 2));
+            Assert.AreEqual(typeof(long[, ,]), Type2.MakeArrayType(typeof(long), 3));
+            Assert.AreEqual(typeof(long[, , ,]), Type2.MakeArrayType(typeof(long), 4));
+            Assert.AreEqual(typeof(long[, , , ,]), Type2.MakeArrayType(typeof(long), 5));
+            Assert.AreEqual(typeof(string[,]), Type2.MakeArrayType(typeof(string), 2));
+            Assert.AreEqual(typeof(string[, ,]), Type2.MakeArrayType(typeof(string), 3));
+            Assert.AreEqual(typeof(string[, , ,]), Type2.MakeArrayType(typeof(string), 4));
+            Assert.AreEqual(typeof(string[, , , ,]), Type2.MakeArrayType(typeof(string), 5));
         }
 
         [TestMethod]
         public void Type_MakeByRefType()
         {
-            Assert.AreEqual(Type.GetType("System.Int32&", true, false), Mock.System.Type2.MakeByRefType(typeof(int)));
-            Assert.AreEqual(Type.GetType("System.Int64&", true, false), Mock.System.Type2.MakeByRefType(typeof(long)));
-            Assert.AreEqual(Type.GetType("System.String&", true, false), Mock.System.Type2.MakeByRefType(typeof(string)));
+            Assert.AreEqual(Type.GetType("System.Int32&", true, false), Type2.MakeByRefType(typeof(int)));
+            Assert.AreEqual(Type.GetType("System.Int64&", true, false), Type2.MakeByRefType(typeof(long)));
+            Assert.AreEqual(Type.GetType("System.String&", true, false), Type2.MakeByRefType(typeof(string)));
         }
 
         [TestMethod]
         public void Type_MakePointerType()
         {
-            Assert.AreEqual(Type.GetType("System.Int32*", true, false), Mock.System.Type2.MakePointerType(typeof(int)));
-            Assert.AreEqual(Type.GetType("System.Int64*", true, false), Mock.System.Type2.MakePointerType(typeof(long)));
-            Assert.AreEqual(Type.GetType("System.String*", true, false), Mock.System.Type2.MakePointerType(typeof(string)));
+            Assert.AreEqual(Type.GetType("System.Int32*", true, false), Type2.MakePointerType(typeof(int)));
+            Assert.AreEqual(Type.GetType("System.Int64*", true, false), Type2.MakePointerType(typeof(long)));
+            Assert.AreEqual(Type.GetType("System.String*", true, false), Type2.MakePointerType(typeof(string)));
         }
 
         interface Foo
@@ -186,19 +191,29 @@ namespace System.Runtime.Tests
             private string _field2;
 
             public int Field1
-                => _field1;
+            {
+                get { return _field1; }
+            }
 
             public string Field2
-                => _field2;
+            {
+                get { return _field2; }
+            }
 
             public void SetField1(int value)
-                => _field1 = value;
+            {
+                _field1 = value;
+            }
 
             public void SetField1(int value, bool set)
-                => _field1 = set ? value : _field1;
+            {
+                _field1 = set ? value : _field1;
+            }
 
             public void SetField2(string value)
-                => _field2 = value;
+            {
+                _field2 = value;
+            }
 
             public void DoNothing() { }
         }

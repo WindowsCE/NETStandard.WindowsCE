@@ -37,6 +37,26 @@ namespace Tests
 
         private IEnumerable<string> GetTypeCodeNames(bool extended)
         {
+#if WindowsCE
+            yield return "Empty";
+            yield return "Object";
+            yield return "DBNull";
+            yield return "Boolean";
+            yield return "Char";
+            yield return "SByte";
+            yield return "Byte";
+            yield return "Int16";
+            yield return "UInt16";
+            yield return "Int32";
+            yield return "UInt32";
+            yield return "Int64";
+            yield return "UInt64";
+            yield return "Single";
+            yield return "Double";
+            yield return "Decimal";
+            yield return "DateTime";
+            yield return "String";
+#else
             yield return nameof(TypeCode.Empty);
             yield return nameof(TypeCode.Object);
             yield return nameof(TypeCode.DBNull);
@@ -55,6 +75,7 @@ namespace Tests
             yield return nameof(TypeCode.Decimal);
             yield return nameof(TypeCode.DateTime);
             yield return nameof(TypeCode.String);
+#endif
 
             if (extended)
                 yield return "200";
@@ -95,6 +116,24 @@ namespace Tests
         {
             const string separator = ", ";
 
+#if WindowsCE
+            yield return "Assembly";
+            yield return "Module";
+            yield return "Class";
+            yield return "Struct";
+            yield return "Enum";
+            yield return "Constructor";
+            yield return "Method";
+            yield return "Property";
+            yield return "Field";
+            yield return "Event";
+            yield return "Interface";
+            yield return "Parameter";
+            yield return "Delegate";
+            yield return "ReturnValue";
+            yield return "GenericParameter";
+            yield return "All";
+#else
             yield return nameof(AttributeTargets.Assembly);
             yield return nameof(AttributeTargets.Module);
             yield return nameof(AttributeTargets.Class);
@@ -111,15 +150,25 @@ namespace Tests
             yield return nameof(AttributeTargets.ReturnValue);
             yield return nameof(AttributeTargets.GenericParameter);
             yield return nameof(AttributeTargets.All);
+#endif
 
             if (extended)
             {
+#if WindowsCE
+                yield return "Assembly" + separator + "Module";
+                yield return "Assembly" + separator + "Class";
+                yield return "Module" + separator + "Class";
+                yield return "Assembly" + separator + "Module" + separator + "Class";
+                yield return "Assembly" + separator + "Constructor";
+                yield return "Struct" + separator + "Interface";
+#else
                 yield return nameof(AttributeTargets.Assembly) + separator + nameof(AttributeTargets.Module);
                 yield return nameof(AttributeTargets.Assembly) + separator + nameof(AttributeTargets.Class);
                 yield return nameof(AttributeTargets.Module) + separator + nameof(AttributeTargets.Class);
                 yield return nameof(AttributeTargets.Assembly) + separator + nameof(AttributeTargets.Module) + separator + nameof(AttributeTargets.Class);
                 yield return nameof(AttributeTargets.Assembly) + separator + nameof(AttributeTargets.Constructor);
                 yield return nameof(AttributeTargets.Struct) + separator + nameof(AttributeTargets.Interface);
+#endif
                 yield return (((int)AttributeTargets.All) * 2).ToString();
             }
         }
@@ -159,14 +208,14 @@ namespace Tests
             {
                 Assert.AreEqual(typeCode, Convert.GetTypeCode(values[i]));
 
-                string fmtG = Mock.System.Enum2.Format(enumType, values[i], "g");
-                string fmtG2 = Mock.System.Enum2.Format(enumType, values[i], "G");
-                string fmtX = Mock.System.Enum2.Format(enumType, values[i], "x");
-                string fmtX2 = Mock.System.Enum2.Format(enumType, values[i], "X");
-                string fmtD = Mock.System.Enum2.Format(enumType, values[i], "d");
-                string fmtD2 = Mock.System.Enum2.Format(enumType, values[i], "D");
-                string fmtF = Mock.System.Enum2.Format(enumType, values[i], "f");
-                string fmtF2 = Mock.System.Enum2.Format(enumType, values[i], "F");
+                string fmtG = Enum2.Format(enumType, values[i], "g");
+                string fmtG2 = Enum2.Format(enumType, values[i], "G");
+                string fmtX = Enum2.Format(enumType, values[i], "x");
+                string fmtX2 = Enum2.Format(enumType, values[i], "X");
+                string fmtD = Enum2.Format(enumType, values[i], "d");
+                string fmtD2 = Enum2.Format(enumType, values[i], "D");
+                string fmtF = Enum2.Format(enumType, values[i], "f");
+                string fmtF2 = Enum2.Format(enumType, values[i], "F");
 
                 Assert.IsNotNull(fmtG);
                 Assert.IsNotNull(fmtG2);
@@ -209,7 +258,7 @@ namespace Tests
 
         private void EnumGetNames(Type enumType, string[] expected)
         {
-            string[] result = Mock.System.Enum2.GetNames(enumType);
+            string[] result = Enum2.GetNames(enumType);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(expected.Length, result.Length);
@@ -238,7 +287,7 @@ namespace Tests
 
         private void EnumGetValues(Type enumType, ulong[] expected)
         {
-            Array result = Mock.System.Enum2.GetValues(enumType);
+            Array result = Enum2.GetValues(enumType);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(expected.Length, result.Length);
@@ -280,7 +329,7 @@ namespace Tests
 
             for (int i = 0; i < values.Length; i++)
             {
-                string name = Mock.System.Enum2.GetName(enumType, values[i]);
+                string name = Enum2.GetName(enumType, values[i]);
                 Assert.AreEqual(names[i], name);
             }
         }
@@ -318,41 +367,45 @@ namespace Tests
         [TestMethod]
         public void EnumHasFlag()
         {
-            Assert.IsTrue(Mock.System.Enum2.HasFlag(
+            Assert.IsTrue(Enum2.HasFlag(
                 AttributeTargets.All,
                 AttributeTargets.All));
-            Assert.IsTrue(Mock.System.Enum2.HasFlag(
+            Assert.IsTrue(Enum2.HasFlag(
                 AttributeTargets.All,
                 AttributeTargets.Assembly));
-            Assert.IsTrue(Mock.System.Enum2.HasFlag(
+            Assert.IsTrue(Enum2.HasFlag(
                 AttributeTargets.All,
                 AttributeTargets.Constructor));
-            Assert.IsTrue(Mock.System.Enum2.HasFlag(
+            Assert.IsTrue(Enum2.HasFlag(
                 AttributeTargets.Assembly | AttributeTargets.Module,
                 AttributeTargets.Assembly));
-            Assert.IsTrue(Mock.System.Enum2.HasFlag(
+            Assert.IsTrue(Enum2.HasFlag(
                 AttributeTargets.Assembly | AttributeTargets.Module,
                 AttributeTargets.Module));
-            Assert.IsFalse(Mock.System.Enum2.HasFlag(
+            Assert.IsFalse(Enum2.HasFlag(
                 AttributeTargets.Assembly,
                 AttributeTargets.Module));
-            Assert.IsFalse(Mock.System.Enum2.HasFlag(
+            Assert.IsFalse(Enum2.HasFlag(
                 AttributeTargets.Assembly | AttributeTargets.Module,
                 AttributeTargets.Class));
 
-            Assert.IsFalse(Mock.System.Enum2.HasFlag(
+            Assert.IsFalse(Enum2.HasFlag(
                 MemberTypes.Method,
                 MemberTypes.All));
-            Assert.IsTrue(Mock.System.Enum2.HasFlag(
+            Assert.IsTrue(Enum2.HasFlag(
                 MemberTypes.All,
                 MemberTypes.Method));
         }
 
         [TestMethod]
+#if WindowsCE
+        [ExpectedException(typeof(ArgumentException))]
+#else
         [ExpectedException(typeof(ArgumentException), AllowDerivedTypes = false)]
+#endif
         public void EnumHasFlag_TypeMismatch()
         {
-            Mock.System.Enum2.HasFlag(AttributeTargets.All, TypeCode.Boolean);
+            Enum2.HasFlag(AttributeTargets.All, TypeCode.Boolean);
         }
     }
 }

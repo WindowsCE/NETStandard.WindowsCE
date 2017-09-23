@@ -3,9 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading;
+using System;
+
+#if !WindowsCE
 using Mock.System;
 using Mock.System.Threading;
-using System;
+#endif
 
 namespace Tests
 {
