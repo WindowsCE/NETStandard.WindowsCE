@@ -1352,12 +1352,6 @@ namespace Mock.System.Collections.Generic
             int intArrayLength = BitHelper.ToIntArrayLength(originalLastIndex);
 
             BitHelper bitHelper;
-            if (intArrayLength <= StackAllocThreshold)
-            {
-                fixed (int* bitArrayPtr = new int[intArrayLength])
-                    bitHelper = new BitHelper(bitArrayPtr, intArrayLength);
-            }
-            else
             {
                 int[] bitArray = new int[intArrayLength];
                 bitHelper = new BitHelper(bitArray, intArrayLength);
@@ -1449,15 +1443,6 @@ namespace Mock.System.Collections.Generic
 
             BitHelper itemsToRemove;
             BitHelper itemsAddedFromOther;
-            if (intArrayLength <= StackAllocThreshold / 2)
-            {
-                fixed (int* itemsToRemovePtr = new int[intArrayLength])
-                    itemsToRemove = new BitHelper(itemsToRemovePtr, intArrayLength);
-
-                fixed (int* itemsAddedFromOtherPtr = new int[intArrayLength])
-                    itemsAddedFromOther = new BitHelper(itemsAddedFromOtherPtr, intArrayLength);
-            }
-            else
             {
                 int[] itemsToRemoveArray = new int[intArrayLength];
                 itemsToRemove = new BitHelper(itemsToRemoveArray, intArrayLength);
@@ -1602,12 +1587,6 @@ namespace Mock.System.Collections.Generic
             int intArrayLength = BitHelper.ToIntArrayLength(originalLastIndex);
 
             BitHelper bitHelper;
-            if (intArrayLength <= StackAllocThreshold)
-            {
-                fixed (int* bitArrayPtr = new int[intArrayLength])
-                    bitHelper = new BitHelper(bitArrayPtr, intArrayLength);
-            }
-            else
             {
                 int[] bitArray = new int[intArrayLength];
                 bitHelper = new BitHelper(bitArray, intArrayLength);
