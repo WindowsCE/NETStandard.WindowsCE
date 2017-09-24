@@ -93,12 +93,21 @@ namespace Tests
             // params array element type and gives it the go-ahead if it is. Unfortunately, the binder then bollixes itself by using Array.Copy() to copy
             // the params arguments. Since Array.Copy() doesn't tolerate this sort of type mismatch, it throws an InvalidCastException which bubbles out
             // out of Activator.CreateInstance. Accidental or not, we'll inherit that behavior on .NET Native.)
+#if !WindowsCE
             AssertExtensions.Throws<InvalidCastException>(() => Activator.CreateInstance(typeof(Choice1), new object[] { new VarIntArgs(), 1, (short)2 }));
+#else
+            Assert.IsNotNull(Activator.CreateInstance(typeof(Choice1), new object[] { new VarIntArgs(), 1, (short)2 }));
+#endif
 
             AssertExtensions.ThrowsAny<MissingMemberException>(() => Activator.CreateInstance(typeof(TypeWithoutDefaultCtor))); // Type has no default constructor
             AssertExtensions.Throws<TargetInvocationException>(() => Activator.CreateInstance(typeof(TypeWithDefaultCtorThatThrows))); // Type has a default constructor throws an exception
+#if !WindowsCE
             AssertExtensions.ThrowsAny<MissingMemberException>(() => Activator.CreateInstance(typeof(AbstractTypeWithDefaultCtor))); // Type is abstract
             AssertExtensions.ThrowsAny<MissingMemberException>(() => Activator.CreateInstance(typeof(IInterfaceType))); // Type is an interface
+#else
+            AssertExtensions.ThrowsAny<MemberAccessException>(() => Activator.CreateInstance(typeof(AbstractTypeWithDefaultCtor))); // Type is abstract
+            AssertExtensions.ThrowsAny<MemberAccessException>(() => Activator.CreateInstance(typeof(IInterfaceType))); // Type is an interface
+#endif
 
 #if netcoreapp || uapaot
             foreach (Type nonRuntimeType in Helpers.NonRuntimeTypes)
@@ -122,12 +131,21 @@ namespace Tests
         [TestMethod]
         public void Activator_CreateInstance_Generic_Invalid()
         {
+#if !WindowsCE
             AssertExtensions.ThrowsAny<MissingMemberException>(() => Activator.CreateInstance<int[]>()); // Cannot create array type
+#else
+            Activator.CreateInstance<int[]>(); // Can create array type
+#endif
 
             AssertExtensions.ThrowsAny<MissingMemberException>(() => Activator.CreateInstance<TypeWithoutDefaultCtor>()); // Type has no default constructor
             AssertExtensions.Throws<TargetInvocationException>(() => Activator.CreateInstance<TypeWithDefaultCtorThatThrows>()); // Type has a default constructor that throws
+#if !WindowsCE
             AssertExtensions.ThrowsAny<MissingMemberException>(() => Activator.CreateInstance<AbstractTypeWithDefaultCtor>()); // Type is abstract
             AssertExtensions.ThrowsAny<MissingMemberException>(() => Activator.CreateInstance<IInterfaceType>()); // Type is an interface
+#else
+            AssertExtensions.ThrowsAny<MemberAccessException>(() => Activator.CreateInstance<AbstractTypeWithDefaultCtor>()); // Type is abstract
+            AssertExtensions.ThrowsAny<MemberAccessException>(() => Activator.CreateInstance<IInterfaceType>()); // Type is an interface
+#endif
         }
 
         [TestMethod]
