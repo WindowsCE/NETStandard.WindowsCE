@@ -38,7 +38,18 @@ namespace Mock.System
             if (enumType == null) throw new ArgumentNullException("enumType");
             if (value == null) throw new ArgumentNullException("value");
             if (format == null) throw new ArgumentNullException("format");
-            if (!enumType.IsEnum) throw new ArgumentException("The argument enumType must be an System.Enum.");
+            if (!enumType.IsEnum) throw new ArgumentException("The argument enumType must be an System.Enum.", nameof(enumType));
+
+            var valueType = value.GetType();
+            if (valueType.IsEnum && enumType != valueType)
+                throw new ArgumentException("The value must be of the same type of enum type.");
+
+            if (!valueType.IsEnum)
+            {
+                var underlyingType = Enum.GetUnderlyingType(enumType);
+                if (valueType != underlyingType)
+                    throw new ArgumentException("The enum underlying type and the object type must be the same.");
+            }
 
             if (format.Length != 1)
                 throw new FormatException("Invalid format");
@@ -71,8 +82,7 @@ namespace Mock.System
                 throw new ArgumentNullException(nameof(value));
 
             Type valueType = value.GetType();
-            if (valueType.BaseType != SystemEnumType
-                && !Type2.IsIntegerNumber(valueType))
+            if (!valueType.IsEnum && !Type2.IsIntegerNumber(valueType))
                 throw new ArgumentException("The specified value should be enum base or an integer number", nameof(value));
 
             int length;
@@ -215,7 +225,7 @@ namespace Mock.System
         private static IEnumerable<TypeValueAndName> GetValuesAndNames(Type enumType, out int length, out bool isFlags, out Type underlyingType)
         {
             // Check that the type supplied inherits from System.Enum
-            if (enumType.BaseType != SystemEnumType)
+            if (!enumType.IsEnum)
             {
                 //the type supplied does not derive from enum
                 throw new ArgumentException(

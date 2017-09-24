@@ -5,6 +5,10 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
+#if !WindowsCE
+using Mock.System;
+#endif
+
 namespace Tests
 {
     [TestClass]

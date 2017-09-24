@@ -4,8 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-#if !WindowsCE
+#if WindowsCE
+using StringSplitOptions2 = System.StringSplitOptions;
+#else
 using Mock.System;
+using StringSplitOptions2 = Mock.System.StringSplitOptions;
 #endif
 
 namespace System.Runtime.Tests
@@ -177,14 +180,14 @@ namespace System.Runtime.Tests
                 ""
             };
 
-            string[] result = String2.Split(text, new char[] { ',', '.' }, StringSplitOptions.None);
+            string[] result = String2.Split(text, new char[] { ',', '.' }, StringSplitOptions2.None);
             Assert.AreEqual(expected1.Length, result.Length);
             if (!result.SequenceEqual(expected1))
                 Assert.Fail("String split by chars test #1");
 
             string[] expected2 = new string[expected1.Length - 1];
             Array.Copy(expected1, expected2, expected2.Length);
-            result = String2.Split(text, new char[] { ',', '.' }, StringSplitOptions.RemoveEmptyEntries);
+            result = String2.Split(text, new char[] { ',', '.' }, StringSplitOptions2.RemoveEmptyEntries);
             Assert.AreEqual(expected2.Length, result.Length);
             if (!result.SequenceEqual(expected2))
                 Assert.Fail("String split by chars test #2");
@@ -202,21 +205,21 @@ namespace System.Runtime.Tests
                 " Cras convallis, nulla eget faucibus sagittis, dolor.",
             };
 
-            string[] result = String2.Split(text, new char[] { ',', '.' }, 3, StringSplitOptions.None);
+            string[] result = String2.Split(text, new char[] { ',', '.' }, 3, StringSplitOptions2.None);
             Assert.AreEqual(expected1.Length, result.Length);
             if (!result.SequenceEqual(expected1))
                 Assert.Fail("String split count by chars test #1");
 
-            result = String2.Split(text, new char[] { ',', '.' }, 3, StringSplitOptions.RemoveEmptyEntries);
+            result = String2.Split(text, new char[] { ',', '.' }, 3, StringSplitOptions2.RemoveEmptyEntries);
             Assert.AreEqual(expected1.Length, result.Length);
             if (!result.SequenceEqual(expected1))
                 Assert.Fail("String split count by chars test #2");
 
-            result = String2.Split(text, new char[] { ',', '.' }, 1, StringSplitOptions.None);
+            result = String2.Split(text, new char[] { ',', '.' }, 1, StringSplitOptions2.None);
             Assert.AreEqual(1, result.Length);
             Assert.AreEqual(text, result[0], "String split count by chars test #3");
 
-            result = String2.Split(text, new char[] { ',', '.' }, 1, StringSplitOptions.RemoveEmptyEntries);
+            result = String2.Split(text, new char[] { ',', '.' }, 1, StringSplitOptions2.RemoveEmptyEntries);
             Assert.AreEqual(1, result.Length);
             Assert.AreEqual(text, result[0], "String split count by chars test #4");
         }
@@ -236,14 +239,14 @@ namespace System.Runtime.Tests
                 ""
             };
 
-            string[] result = String2.Split(text, new string[] { ", ", ". ", ",", "." }, StringSplitOptions.None);
+            string[] result = String2.Split(text, new string[] { ", ", ". ", ",", "." }, StringSplitOptions2.None);
             Assert.AreEqual(expected1.Length, result.Length);
             if (!result.SequenceEqual(expected1))
                 Assert.Fail("String split by string test #1");
 
             string[] expected2 = new string[expected1.Length - 1];
             Array.Copy(expected1, expected2, expected2.Length);
-            result = String2.Split(text, new string[] { ", ", ". ", ",", "." }, StringSplitOptions.RemoveEmptyEntries);
+            result = String2.Split(text, new string[] { ", ", ". ", ",", "." }, StringSplitOptions2.RemoveEmptyEntries);
             Assert.AreEqual(expected2.Length, result.Length);
             if (!result.SequenceEqual(expected2))
                 Assert.Fail("String split by string test #2");
@@ -261,21 +264,21 @@ namespace System.Runtime.Tests
                 "Cras convallis, nulla eget faucibus sagittis, dolor.",
             };
 
-            string[] result = String2.Split(text, new string[] { ", ", ". ", ",", "." }, 3, StringSplitOptions.None);
+            string[] result = String2.Split(text, new string[] { ", ", ". ", ",", "." }, 3, StringSplitOptions2.None);
             Assert.AreEqual(expected1.Length, result.Length);
             if (!result.SequenceEqual(expected1))
                 Assert.Fail("String split count by string test #1");
 
-            result = String2.Split(text, new string[] { ", ", ". ", ",", "." }, 3, StringSplitOptions.RemoveEmptyEntries);
+            result = String2.Split(text, new string[] { ", ", ". ", ",", "." }, 3, StringSplitOptions2.RemoveEmptyEntries);
             Assert.AreEqual(expected1.Length, result.Length);
             if (!result.SequenceEqual(expected1))
                 Assert.Fail("String split count by string test #2");
 
-            result = String2.Split(text, new string[] { ", ", ". ", ",", "." }, 1, StringSplitOptions.None);
+            result = String2.Split(text, new string[] { ", ", ". ", ",", "." }, 1, StringSplitOptions2.None);
             Assert.AreEqual(1, result.Length);
             Assert.AreEqual(text, result[0], "String split count by string test #3");
 
-            result = String2.Split(text, new string[] { ", ", ". ", ",", "." }, 1, StringSplitOptions.RemoveEmptyEntries);
+            result = String2.Split(text, new string[] { ", ", ". ", ",", "." }, 1, StringSplitOptions2.RemoveEmptyEntries);
             Assert.AreEqual(1, result.Length);
             Assert.AreEqual(text, result[0], "String split count by string test #4");
         }
