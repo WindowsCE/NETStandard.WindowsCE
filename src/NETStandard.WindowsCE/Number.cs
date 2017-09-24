@@ -418,175 +418,189 @@ namespace System
 
         internal unsafe static bool TryParseDecimal(string value, NumberStyles options, NumberFormatInfo numfmt, out decimal result)
         {
-            byte* numberBufferBytes = stackalloc byte[NumberBuffer.NumberBufferBytes];
-            NumberBuffer number = new NumberBuffer(numberBufferBytes);
-            result = 0;
-
-            if (!TryStringToNumber(value, options, ref number, numfmt, true))
+            fixed (byte* numberBufferBytes = new byte[NumberBuffer.NumberBufferBytes])
             {
-                return false;
-            }
+                NumberBuffer number = new NumberBuffer(numberBufferBytes);
+                result = 0;
 
-            if (!NumberBufferToDecimal(number, ref result))
-            {
-                return false;
+                if (!TryStringToNumber(value, options, ref number, numfmt, true))
+                {
+                    return false;
+                }
+
+                if (!NumberBufferToDecimal(number, ref result))
+                {
+                    return false;
+                }
+                return true;
             }
-            return true;
         }
 
         internal unsafe static bool TryParseDouble(string value, NumberStyles options, NumberFormatInfo numfmt, out double result)
         {
-            byte* numberBufferBytes = stackalloc byte[NumberBuffer.NumberBufferBytes];
-            NumberBuffer number = new NumberBuffer(numberBufferBytes);
-            result = 0;
+            fixed (byte* numberBufferBytes = new byte[NumberBuffer.NumberBufferBytes])
+            {
+                NumberBuffer number = new NumberBuffer(numberBufferBytes);
+                result = 0;
 
 
-            if (!TryStringToNumber(value, options, ref number, numfmt, false))
-            {
-                return false;
+                if (!TryStringToNumber(value, options, ref number, numfmt, false))
+                {
+                    return false;
+                }
+                if (!NumberBufferToDouble(number, ref result))
+                {
+                    return false;
+                }
+                return true;
             }
-            if (!NumberBufferToDouble(number, ref result))
-            {
-                return false;
-            }
-            return true;
         }
 
         internal unsafe static bool TryParseInt32(string s, NumberStyles style, NumberFormatInfo info, out int result)
         {
-            byte* numberBufferBytes = stackalloc byte[NumberBuffer.NumberBufferBytes];
-            NumberBuffer number = new NumberBuffer(numberBufferBytes);
-            result = 0;
-
-            if (!TryStringToNumber(s, style, ref number, info, false))
+            fixed (byte* numberBufferBytes = new byte[NumberBuffer.NumberBufferBytes])
             {
-                return false;
-            }
+                NumberBuffer number = new NumberBuffer(numberBufferBytes);
+                result = 0;
 
-            if ((style & NumberStyles.AllowHexSpecifier) != 0)
-            {
-                if (!HexNumberToInt32(ref number, ref result))
+                if (!TryStringToNumber(s, style, ref number, info, false))
                 {
                     return false;
                 }
-            }
-            else
-            {
-                if (!NumberToInt32(ref number, ref result))
+
+                if ((style & NumberStyles.AllowHexSpecifier) != 0)
                 {
-                    return false;
+                    if (!HexNumberToInt32(ref number, ref result))
+                    {
+                        return false;
+                    }
                 }
+                else
+                {
+                    if (!NumberToInt32(ref number, ref result))
+                    {
+                        return false;
+                    }
+                }
+                return true;
             }
-            return true;
         }
 
         internal unsafe static Boolean TryParseInt64(String s, NumberStyles style, NumberFormatInfo info, out Int64 result)
         {
-            byte* numberBufferBytes = stackalloc byte[NumberBuffer.NumberBufferBytes];
-            NumberBuffer number = new NumberBuffer(numberBufferBytes);
-            result = 0;
-
-            if (!TryStringToNumber(s, style, ref number, info, false))
+            fixed (byte* numberBufferBytes = new byte[NumberBuffer.NumberBufferBytes])
             {
-                return false;
-            }
+                NumberBuffer number = new NumberBuffer(numberBufferBytes);
+                result = 0;
 
-            if ((style & NumberStyles.AllowHexSpecifier) != 0)
-            {
-                if (!HexNumberToInt64(ref number, ref result))
+                if (!TryStringToNumber(s, style, ref number, info, false))
                 {
                     return false;
                 }
-            }
-            else
-            {
-                if (!NumberToInt64(ref number, ref result))
+
+                if ((style & NumberStyles.AllowHexSpecifier) != 0)
                 {
-                    return false;
+                    if (!HexNumberToInt64(ref number, ref result))
+                    {
+                        return false;
+                    }
                 }
+                else
+                {
+                    if (!NumberToInt64(ref number, ref result))
+                    {
+                        return false;
+                    }
+                }
+                return true;
             }
-            return true;
         }
 
         internal unsafe static bool TryParseSingle(string value, NumberStyles options, NumberFormatInfo numfmt, out float result)
         {
-            byte* numberBufferBytes = stackalloc byte[NumberBuffer.NumberBufferBytes];
-            NumberBuffer number = new NumberBuffer(numberBufferBytes);
-            result = 0;
-            double d = 0;
+            fixed (byte* numberBufferBytes = new byte[NumberBuffer.NumberBufferBytes])
+            {
+                NumberBuffer number = new NumberBuffer(numberBufferBytes);
+                result = 0;
+                double d = 0;
 
-            if (!TryStringToNumber(value, options, ref number, numfmt, false))
-            {
-                return false;
-            }
-            if (!NumberBufferToDouble(number, ref d))
-            {
-                return false;
-            }
-            float castSingle = (float)d;
-            if (float.IsInfinity(castSingle))
-            {
-                return false;
-            }
+                if (!TryStringToNumber(value, options, ref number, numfmt, false))
+                {
+                    return false;
+                }
+                if (!NumberBufferToDouble(number, ref d))
+                {
+                    return false;
+                }
+                float castSingle = (float)d;
+                if (float.IsInfinity(castSingle))
+                {
+                    return false;
+                }
 
-            result = castSingle;
-            return true;
+                result = castSingle;
+                return true;
+            }
         }
 
         internal unsafe static bool TryParseUInt32(string s, NumberStyles style, NumberFormatInfo info, out uint result)
         {
-            byte* numberBufferBytes = stackalloc byte[NumberBuffer.NumberBufferBytes];
-            NumberBuffer number = new NumberBuffer(numberBufferBytes);
-            result = 0;
-
-            if (!TryStringToNumber(s, style, ref number, info, false))
+            fixed (byte* numberBufferBytes = new byte[NumberBuffer.NumberBufferBytes])
             {
-                return false;
-            }
+                NumberBuffer number = new NumberBuffer(numberBufferBytes);
+                result = 0;
 
-            if ((style & NumberStyles.AllowHexSpecifier) != 0)
-            {
-                if (!HexNumberToUInt32(ref number, ref result))
+                if (!TryStringToNumber(s, style, ref number, info, false))
                 {
                     return false;
                 }
-            }
-            else
-            {
-                if (!NumberToUInt32(ref number, ref result))
+
+                if ((style & NumberStyles.AllowHexSpecifier) != 0)
                 {
-                    return false;
+                    if (!HexNumberToUInt32(ref number, ref result))
+                    {
+                        return false;
+                    }
                 }
+                else
+                {
+                    if (!NumberToUInt32(ref number, ref result))
+                    {
+                        return false;
+                    }
+                }
+                return true;
             }
-            return true;
         }
 
         internal unsafe static bool TryParseUInt64(string s, NumberStyles style, NumberFormatInfo info, out ulong result)
         {
-            byte* numberBufferBytes = stackalloc byte[NumberBuffer.NumberBufferBytes];
-            NumberBuffer number = new NumberBuffer(numberBufferBytes);
-            result = 0;
-
-            if (!TryStringToNumber(s, style, ref number, info, false))
+            fixed (byte* numberBufferBytes = new byte[NumberBuffer.NumberBufferBytes])
             {
-                return false;
-            }
+                NumberBuffer number = new NumberBuffer(numberBufferBytes);
+                result = 0;
 
-            if ((style & NumberStyles.AllowHexSpecifier) != 0)
-            {
-                if (!HexNumberToUInt64(ref number, ref result))
+                if (!TryStringToNumber(s, style, ref number, info, false))
                 {
                     return false;
                 }
-            }
-            else
-            {
-                if (!NumberToUInt64(ref number, ref result))
+
+                if ((style & NumberStyles.AllowHexSpecifier) != 0)
                 {
-                    return false;
+                    if (!HexNumberToUInt64(ref number, ref result))
+                    {
+                        return false;
+                    }
                 }
+                else
+                {
+                    if (!NumberToUInt64(ref number, ref result))
+                    {
+                        return false;
+                    }
+                }
+                return true;
             }
-            return true;
         }
 
         // Constants used by number parsing

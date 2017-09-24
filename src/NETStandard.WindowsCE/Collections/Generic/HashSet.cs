@@ -7,7 +7,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 
 #if !NET35_CF
@@ -89,7 +88,7 @@ namespace Mock.System.Collections.Generic
 
         private SerializationInfo _siInfo; // temporary variable needed during deserialization
 
-#region Constructors
+        #region Constructors
 
         public HashSet()
             : this(EqualityComparer<T>.Default)
@@ -223,9 +222,9 @@ namespace Mock.System.Collections.Generic
             }
         }
 
-#endregion
+        #endregion
 
-#region ICollection<T> methods
+        #region ICollection<T> methods
 
         /// <summary>
         /// Add item to this hashset. This is the explicit implementation of the <see cref="ICollection{T}"/>
@@ -360,9 +359,9 @@ namespace Mock.System.Collections.Generic
             get { return false; }
         }
 
-#endregion
+        #endregion
 
-#region IEnumerable methods
+        #region IEnumerable methods
 
         public Enumerator GetEnumerator()
         {
@@ -379,9 +378,9 @@ namespace Mock.System.Collections.Generic
             return new Enumerator(this);
         }
 
-#endregion
+        #endregion
 
-#region ISerializable methods
+        #region ISerializable methods
 
         public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
         {
@@ -402,9 +401,9 @@ namespace Mock.System.Collections.Generic
             }
         }
 
-#endregion
+        #endregion
 
-#region IDeserializationCallback methods
+        #region IDeserializationCallback methods
 
         public virtual void OnDeserialization(Object sender)
         {
@@ -447,9 +446,9 @@ namespace Mock.System.Collections.Generic
             _siInfo = null;
         }
 
-#endregion
+        #endregion
 
-#region HashSet methods
+        #region HashSet methods
 
         /// <summary>
         /// Add item to this HashSet. Returns bool indicating whether item was added (won't be 
@@ -1098,9 +1097,9 @@ namespace Mock.System.Collections.Generic
             }
         }
 
-#endregion
+        #endregion
 
-#region Helper methods
+        #region Helper methods
 
         /// <summary>
         /// Used for deep equality of HashSet testing
@@ -1355,8 +1354,8 @@ namespace Mock.System.Collections.Generic
             BitHelper bitHelper;
             if (intArrayLength <= StackAllocThreshold)
             {
-                int* bitArrayPtr = stackalloc int[intArrayLength];
-                bitHelper = new BitHelper(bitArrayPtr, intArrayLength);
+                fixed (int* bitArrayPtr = new int[intArrayLength])
+                    bitHelper = new BitHelper(bitArrayPtr, intArrayLength);
             }
             else
             {
@@ -1452,11 +1451,11 @@ namespace Mock.System.Collections.Generic
             BitHelper itemsAddedFromOther;
             if (intArrayLength <= StackAllocThreshold / 2)
             {
-                int* itemsToRemovePtr = stackalloc int[intArrayLength];
-                itemsToRemove = new BitHelper(itemsToRemovePtr, intArrayLength);
+                fixed (int* itemsToRemovePtr = new int[intArrayLength])
+                    itemsToRemove = new BitHelper(itemsToRemovePtr, intArrayLength);
 
-                int* itemsAddedFromOtherPtr = stackalloc int[intArrayLength];
-                itemsAddedFromOther = new BitHelper(itemsAddedFromOtherPtr, intArrayLength);
+                fixed (int* itemsAddedFromOtherPtr = new int[intArrayLength])
+                    itemsAddedFromOther = new BitHelper(itemsAddedFromOtherPtr, intArrayLength);
             }
             else
             {
@@ -1605,8 +1604,8 @@ namespace Mock.System.Collections.Generic
             BitHelper bitHelper;
             if (intArrayLength <= StackAllocThreshold)
             {
-                int* bitArrayPtr = stackalloc int[intArrayLength];
-                bitHelper = new BitHelper(bitArrayPtr, intArrayLength);
+                fixed (int* bitArrayPtr = new int[intArrayLength])
+                    bitHelper = new BitHelper(bitArrayPtr, intArrayLength);
             }
             else
             {
@@ -1737,7 +1736,7 @@ namespace Mock.System.Collections.Generic
             return _comparer.GetHashCode(item) & Lower31BitMask;
         }
 
-#endregion
+        #endregion
 
         // used for set checking operations (using enumerables) that rely on counting
         internal struct ElementCount
