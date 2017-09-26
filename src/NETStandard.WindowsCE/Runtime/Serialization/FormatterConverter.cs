@@ -25,7 +25,7 @@ namespace Mock.System.Runtime.Serialization
 {
     /// <summary>
     /// Represents a base implementation of the <see cref="IFormatterConverter"/>
-    /// interface that uses the <see cref="System.Convert"/> class.
+    /// interface that uses the <see cref="SConvert"/> class.
     /// </summary>
     public class FormatterConverter : IFormatterConverter
     {

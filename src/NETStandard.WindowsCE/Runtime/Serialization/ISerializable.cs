@@ -28,7 +28,7 @@ namespace Mock.System.Runtime.Serialization
         /// </summary>
         /// <param name="info">The <see cref="SerializationInfo" /> to populate with data. </param>
         /// <param name="context">The destination (see <see cref="StreamingContext" />) for this serialization.</param>
-        /// <exception cref="Security.SecurityException">The caller does not have the required permission.</exception>
+        // <exception cref="Security.SecurityException">The caller does not have the required permission.</exception>
         void GetObjectData(SerializationInfo info, StreamingContext context);
     }
 }

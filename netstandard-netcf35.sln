@@ -1,24 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CFF33A7E-D3D2-4F7D-BAAF-82882477E893}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A73F9B3F-3DD5-4548-B00B-732A1BFA32D5}"
 	ProjectSection(SolutionItems) = preProject
-		global.json = global.json
 		NETStandard.WindowsCE.nuspec = NETStandard.WindowsCE.nuspec
 		References.txt = References.txt
 	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "NETStandard.WindowsCE", "src\NETStandard.WindowsCE\NETStandard.WindowsCE.xproj", "{24857E98-E634-4803-8CC6-172B8389D89D}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "NETStandardReference", "src\NETStandardReference\NETStandardReference.xproj", "{151B5E2C-5489-4810-A511-9A6229627B79}"
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "System.Runtime.Variance.WindowsCE", "src\System.Runtime.Variance.WindowsCE\System.Runtime.Variance.WindowsCE.xproj", "{450EC9D9-93BB-4C9B-B299-05AA9959D93B}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{20BD1660-3BCE-42CF-97B3-7B0E051078DA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NETStandard.WindowsCE", "src\NETStandard.WindowsCE\NETStandard.WindowsCE.csproj", "{24857E98-E634-4803-8CC6-172B8389D89D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NETStandardReference", "src\NETStandardReference\NETStandardReference.csproj", "{151B5E2C-5489-4810-A511-9A6229627B79}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "System.Runtime.Variance.WindowsCE", "src\System.Runtime.Variance.WindowsCE\System.Runtime.Variance.WindowsCE.csproj", "{450EC9D9-93BB-4C9B-B299-05AA9959D93B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.Runtime.Tests", "test\System.Runtime.Tests\System.Runtime.Tests.csproj", "{F49933B4-0985-4253-94BD-073F63E25DB2}"
 	ProjectSection(ProjectDependencies) = postProject
