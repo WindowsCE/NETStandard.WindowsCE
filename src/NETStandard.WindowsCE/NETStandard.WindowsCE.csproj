@@ -1,0 +1,61 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net35-cf;net35-client</TargetFrameworks>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AssemblyName>NETStandard.WindowsCE</AssemblyName>
+    <AssemblyOriginatorKeyFile>../../tools/keypair.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+    <PackageId>NETStandard.WindowsCE</PackageId>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+  </PropertyGroup>
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net35-cf'">
+		<TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
+		<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+		<TargetFrameworkProfile>CompactFramework</TargetFrameworkProfile>
+		<DefineConstants>NET35_CF;WindowsCE</DefineConstants>
+		<DisableImplicitFrameworkReferences>True</DisableImplicitFrameworkReferences>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(TargetFramework)' == 'net35-client'">
+		<TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
+		<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+		<TargetFrameworkProfile>Client</TargetFrameworkProfile>
+		<!-- https://github.com/Microsoft/msbuild/issues/1333 -->
+		<FrameworkPathOverride>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v3.5\Profile\Client</FrameworkPathOverride>
+		<DisableImplicitFrameworkReferences>True</DisableImplicitFrameworkReferences>
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" '$(TargetFramework)' == 'net35-cf' ">
+		<NoStdLib>True</NoStdLib>
+		<NoConfig>true</NoConfig>
+		<FileAlignment>512</FileAlignment>
+		<GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+		<PlatformID>E2BECB1F-8C8C-41ba-B736-9BE7D946A398</PlatformID>
+	</PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net35-cf' ">
+		<Reference Include="mscorlib, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac" />
+		<Reference Include="System, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac" />
+		<Reference Include="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac" />
+  </ItemGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net35-client' ">
+    <NoWarn>$(NoWarn);CS0436;CS0114</NoWarn>
+  </PropertyGroup>
+
+	<ItemGroup Condition=" '$(TargetFramework)' == 'net35-client' ">
+    <Reference Include="System" />
+  </ItemGroup>
+
+</Project>

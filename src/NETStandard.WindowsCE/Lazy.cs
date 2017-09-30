@@ -146,7 +146,7 @@ namespace Mock.System
         /// The <see cref="T:System.Func{T}"/> invoked to produce the lazily-initialized value when it is
         /// needed.
         /// </param>
-        /// <exception cref="System.ArgumentNullException"><paramref name="valueFactory"/> is a null
+        /// <exception cref="ArgumentNullException"><paramref name="valueFactory"/> is a null
         /// reference (Nothing in Visual Basic).</exception>
         /// <remarks>
         /// An instance created with this constructor may be used concurrently from multiple threads.
@@ -170,7 +170,7 @@ namespace Mock.System
         /// class that uses <typeparamref name="T"/>'s default constructor and a specified thread-safety mode.
         /// </summary>
         /// <param name="mode">The lazy thread-safety mode mode</param>
-        /// <exception cref="System.ArgumentOutOfRangeException"><paramref name="mode"/> mode contains an invalid valuee</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="mode"/> mode contains an invalid valuee</exception>
         public Lazy(LazyThreadSafetyMode mode)
         {
             m_threadSafeObj = GetObjectFromMode(mode);
@@ -186,7 +186,7 @@ namespace Mock.System
         /// </param>
         /// <param name="isThreadSafe">true if this instance should be usable by multiple threads concurrently; false if the instance will only be used by one thread at a time.
         /// </param>
-        /// <exception cref="System.ArgumentNullException"><paramref name="valueFactory"/> is
+        /// <exception cref="ArgumentNullException"><paramref name="valueFactory"/> is
         /// a null reference (Nothing in Visual Basic).</exception>
         public Lazy(Func<T> valueFactory, bool isThreadSafe)
             : this(valueFactory, isThreadSafe ? LazyThreadSafetyMode.ExecutionAndPublication : LazyThreadSafetyMode.None)
@@ -200,9 +200,9 @@ namespace Mock.System
         /// The <see cref="T:System.Func{T}"/> invoked to produce the lazily-initialized value when it is needed.
         /// </param>
         /// <param name="mode">The lazy thread-safety mode.</param>
-        /// <exception cref="System.ArgumentNullException"><paramref name="valueFactory"/> is
+        /// <exception cref="ArgumentNullException"><paramref name="valueFactory"/> is
         /// a null reference (Nothing in Visual Basic).</exception>
-        /// <exception cref="System.ArgumentOutOfRangeException"><paramref name="mode"/> mode contains an invalid value.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="mode"/> mode contains an invalid value.</exception>
         public Lazy(Func<T> valueFactory, LazyThreadSafetyMode mode)
         {
             if (valueFactory == null)
@@ -237,7 +237,7 @@ namespace Mock.System
         }
 
         /// <summary>Creates and returns a string representation of this instance.</summary>
-        /// <returns>The result of calling <see cref="System.Object.ToString"/> on the <see
+        /// <returns>The result of calling <see cref="Object.ToString"/> on the <see
         /// cref="Value"/>.</returns>
         /// <exception cref="T:System.NullReferenceException">
         /// The <see cref="Value"/> is null.
