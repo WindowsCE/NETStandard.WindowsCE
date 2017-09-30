@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		SmartDeviceTestRun.testrunConfig = SmartDeviceTestRun.testrunConfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Tests", "..\Common.Tests\Common.Tests.csproj", "{CB63FC16-695D-4277-B980-90363DA370CF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Tests", "Common.Tests\Common.Tests.csproj", "{CB63FC16-695D-4277-B980-90363DA370CF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console.Tests", "Console.Tests\Console.Tests.csproj", "{00425298-0504-449B-BC45-71ED3CE7B3F8}"
 EndProject
