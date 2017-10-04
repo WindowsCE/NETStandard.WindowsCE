@@ -52,6 +52,8 @@ namespace Tests
             GC.Collect();
             VerifyIsDead(w);
 
+            // WARN: Compact Framework does not support to track resurrection
+#if !WindowsCE
             l = new Latch();
             w = MakeWeakReference(() => new ResurrectingC(l), true);
             GC.Collect();
@@ -78,6 +80,7 @@ namespace Tests
             {
                 VerifyIsDead(w);
             }
+#endif
         }
 
         [TestMethod]
@@ -104,6 +107,8 @@ namespace Tests
             GC.Collect();
             VerifyIsDead(w);
 
+            // WARN: Compact Framework does not support to track resurrection
+#if !WindowsCE
             l = new Latch();
             w = MakeWeakReferenceOfObject(() => new ResurrectingC(l), true);
             GC.Collect();
@@ -130,6 +135,7 @@ namespace Tests
             {
                 VerifyIsDead(w);
             }
+#endif
         }
 
         private class Latch

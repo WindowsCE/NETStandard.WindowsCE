@@ -101,6 +101,21 @@
     <Compile Include="..\..\test\System.Runtime.Tests\StringTests.cs">
       <Link>StringTests.cs</Link>
     </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\Threading\LazyInitializerTests.cs">
+      <Link>Threading\LazyInitializerTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\Threading\MonitorTests.cs">
+      <Link>Threading\MonitorTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\Threading\MonitorTestsMS.cs">
+      <Link>Threading\MonitorTestsMS.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\Threading\SpinWaitTests.cs">
+      <Link>Threading\SpinWaitTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\Threading\VolatileTests.cs">
+      <Link>Threading\VolatileTests.cs</Link>
+    </Compile>
     <Compile Include="..\..\test\System.Runtime.Tests\TypeTests.cs">
       <Link>TypeTests.cs</Link>
     </Compile>
@@ -116,7 +131,7 @@
     <Content Include="AuthoringTests.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Common.Tests\Common.Tests.csproj">
+    <ProjectReference Include="..\Common.Tests\Common.Tests.csproj">
       <Project>{CB63FC16-695D-4277-B980-90363DA370CF}</Project>
       <Name>Common.Tests</Name>
     </ProjectReference>

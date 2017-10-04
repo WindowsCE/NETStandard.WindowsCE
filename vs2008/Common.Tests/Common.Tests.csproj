@@ -54,7 +54,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\test\Common.Tests\AssertExtensions.cs">
+    <Compile Include="..\..\test\Common.Tests\AssertExtensions.cs">
       <Link>AssertExtensions.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

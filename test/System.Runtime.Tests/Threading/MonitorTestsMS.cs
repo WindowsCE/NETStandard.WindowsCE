@@ -5,7 +5,12 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading;
+
+#if WindowsCE
+using Monitor = System.Threading.Monitor2;
+#else
 using Monitor = Mock.System.Threading.Monitor2;
+#endif
 
 namespace Tests
 {
@@ -126,9 +131,15 @@ namespace Tests
             int valueType = 1;
             AssertExtensions.Throws<ArgumentNullException>("obj", () => Monitor.Exit(null));
 
+#if !WindowsCE
             AssertExtensions.Throws<SynchronizationLockException>(() => Monitor.Exit(obj));
             AssertExtensions.Throws<SynchronizationLockException>(() => Monitor.Exit(new object()));
             AssertExtensions.Throws<SynchronizationLockException>(() => Monitor.Exit(valueType));
+#else
+            AssertExtensions.Throws<ArgumentException>(() => Monitor.Exit(obj));
+            AssertExtensions.Throws<ArgumentException>(() => Monitor.Exit(new object()));
+            AssertExtensions.Throws<ArgumentException>(() => Monitor.Exit(valueType));
+#endif
         }
 
         //[TestMethod]

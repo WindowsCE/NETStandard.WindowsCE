@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Threading;
 
+#if !WindowsCE
+using Mock.System.Threading;
+#endif
+
 namespace System.Runtime.Tests.Threading
 {
     [TestClass]
@@ -21,8 +25,8 @@ namespace System.Runtime.Tests.Threading
             Thread.Sleep(1);
             Assert.IsFalse(Monitor.TryEnter(lockObj));
 
-            //Assert.IsTrue(Mock.System.Threading.Monitor2.TryEnter(lockObj, 15));
-            Assert.IsTrue(Mock.System.Threading.Monitor2.TryEnter(lockObj, 30));
+            //Assert.IsTrue(Monitor2.TryEnter(lockObj, 15));
+            Assert.IsTrue(Monitor2.TryEnter(lockObj, 30));
             Monitor.Exit(lockObj);
 
             Assert.IsTrue(thread.Join(250));
@@ -39,7 +43,7 @@ namespace System.Runtime.Tests.Threading
             {
                 lock (locker)
                     while (!go)
-                        Mock.System.Threading.Monitor2.Wait(locker);
+                        Monitor2.Wait(locker);
 
                 gotPulse = true;
             });
@@ -48,7 +52,7 @@ namespace System.Runtime.Tests.Threading
             lock (locker)
             {
                 go = true;
-                Mock.System.Threading.Monitor2.Pulse(locker);
+                Monitor2.Pulse(locker);
             }
 
             Assert.IsTrue(thread.Join(250));
@@ -108,7 +112,7 @@ namespace System.Runtime.Tests.Threading
                 lock (_locker)
                 {
                     _itemQ.Enqueue(item);                           // We must pulse because we're
-                    Mock.System.Threading.Monitor2.Pulse(_locker);  // changing a blocking condition.
+                    Monitor2.Pulse(_locker);  // changing a blocking condition.
                 }
             }
 
@@ -120,7 +124,7 @@ namespace System.Runtime.Tests.Threading
                     lock (_locker)
                     {
                         while (_itemQ.Count == 0)
-                            Mock.System.Threading.Monitor2.Wait(_locker);
+                            Monitor2.Wait(_locker);
                         item = _itemQ.Dequeue();
                     }
                     if (item == null) return;         // This signals our exit.

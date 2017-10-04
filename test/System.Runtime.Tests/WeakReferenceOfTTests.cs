@@ -51,6 +51,9 @@ namespace MonoTests.System
         }
 
         [TestMethod]
+#if WindowsCE
+        [ExpectedException(typeof(NotSupportedException))]
+#endif
         public void WeakReference_Object_Null_TrackResurrection_True()
         {
             WeakReference wr = new WeakReference(null, true);
@@ -81,6 +84,9 @@ namespace MonoTests.System
         }
 
         [TestMethod]
+#if WindowsCE
+        [ExpectedException(typeof(NotSupportedException))]
+#endif
         public void WeakReference_Object_TrackResurrection_True()
         {
             using (Stream s = Stream.Null)
