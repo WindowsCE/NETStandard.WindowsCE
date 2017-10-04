@@ -3,9 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Mock.System.Runtime.Serialization;
 using System;
 using System.Globalization;
+
+#if WindowsCE
+using System.Runtime.Serialization;
+#else
+using Mock.System.Runtime.Serialization;
+#endif
 
 namespace Tests.Runtime.Serialization
 {

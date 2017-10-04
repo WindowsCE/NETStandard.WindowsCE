@@ -95,6 +95,12 @@
     <Compile Include="..\..\test\System.Runtime.Tests\LazyTestsMS.cs">
       <Link>LazyTestsMS.cs</Link>
     </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\Runtime\Serialization\FormatterConverterTests.cs">
+      <Link>Runtime\Serialization\FormatterConverterTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\Runtime\Serialization\SerializationInfoTests.cs">
+      <Link>Runtime\Serialization\SerializationInfoTests.cs</Link>
+    </Compile>
     <Compile Include="..\..\test\System.Runtime.Tests\SingleTests.cs">
       <Link>SingleTests.cs</Link>
     </Compile>
