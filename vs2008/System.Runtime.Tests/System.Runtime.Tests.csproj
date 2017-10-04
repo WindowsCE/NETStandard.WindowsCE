@@ -86,6 +86,9 @@
     <Compile Include="..\..\test\System.Runtime.Tests\Int32Tests.cs">
       <Link>Int32Tests.cs</Link>
     </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\IO\Stream.AsyncTests.cs">
+      <Link>IO\Stream.AsyncTests.cs</Link>
+    </Compile>
     <Compile Include="..\..\test\System.Runtime.Tests\LazyOfTMetadataTests.cs">
       <Link>LazyOfTMetadataTests.cs</Link>
     </Compile>
@@ -132,9 +135,6 @@
       <Link>WeakReferenceTests.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="AuthoringTests.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common.Tests\Common.Tests.csproj">
