@@ -101,21 +101,31 @@ namespace System.IO
 
         private static async Task CopyToHalfAsync(AsyncStream source, Stream destination, int bufferSize, CancellationToken cancellationToken)
         {
+            bool isApmSupported = IsApmSupported(destination);
             byte[] buffer = new byte[bufferSize];
             while (true)
             {
                 int bytesRead = await source.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
                 if (bytesRead == 0) break;
-                await WriteAsyncInternal(destination, buffer, 0, bytesRead, cancellationToken).ConfigureAwait(false);
+                if (isApmSupported)
+                    await WriteAsyncApmInternal(destination, buffer, 0, bytesRead, cancellationToken).ConfigureAwait(false);
+                else
+                    await WriteAsyncNoApmInternal(destination, buffer, 0, bytesRead, cancellationToken).ConfigureAwait(false);
             }
         }
 
         private static async Task CopyToHalfAsync(Stream source, AsyncStream destination, int bufferSize, CancellationToken cancellationToken)
         {
+            bool isApmSupported = IsApmSupported(source);
             byte[] buffer = new byte[bufferSize];
             while (true)
             {
-                int bytesRead = await ReadAsyncInternal(source, buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
+                int bytesRead;
+                if (isApmSupported)
+                    bytesRead = await ReadAsyncApmInternal(source, buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
+                else
+                    bytesRead = await ReadAsyncNoApmInternal(source, buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
+
                 if (bytesRead == 0) break;
                 await destination.WriteAsync(buffer, 0, bytesRead, cancellationToken).ConfigureAwait(false);
             }
@@ -123,12 +133,23 @@ namespace System.IO
 
         private static async Task CopyToNoAsync(Stream source, Stream destination, int bufferSize, CancellationToken cancellationToken)
         {
+            bool isApmSupportedBySource = IsApmSupported(source);
+            bool isApmSupportedByDestination = IsApmSupported(destination);
             byte[] buffer = new byte[bufferSize];
             while (true)
             {
-                int bytesRead = await ReadAsyncInternal(source, buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
+                int bytesRead;
+                if (isApmSupportedBySource)
+                    bytesRead = await ReadAsyncApmInternal(source, buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
+                else
+                    bytesRead = await ReadAsyncNoApmInternal(source, buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false);
+
                 if (bytesRead == 0) break;
-                await WriteAsyncInternal(destination, buffer, 0, bytesRead, cancellationToken).ConfigureAwait(false);
+
+                if (isApmSupportedByDestination)
+                    await WriteAsyncApmInternal(destination, buffer, 0, bytesRead, cancellationToken).ConfigureAwait(false);
+                else
+                    await WriteAsyncNoApmInternal(destination, buffer, 0, bytesRead, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -175,6 +196,14 @@ namespace System.IO
 
         internal static Task<int> ReadAsyncInternal(Stream source, byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
+            if (IsApmSupported(source))
+                return ReadAsyncApmInternal(source, buffer, offset, count, cancellationToken);
+            else
+                return ReadAsyncNoApmInternal(source, buffer, offset, count, cancellationToken);
+        }
+
+        internal static Task<int> ReadAsyncApmInternal(Stream source, byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
             if (cancellationToken.IsCancellationRequested)
                 return Task.FromCanceled<int>(cancellationToken);
 
@@ -182,6 +211,22 @@ namespace System.IO
                 (localBuffer, localOffset, localCount, callback, state) => ((Stream)state).BeginRead(localBuffer, localOffset, localCount, callback, state),
                 iar => ((Stream)iar.AsyncState).EndRead(iar),
                 buffer, offset, count, source);
+        }
+
+        internal static Task<int> ReadAsyncNoApmInternal(Stream source, byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return Task.FromCanceled<int>(cancellationToken);
+
+            return Task.Factory.StartNew(state =>
+            {
+                var aop = (AsyncOperationParameters)state;
+                aop.cancellationToken.ThrowIfCancellationRequested();
+
+                return aop.source.Read(aop.buffer, aop.offset, aop.count);
+            },
+            new AsyncOperationParameters(source, buffer, offset, count, cancellationToken),
+            cancellationToken);
         }
 
         public static Task WriteAsync(this Stream source, byte[] buffer, int offset, int count)
@@ -201,6 +246,14 @@ namespace System.IO
 
         internal static Task WriteAsyncInternal(Stream source, byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
+            if (IsApmSupported(source))
+                return WriteAsyncApmInternal(source, buffer, offset, count, cancellationToken);
+            else
+                return WriteAsyncNoApmInternal(source, buffer, offset, count, cancellationToken);
+        }
+
+        internal static Task WriteAsyncApmInternal(Stream source, byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
             if (cancellationToken.IsCancellationRequested)
                 return Task.FromCanceled<int>(cancellationToken);
 
@@ -208,6 +261,23 @@ namespace System.IO
                 (localBuffer, localOffset, localCount, callback, state) => ((Stream)state).BeginWrite(localBuffer, localOffset, localCount, callback, state),
                 iar => ((Stream)iar.AsyncState).EndWrite(iar),
                 buffer, offset, count, source);
+        }
+
+        internal static Task WriteAsyncNoApmInternal(Stream source, byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return Task.FromCanceled<int>(cancellationToken);
+
+            return Task.Factory.StartNew(
+                state =>
+                {
+                    var aop = (AsyncOperationParameters)state;
+                    aop.cancellationToken.ThrowIfCancellationRequested();
+
+                    aop.source.Write(aop.buffer, aop.offset, aop.count);
+                },
+                new AsyncOperationParameters(source, buffer, offset, count, cancellationToken),
+                cancellationToken);
         }
 
         /// <summary>
@@ -272,6 +342,37 @@ namespace System.IO
             }
 
             return bufferSize;
+        }
+
+        internal static bool IsApmSupported(Stream stream)
+        {
+            // These are the types known to implement APM on Compact Framework
+            if (stream is Compression.DeflateStream)
+                return true;
+            else if (stream is Compression.GZipStream)
+                return true;
+            else if (stream is Net.Sockets.NetworkStream)
+                return true;
+
+            return false;
+        }
+
+        internal struct AsyncOperationParameters
+        {
+            public Stream source;
+            public byte[] buffer;
+            public int offset;
+            public int count;
+            public CancellationToken cancellationToken;
+
+            public AsyncOperationParameters(Stream source, byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+            {
+                this.source = source;
+                this.buffer = buffer;
+                this.offset = offset;
+                this.count = count;
+                this.cancellationToken = cancellationToken;
+            }
         }
     }
 }
