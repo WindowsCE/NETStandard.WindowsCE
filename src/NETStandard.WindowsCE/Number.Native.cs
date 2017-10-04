@@ -187,7 +187,7 @@ namespace System
 
                 // get the denormalized power of 10
                 uint mult = (uint)(rgval64Power10[count - 1] >> (64 - rgexp64Power10[count - 1]));
-                val = (val * mult) + (ulong)DigitsToInt(src + 9, count);
+                val = (val * (ulong)mult) + (ulong)DigitsToInt(src + 9, count);
             }
 
             int scale = number.scale - (total - remaining);
@@ -197,19 +197,19 @@ namespace System
                 // overflow / underflow
                 val = scale > 0 ? 0x7FF0000000000000UL : 0UL;
                 if (number.sign)
-                    val |= 0x8000000000000000;
+                    val |= 0x8000000000000000UL;
                 return UInt64ToDouble(val);
             }
 
             int exp = 64;
 
             // normalize the mantissa
-            if ((val & 0xFFFFFFFF00000000UL) == 0) { val <<= 32; exp -= 32; }
-            if ((val & 0xFFFF000000000000UL) == 0) { val <<= 16; exp -= 16; }
-            if ((val & 0xFF00000000000000UL) == 0) { val <<= 8; exp -= 8; }
-            if ((val & 0xF000000000000000UL) == 0) { val <<= 4; exp -= 4; }
-            if ((val & 0xC000000000000000UL) == 0) { val <<= 2; exp -= 2; }
-            if ((val & 0x8000000000000000UL) == 0) { val <<= 1; exp -= 1; }
+            if ((val & 0xFFFFFFFF00000000UL) == 0UL) { val <<= 32; exp -= 32; }
+            if ((val & 0xFFFF000000000000UL) == 0UL) { val <<= 16; exp -= 16; }
+            if ((val & 0xFF00000000000000UL) == 0UL) { val <<= 8; exp -= 8; }
+            if ((val & 0xF000000000000000UL) == 0UL) { val <<= 4; exp -= 4; }
+            if ((val & 0xC000000000000000UL) == 0UL) { val <<= 2; exp -= 2; }
+            if ((val & 0x8000000000000000UL) == 0UL) { val <<= 1; exp -= 1; }
 
             int index = absscale & 15;
             if (index != 0)
@@ -234,10 +234,10 @@ namespace System
             }
 
             // round & scale down
-            if ((val & (1 << 10)) != 0)
+            if ((val & (1UL << 10)) != 0UL)
             {
                 // IEEE round to even
-                ulong tmp = val + ((1UL << 10) - 1) + (((uint)val >> 11) & 1);
+                ulong tmp = val + ((1UL << 10) - 1UL) + (((uint)val >> 11) & 1UL);
                 if (tmp < val)
                 {
                     // overflow
@@ -261,7 +261,7 @@ namespace System
                 else if (exp <= -52)
                 {
                     // underflow
-                    val = 0;
+                    val = 0UL;
                 }
                 else
                 {
@@ -344,7 +344,7 @@ namespace System
                 result += (a_lo * b_hi) >> 32;
 
             // normalize
-            if ((result & 0x8000000000000000UL) == 0) { result <<= 1; pexp--; }
+            if ((result & 0x8000000000000000UL) == 0UL) { result <<= 1; pexp--; }
 
             return result;
         }
