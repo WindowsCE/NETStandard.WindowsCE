@@ -9,6 +9,14 @@
     "warningsAsErrors": true
   },
 
+  "configurations": {
+    "Release": {
+      "buildOptions": {
+        "optimize": false
+      }
+    }
+  },
+
   "frameworks": {
     "net35-cf": {
       "frameworkAssemblies": {
