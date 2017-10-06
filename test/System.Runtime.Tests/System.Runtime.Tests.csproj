@@ -57,6 +57,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="ActivatorTests.cs" />
+    <Compile Include="Collections\Generic\HashSetTest_Theraot.cs" />
     <Compile Include="DateTimeOffsetTests.cs" />
     <Compile Include="DecimalTests.cs" />
     <Compile Include="DoubleTests.cs" />
@@ -88,6 +89,7 @@
       <Name>Common.Tests</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

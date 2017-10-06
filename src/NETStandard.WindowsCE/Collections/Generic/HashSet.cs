@@ -20,6 +20,10 @@ namespace Mock.System.Collections.Generic
 #endif
 {
     /// <summary>
+    /// Represents a set of values.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <remarks>
     /// Implementation notes:
     /// This uses an array-based implementation similar to <see cref="Dictionary{TKey, TValue}"/>, using a buckets array
     /// to map hash values to the Slots array. Items in the Slots array that hash to the same value
@@ -53,8 +57,7 @@ namespace Mock.System.Collections.Generic
     /// A couple of methods have a special case if other is this (e.g. SymmetricExceptWith). 
     /// If we didn't have these checks, we could be iterating over the set and modifying at
     /// the same time. 
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// </remarks>
     //[DebuggerTypeProxy(typeof(ICollectionDebugView<>))]
     [DebuggerDisplay("Count = {Count}")]
     [SuppressMessage("Microsoft.Naming", "CA1710:IdentifiersShouldHaveCorrectSuffix", Justification = "By design")]
