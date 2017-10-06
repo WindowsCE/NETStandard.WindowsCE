@@ -31,8 +31,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
+#if WindowsCE
+using HashSetInt32 = System.Collections.Generic.HashSet<int>;
+using HashSetString = System.Collections.Generic.HashSet<string>;
+#else
 using HashSetInt32 = Mock.System.Collections.Generic.HashSet<int>;
 using HashSetString = Mock.System.Collections.Generic.HashSet<string>;
+#endif
 
 namespace Tests.Collections.Generic
 {

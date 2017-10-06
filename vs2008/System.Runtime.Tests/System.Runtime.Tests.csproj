@@ -65,6 +65,9 @@
     <Compile Include="..\..\test\System.Runtime.Tests\ActivatorTests.cs">
       <Link>ActivatorTests.cs</Link>
     </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\Collections\Generic\HashSetTest_Theraot.cs">
+      <Link>Collections\Generic\HashSetTest_Theraot.cs</Link>
+    </Compile>
     <Compile Include="..\..\test\System.Runtime.Tests\DateTimeOffsetTests.cs">
       <Link>DateTimeOffsetTests.cs</Link>
     </Compile>
