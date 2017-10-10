@@ -58,6 +58,8 @@
   <ItemGroup>
     <Compile Include="ActivatorTests.cs" />
     <Compile Include="Collections\Generic\HashSetTest_Theraot.cs" />
+    <Compile Include="Collections\ObjectModel\ObservableCollectionTest_Theraot.cs" />
+    <Compile Include="Collections\Specialized\CollectionChangedEventValidators.cs" />
     <Compile Include="DateTimeOffsetTests.cs" />
     <Compile Include="DecimalTests.cs" />
     <Compile Include="DoubleTests.cs" />

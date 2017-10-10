@@ -13,16 +13,26 @@ namespace Mock.System
         public const int MinValue = int.MinValue;
 
         public static int Parse(string s)
-            => int.Parse(s);
+        {
+            return Number.ParseInt32(s, NumberStyles.Integer, NumberFormatInfo.CurrentInfo);
+        }
 
         public static int Parse(string s, IFormatProvider provider)
-            => int.Parse(s, provider);
+        {
+            return Number.ParseInt32(s, NumberStyles.Integer, NumberFormatInfo.GetInstance(provider));
+        }
 
         public static int Parse(string s, NumberStyles style)
-            => int.Parse(s, style);
+        {
+            NumberFormatInfo2.ValidateParseStyleInteger(style);
+            return Number.ParseInt32(s, style, NumberFormatInfo.CurrentInfo);
+        }
 
         public static int Parse(string s, NumberStyles style, IFormatProvider provider)
-            => int.Parse(s, style, provider);
+        {
+            NumberFormatInfo2.ValidateParseStyleInteger(style);
+            return Number.ParseInt32(s, style, NumberFormatInfo.GetInstance(provider));
+        }
 
         public static bool TryParse(string s, out int result)
         {

@@ -2,6 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+// Refs:
+// - https://github.com/dotnet/coreclr/blob/54891e0650e69f08832f75a40dc102efc6115d38/src/mscorlib/src/System/Number.cs
+
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
@@ -403,17 +406,55 @@ namespace System
             return false;
         }
 
+        private unsafe static void StringToNumber(String str, NumberStyles options, ref NumberBuffer number, NumberFormatInfo info, Boolean parseDecimal)
+        {
+            if (str == null)
+                throw new ArgumentNullException(nameof(String));
+            Debug.Assert(info != null, "");
+
+            fixed (char* stringPointer = str)
+            {
+                char* p = stringPointer;
+                if (!ParseNumber(ref p, options, ref number, null, info, parseDecimal)
+                    || (p - stringPointer < str.Length && !TrailingZeros(str, (int)(p - stringPointer))))
+                {
+                    throw new FormatException("Input string was not in a correct format.");
+                }
+            }
+        }
+
         private static bool TrailingZeros(string s, int index)
         {
             // For compatibility, we need to allow trailing zeros at the end of a number string
             for (int i = index; i < s.Length; i++)
             {
                 if (s[i] != '\0')
-                {
                     return false;
-                }
             }
             return true;
+        }
+
+        internal unsafe static Int32 ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+        {
+            fixed (byte* numberBufferBytes = new byte[NumberBuffer.NumberBufferBytes])
+            {
+                NumberBuffer number = new NumberBuffer(numberBufferBytes);
+                Int32 i = 0;
+
+                StringToNumber(s, style, ref number, info, false);
+
+                if ((style & NumberStyles.AllowHexSpecifier) != 0)
+                {
+                    if (!HexNumberToInt32(ref number, ref i))
+                        throw new OverflowException("Value was either too large or too small for an Int32.");
+                }
+                else
+                {
+                    if (!NumberToInt32(ref number, ref i))
+                        throw new OverflowException("Value was either too large or too small for an Int32.");
+                }
+                return i;
+            }
         }
 
         internal unsafe static bool TryParseDecimal(string value, NumberStyles options, NumberFormatInfo numfmt, out decimal result)
