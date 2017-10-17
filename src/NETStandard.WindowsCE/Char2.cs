@@ -17,25 +17,119 @@ namespace Mock.System
         public const char MaxValue = char.MaxValue;
         public const char MinValue = char.MinValue;
 
+        internal const int UNICODE_PLANE00_END = 0x00ffff;
+        // The starting codepoint for Unicode plane 1.  Plane 1 contains 0x010000 ~ 0x01ffff.
+        internal const int UNICODE_PLANE01_START = 0x10000;
+        // The end codepoint for Unicode plane 16.  This is the maximum code point value allowed for Unicode.
+        // Plane 16 contains 0x100000 ~ 0x10ffff.
+        internal const int UNICODE_PLANE16_END = 0x10ffff;
+
         internal const int HIGH_SURROGATE_START = 0x00d800;
         internal const int LOW_SURROGATE_END = 0x00dfff;
 
-        [Obsolete(Consts.PlatformNotSupportedDescription)]
+        /*================================= ConvertFromUtf32 ============================
+        ** Convert an UTF32 value into a surrogate pair.
+        ==============================================================================*/
+
         public static string ConvertFromUtf32(int utf32)
         {
-            throw new PlatformNotSupportedException();
+            // For UTF32 values from U+00D800 ~ U+00DFFF, we should throw.  They
+            // are considered as irregular code unit sequence, but they are not illegal.
+            if ((utf32 < 0 || utf32 > UNICODE_PLANE16_END) || (utf32 >= HIGH_SURROGATE_START && utf32 <= LOW_SURROGATE_END))
+            {
+                throw new ArgumentOutOfRangeException(nameof(utf32), SR.ArgumentOutOfRange_InvalidUTF32);
+            }
+
+            if (utf32 < UNICODE_PLANE01_START)
+            {
+                // This is a BMP character.
+                return (Char.ToString((char)utf32));
+            }
+
+            unsafe
+            {
+                // This is a supplementary character.  Convert it to a surrogate pair in UTF-16.
+                utf32 -= UNICODE_PLANE01_START;
+                uint surrogate = 0; // allocate 2 chars worth of stack space
+                char* address = (char*)&surrogate;
+                address[0] = (char)((utf32 / 0x400) + (int)CharUnicodeInfo2.HIGH_SURROGATE_START);
+                address[1] = (char)((utf32 % 0x400) + (int)CharUnicodeInfo2.LOW_SURROGATE_START);
+                return new string(address, 0, 2);
+            }
         }
 
-        [Obsolete(Consts.PlatformNotSupportedDescription)]
+        /*=============================ConvertToUtf32===================================
+        ** Convert a surrogate pair to UTF32 value                                    
+        ==============================================================================*/
+
         public static int ConvertToUtf32(char highSurrogate, char lowSurrogate)
         {
-            throw new PlatformNotSupportedException();
+            if (!IsHighSurrogate(highSurrogate))
+            {
+                throw new ArgumentOutOfRangeException(nameof(highSurrogate), SR.ArgumentOutOfRange_InvalidHighSurrogate);
+            }
+            if (!IsLowSurrogate(lowSurrogate))
+            {
+                throw new ArgumentOutOfRangeException(nameof(lowSurrogate), SR.ArgumentOutOfRange_InvalidLowSurrogate);
+            }
+            return (((highSurrogate - CharUnicodeInfo2.HIGH_SURROGATE_START) * 0x400) + (lowSurrogate - CharUnicodeInfo2.LOW_SURROGATE_START) + UNICODE_PLANE01_START);
         }
 
-        [Obsolete(Consts.PlatformNotSupportedDescription)]
+        /*=============================ConvertToUtf32===================================
+        ** Convert a character or a surrogate pair starting at index of the specified string 
+        ** to UTF32 value.
+        ** The char pointed by index should be a surrogate pair or a BMP character.
+        ** This method throws if a high-surrogate is not followed by a low surrogate.
+        ** This method throws if a low surrogate is seen without preceding a high-surrogate.
+        ==============================================================================*/
+
         public static int ConvertToUtf32(string s, int index)
         {
-            throw new PlatformNotSupportedException();
+            if (s == null)
+            {
+                throw new ArgumentNullException(nameof(s));
+            }
+
+            if (index < 0 || index >= s.Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(index), SR.ArgumentOutOfRange_Index);
+            }
+
+            // Check if the character at index is a high surrogate.
+            int temp1 = (int)s[index] - CharUnicodeInfo2.HIGH_SURROGATE_START;
+            if (temp1 >= 0 && temp1 <= 0x7ff)
+            {
+                // Found a surrogate char.
+                if (temp1 <= 0x3ff)
+                {
+                    // Found a high surrogate.
+                    if (index < s.Length - 1)
+                    {
+                        int temp2 = (int)s[index + 1] - CharUnicodeInfo2.LOW_SURROGATE_START;
+                        if (temp2 >= 0 && temp2 <= 0x3ff)
+                        {
+                            // Found a low surrogate.
+                            return ((temp1 * 0x400) + temp2 + UNICODE_PLANE01_START);
+                        }
+                        else
+                        {
+                            throw new ArgumentException(string.Format(SR.Argument_InvalidHighSurrogate, index), nameof(s));
+                        }
+                    }
+                    else
+                    {
+                        // Found a high surrogate at the end of the string.
+                        throw new ArgumentException(string.Format(SR.Argument_InvalidHighSurrogate, index), nameof(s));
+                    }
+                }
+                else
+                {
+                    // Find a low surrogate at the character pointed by index.
+                    throw new ArgumentException(string.Format(SR.Argument_InvalidLowSurrogate, index), nameof(s));
+                }
+            }
+            // Not a high-surrogate or low-surrogate. Genereate the UTF32 value for the BMP characters.
+            return ((int)s[index]);
         }
 
         public static double GetNumericValue(char c)
@@ -196,7 +290,7 @@ namespace Mock.System
                 throw new ArgumentNullException(nameof(s));
 
             if (s.Length != 1)
-                throw new FormatException("Cannot parse multiple char string to single char");
+                throw new FormatException(SR.Format_NeedSingleChar);
 
             return s[0];
         }

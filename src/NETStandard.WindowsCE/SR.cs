@@ -172,9 +172,9 @@ partial class SR
     //public const string Argument_InvalidEnumValue = "The value '{0}' is not valid for this usage of the type {1}.";
     //public const string Argument_InvalidFlag = "Value of flags is invalid.";
     //public const string Argument_InvalidGroupSize = "Every element in the value array should be between one and nine, except for the last element, which can be zero.";
-    //public const string Argument_InvalidHighSurrogate = "Found a high surrogate char without a following low surrogate at index: {0}. The input may not be in this encoding, or may not contain valid Unicode (UTF-16) characters.";
+    public const string Argument_InvalidHighSurrogate = "Found a high surrogate char without a following low surrogate at index: {0}. The input may not be in this encoding, or may not contain valid Unicode (UTF-16) characters.";
     //public const string Argument_InvalidId = "The specified ID parameter '{0}' is not supported.";
-    //public const string Argument_InvalidLowSurrogate = "Found a low surrogate char without a preceding high surrogate at index: {0}. The input may not be in this encoding, or may not contain valid Unicode (UTF-16) characters.";
+    public const string Argument_InvalidLowSurrogate = "Found a low surrogate char without a preceding high surrogate at index: {0}. The input may not be in this encoding, or may not contain valid Unicode (UTF-16) characters.";
     //public const string Argument_InvalidNativeDigitCount = "The NativeDigits array must contain exactly ten members.";
     //public const string Argument_InvalidNativeDigitValue = "Each member of the NativeDigits array must be a single text element (one or more UTF16 code points) with a Unicode Nd (Number, Decimal Digit) property indicating it is a digit.";
     //public const string Argument_InvalidNeutralRegionName = "The region name {0} should not correspond to neutral culture; a specific culture name is required.";
@@ -198,7 +198,7 @@ partial class SR
     //public const string Argument_OnlyMscorlib = "Only mscorlib's assembly is valid.";
     //public const string Argument_OutOfOrderDateTimes = "The DateStart property must come before the DateEnd property.";
     //public const string ArgumentOutOfRange_HugeArrayNotSupported = "Arrays larger than 2GB are not supported.";
-    //public const string ArgumentOutOfRange_Index = "Index was out of range. Must be non-negative and less than the size of the collection.";
+    public const string ArgumentOutOfRange_Index = "Index was out of range. Must be non-negative and less than the size of the collection.";
     //public const string ArgumentOutOfRange_Length = "The specified length exceeds maximum capacity of SecureString.";
     //public const string ArgumentOutOfRange_LengthTooLarge = "The specified length exceeds the maximum value of {0}.";
     //public const string ArgumentOutOfRange_NeedNonNegNum = "Non-negative number required.";
