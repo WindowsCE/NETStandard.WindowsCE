@@ -85,17 +85,17 @@ namespace Tests
                     Assert.IsTrue(Single.TryParse(value, out result));
                     Assert.AreEqual(expected, result);
 
-                    Assert.AreEqual(expected, float.Parse(value));
+                    Assert.AreEqual(expected, Single.Parse(value));
                 }
 
-                Assert.AreEqual(expected, float.Parse(value, provider));
+                Assert.AreEqual(expected, Single.Parse(value, provider));
             }
 
             // Use Parse(string, NumberStyles, IFormatProvider)
             Assert.IsTrue(Single.TryParse(value, style, provider, out result));
             Assert.AreEqual(expected, result);
 
-            Assert.AreEqual(expected, float.Parse(value, style, provider));
+            Assert.AreEqual(expected, Single.Parse(value, style, provider));
 
             if (isDefaultProvider)
             {
@@ -104,7 +104,7 @@ namespace Tests
                 Assert.AreEqual(expected, result);
 
                 //Assert.AreEqual(expected, float.Parse(value, style));
-                Assert.AreEqual(expected, float.Parse(value, style, NumberFormatInfo.InvariantInfo));
+                Assert.AreEqual(expected, Single.Parse(value, style, NumberFormatInfo.InvariantInfo));
             }
         }
 
@@ -159,14 +159,14 @@ namespace Tests
                     //AssertExtensions.Throws(exceptionType, () => float.Parse(value));
                 }
 
-                AssertExtensions.Throws(exceptionType, () => float.Parse(value, provider));
+                AssertExtensions.Throws(exceptionType, () => Single.Parse(value, provider));
             }
 
             // Use Parse(string, NumberStyles, IFormatProvider)
             Assert.IsFalse(Single.TryParse(value, style, provider, out result));
             Assert.AreEqual(default(float), result);
 
-            AssertExtensions.Throws(exceptionType, () => float.Parse(value, style, provider));
+            AssertExtensions.Throws(exceptionType, () => Single.Parse(value, style, provider));
 
             if (isDefaultProvider)
             {
@@ -175,7 +175,7 @@ namespace Tests
                 Assert.AreEqual(default(float), result);
 
                 //AssertExtensions.Throws(exceptionType, () => float.Parse(value, style));
-                AssertExtensions.Throws(exceptionType, () => float.Parse(value, style, NumberFormatInfo.InvariantInfo));
+                AssertExtensions.Throws(exceptionType, () => Single.Parse(value, style, NumberFormatInfo.InvariantInfo));
             }
         }
     }
