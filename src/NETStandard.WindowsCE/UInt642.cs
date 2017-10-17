@@ -14,16 +14,26 @@ namespace Mock.System
         public const ulong MinValue = ulong.MinValue;
 
         public static ulong Parse(string s)
-            => ulong.Parse(s);
+        {
+            return Number.ParseUInt64(s, NumberStyles.Integer, NumberFormatInfo.CurrentInfo);
+        }
 
         public static ulong Parse(string s, IFormatProvider provider)
-            => ulong.Parse(s, NumberStyles.Integer, provider);
+        {
+            return Number.ParseUInt64(s, NumberStyles.Integer, NumberFormatInfo.GetInstance(provider));
+        }
 
         public static ulong Parse(string s, NumberStyles style)
-            => ulong.Parse(s, style);
+        {
+            NumberFormatInfo2.ValidateParseStyleInteger(style);
+            return Number.ParseUInt64(s, style, NumberFormatInfo.CurrentInfo);
+        }
 
         public static ulong Parse(string s, NumberStyles style, IFormatProvider provider)
-            => ulong.Parse(s, style, provider);
+        {
+            NumberFormatInfo2.ValidateParseStyleInteger(style);
+            return Number.ParseUInt64(s, style, NumberFormatInfo.GetInstance(provider));
+        }
 
         public static bool TryParse(string s, out ulong result)
         {

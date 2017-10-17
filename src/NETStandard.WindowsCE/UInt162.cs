@@ -14,16 +14,42 @@ namespace Mock.System
         public const ushort MinValue = ushort.MinValue;
 
         public static ushort Parse(string s)
-            => ushort.Parse(s);
+        {
+            return Parse(s, NumberStyles.Integer, NumberFormatInfo.CurrentInfo);
+        }
 
         public static ushort Parse(string s, IFormatProvider provider)
-            => ushort.Parse(s, NumberStyles.Integer, provider);
+        {
+            return Parse(s, NumberStyles.Integer, NumberFormatInfo.GetInstance(provider));
+        }
 
         public static ushort Parse(string s, NumberStyles style)
-            => ushort.Parse(s, style);
+        {
+            NumberFormatInfo2.ValidateParseStyleInteger(style);
+            return Parse(s, style, NumberFormatInfo.CurrentInfo);
+        }
 
         public static ushort Parse(string s, NumberStyles style, IFormatProvider provider)
-            => ushort.Parse(s, style, provider);
+        {
+            NumberFormatInfo2.ValidateParseStyleInteger(style);
+            return Parse(s, style, NumberFormatInfo.GetInstance(provider));
+        }
+
+        private static ushort Parse(String s, NumberStyles style, NumberFormatInfo info)
+        {
+            uint i = 0;
+            try
+            {
+                i = Number.ParseUInt32(s, style, info);
+            }
+            catch (OverflowException e)
+            {
+                throw new OverflowException(SR.Overflow_UInt16, e);
+            }
+
+            if (i > MaxValue) throw new OverflowException(SR.Overflow_UInt16);
+            return (ushort)i;
+        }
 
         public static bool TryParse(string s, out ushort result)
         {

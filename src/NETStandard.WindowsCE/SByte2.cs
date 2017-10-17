@@ -14,16 +14,51 @@ namespace Mock.System
         public const sbyte MinValue = sbyte.MinValue;
 
         public static sbyte Parse(string s)
-            => sbyte.Parse(s);
+        {
+            return Parse(s, NumberStyles.Integer, NumberFormatInfo.CurrentInfo);
+        }
 
         public static sbyte Parse(string s, IFormatProvider provider)
-            => sbyte.Parse(s, NumberStyles.Integer, provider);
+        {
+            return Parse(s, NumberStyles.Integer, NumberFormatInfo.GetInstance(provider));
+        }
 
         public static sbyte Parse(string s, NumberStyles style)
-            => sbyte.Parse(s, style);
+        {
+            NumberFormatInfo2.ValidateParseStyleInteger(style);
+            return Parse(s, style, NumberFormatInfo.CurrentInfo);
+        }
 
         public static sbyte Parse(string s, NumberStyles style, IFormatProvider provider)
-            => sbyte.Parse(s, style, provider);
+        {
+            NumberFormatInfo2.ValidateParseStyleInteger(style);
+            return Parse(s, style, NumberFormatInfo.GetInstance(provider));
+        }
+
+        private static sbyte Parse(String s, NumberStyles style, NumberFormatInfo info)
+        {
+            int i = 0;
+            try
+            {
+                i = Number.ParseInt32(s, style, info);
+            }
+            catch (OverflowException e)
+            {
+                throw new OverflowException(SR.Overflow_SByte, e);
+            }
+
+            if ((style & NumberStyles.AllowHexSpecifier) != 0)
+            { // We are parsing a hexadecimal number
+                if ((i < 0) || i > Byte.MaxValue)
+                {
+                    throw new OverflowException(SR.Overflow_SByte);
+                }
+                return (sbyte)i;
+            }
+
+            if (i < MinValue || i > MaxValue) throw new OverflowException(SR.Overflow_SByte);
+            return (sbyte)i;
+        }
 
         public static bool TryParse(string s, out sbyte result)
         {

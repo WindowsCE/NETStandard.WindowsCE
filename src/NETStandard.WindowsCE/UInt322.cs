@@ -14,16 +14,26 @@ namespace Mock.System
         public const uint MinValue = uint.MinValue;
 
         public static uint Parse(string s)
-            => uint.Parse(s);
+        {
+            return Number.ParseUInt32(s, NumberStyles.Integer, NumberFormatInfo.CurrentInfo);
+        }
 
         public static uint Parse(string s, IFormatProvider provider)
-            => uint.Parse(s, NumberStyles.Integer, provider);
+        {
+            return Number.ParseUInt32(s, NumberStyles.Integer, NumberFormatInfo.GetInstance(provider));
+        }
 
         public static uint Parse(string s, NumberStyles style)
-            => uint.Parse(s, style);
+        {
+            NumberFormatInfo2.ValidateParseStyleInteger(style);
+            return Number.ParseUInt32(s, style, NumberFormatInfo.CurrentInfo);
+        }
 
         public static uint Parse(string s, NumberStyles style, IFormatProvider provider)
-            => uint.Parse(s, style, provider);
+        {
+            NumberFormatInfo2.ValidateParseStyleInteger(style);
+            return Number.ParseUInt32(s, style, NumberFormatInfo.GetInstance(provider));
+        }
 
         public static bool TryParse(string s, out uint result)
         {

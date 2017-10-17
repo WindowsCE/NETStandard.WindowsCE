@@ -418,7 +418,7 @@ namespace System
                 if (!ParseNumber(ref p, options, ref number, null, info, parseDecimal)
                     || (p - stringPointer < str.Length && !TrailingZeros(str, (int)(p - stringPointer))))
                 {
-                    throw new FormatException("Input string was not in a correct format.");
+                    throw new FormatException(SR.Format_InvalidString);
                 }
             }
         }
@@ -434,6 +434,65 @@ namespace System
             return true;
         }
 
+        internal unsafe static Decimal ParseDecimal(String value, NumberStyles options, NumberFormatInfo numfmt)
+        {
+            fixed (Byte* numberBufferBytes = new Byte[NumberBuffer.NumberBufferBytes])
+            {
+                NumberBuffer number = new NumberBuffer(numberBufferBytes);
+                Decimal result = 0;
+
+                StringToNumber(value, options, ref number, numfmt, true);
+
+                if (!NumberBufferToDecimal(number, ref result))
+                {
+                    throw new OverflowException(SR.Overflow_Decimal);
+                }
+                return result;
+            }
+        }
+
+        internal unsafe static Double ParseDouble(String value, NumberStyles options, NumberFormatInfo numfmt)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
+            fixed (Byte* numberBufferBytes = new Byte[NumberBuffer.NumberBufferBytes])
+            {
+                NumberBuffer number = new NumberBuffer(numberBufferBytes);
+                Double d = 0;
+
+                if (!TryStringToNumber(value, options, ref number, numfmt, false))
+                {
+                    //If we failed TryStringToNumber, it may be from one of our special strings.
+                    //Check the three with which we're concerned and rethrow if it's not one of
+                    //those strings.
+                    String sTrim = value.Trim();
+                    if (sTrim.Equals(numfmt.PositiveInfinitySymbol))
+                    {
+                        return Double.PositiveInfinity;
+                    }
+                    if (sTrim.Equals(numfmt.NegativeInfinitySymbol))
+                    {
+                        return Double.NegativeInfinity;
+                    }
+                    if (sTrim.Equals(numfmt.NaNSymbol))
+                    {
+                        return Double.NaN;
+                    }
+                    throw new FormatException(SR.Format_InvalidString);
+                }
+
+                if (!NumberBufferToDouble(number, ref d))
+                {
+                    throw new OverflowException(SR.Overflow_Double);
+                }
+
+                return d;
+            }
+        }
+
         internal unsafe static Int32 ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
         {
             fixed (byte* numberBufferBytes = new byte[NumberBuffer.NumberBufferBytes])
@@ -446,12 +505,93 @@ namespace System
                 if ((style & NumberStyles.AllowHexSpecifier) != 0)
                 {
                     if (!HexNumberToInt32(ref number, ref i))
-                        throw new OverflowException("Value was either too large or too small for an Int32.");
+                        throw new OverflowException(SR.Overflow_Int32);
                 }
                 else
                 {
                     if (!NumberToInt32(ref number, ref i))
-                        throw new OverflowException("Value was either too large or too small for an Int32.");
+                        throw new OverflowException(SR.Overflow_Int32);
+                }
+                return i;
+            }
+        }
+
+        internal unsafe static Int64 ParseInt64(String value, NumberStyles options, NumberFormatInfo numfmt)
+        {
+            fixed (byte* numberBufferBytes = new byte[NumberBuffer.NumberBufferBytes])
+            {
+                NumberBuffer number = new NumberBuffer(numberBufferBytes);
+                Int64 i = 0;
+
+                StringToNumber(value, options, ref number, numfmt, false);
+
+                if ((options & NumberStyles.AllowHexSpecifier) != 0)
+                {
+                    if (!HexNumberToInt64(ref number, ref i))
+                    {
+                        throw new OverflowException(SR.Overflow_Int64);
+                    }
+                }
+                else
+                {
+                    if (!NumberToInt64(ref number, ref i))
+                    {
+                        throw new OverflowException(SR.Overflow_Int64);
+                    }
+                }
+                return i;
+            }
+        }
+
+        internal unsafe static UInt32 ParseUInt32(String value, NumberStyles options, NumberFormatInfo numfmt)
+        {
+            fixed (Byte* numberBufferBytes = new Byte[NumberBuffer.NumberBufferBytes])
+            {
+                NumberBuffer number = new NumberBuffer(numberBufferBytes);
+                UInt32 i = 0;
+
+                StringToNumber(value, options, ref number, numfmt, false);
+
+                if ((options & NumberStyles.AllowHexSpecifier) != 0)
+                {
+                    if (!HexNumberToUInt32(ref number, ref i))
+                    {
+                        throw new OverflowException(SR.Overflow_UInt32);
+                    }
+                }
+                else
+                {
+                    if (!NumberToUInt32(ref number, ref i))
+                    {
+                        throw new OverflowException(SR.Overflow_UInt32);
+                    }
+                }
+
+                return i;
+            }
+        }
+
+        internal unsafe static UInt64 ParseUInt64(String value, NumberStyles options, NumberFormatInfo numfmt)
+        {
+            fixed (Byte* numberBufferBytes = new Byte[NumberBuffer.NumberBufferBytes])
+            {
+                NumberBuffer number = new NumberBuffer(numberBufferBytes);
+                UInt64 i = 0;
+
+                StringToNumber(value, options, ref number, numfmt, false);
+                if ((options & NumberStyles.AllowHexSpecifier) != 0)
+                {
+                    if (!HexNumberToUInt64(ref number, ref i))
+                    {
+                        throw new OverflowException(SR.Overflow_UInt64);
+                    }
+                }
+                else
+                {
+                    if (!NumberToUInt64(ref number, ref i))
+                    {
+                        throw new OverflowException(SR.Overflow_UInt64);
+                    }
                 }
                 return i;
             }

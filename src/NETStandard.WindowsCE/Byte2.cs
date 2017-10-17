@@ -13,16 +13,42 @@ namespace Mock.System
         public const byte MinValue = byte.MinValue;
 
         public static byte Parse(string s)
-            => byte.Parse(s);
+        {
+            return Parse(s, NumberStyles.Integer, NumberFormatInfo.CurrentInfo);
+        }
 
         public static byte Parse(string s, IFormatProvider provider)
-            => byte.Parse(s, NumberStyles.Integer, provider);
+        {
+            return Parse(s, NumberStyles.Integer, NumberFormatInfo.GetInstance(provider));
+        }
 
         public static byte Parse(string s, NumberStyles style)
-            => byte.Parse(s, style);
+        {
+            NumberFormatInfo2.ValidateParseStyleInteger(style);
+            return Parse(s, style, NumberFormatInfo.CurrentInfo);
+        }
 
         public static byte Parse(string s, NumberStyles style, IFormatProvider provider)
-            => byte.Parse(s, style, provider);
+        {
+            NumberFormatInfo2.ValidateParseStyleInteger(style);
+            return Parse(s, style, NumberFormatInfo.GetInstance(provider));
+        }
+
+        private static byte Parse(String s, NumberStyles style, NumberFormatInfo info)
+        {
+            int i = 0;
+            try
+            {
+                i = Number.ParseInt32(s, style, info);
+            }
+            catch (OverflowException e)
+            {
+                throw new OverflowException(SR.Overflow_Byte, e);
+            }
+
+            if (i < MinValue || i > MaxValue) throw new OverflowException(SR.Overflow_Byte);
+            return (byte)i;
+        }
 
         public static bool TryParse(string s, out byte result)
         {
