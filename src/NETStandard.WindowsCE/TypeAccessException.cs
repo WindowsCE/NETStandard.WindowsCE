@@ -23,10 +23,9 @@ namespace Mock.System
     public class TypeAccessException : TypeLoadException, ISerializable
     {
         private const int COR_E_TYPEACCESS = unchecked((int)0x80131543);
-        private const string Arg_TypeAccessException = "Attempt to access the type failed.";
 
         public TypeAccessException()
-            : base(Arg_TypeAccessException)
+            : base(SR.Arg_TypeAccessException)
         {
             this.SetErrorCode(COR_E_TYPEACCESS);
         }

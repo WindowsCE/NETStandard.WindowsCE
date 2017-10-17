@@ -16,7 +16,6 @@ namespace Mock.System
     [Serializable]
     public sealed class TypeInitializationException : Exception2
     {
-        private const string TypeInitialization_Default = "The type initializer for '{0}' threw an exception.";
         private readonly string _typeName;
 
         public string TypeName
@@ -40,6 +39,6 @@ namespace Mock.System
         }
 
         private static string GetDefaultMessage(string fullTypeName)
-            => string.Format(TypeInitialization_Default, fullTypeName ?? string.Empty);
+            => string.Format(SR.TypeInitialization_Type, fullTypeName ?? string.Empty);
     }
 }

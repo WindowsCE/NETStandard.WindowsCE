@@ -27,7 +27,7 @@ partial class SR
     //public const string Arg_DivideByZero = "Attempted to divide by zero.";
     //public const string Arg_DlgtNullInst = "Delegate to an instance method cannot have null 'this'.";
     //public const string Arg_DlgtTypeMis = "Delegates must be of the same type.";
-    //public const string Arg_DuplicateWaitObjectException = "Duplicate objects in argument.";
+    public const string Arg_DuplicateWaitObjectException = "Duplicate objects in argument.";
     //public const string Arg_EnumAndObjectMustBeSameType = "Object must be the same type as the enum. The type passed in was '{0}'; the enum type was '{1}'.";
     //public const string Arg_EntryPointNotFoundException = "Entry point was not found.";
     //public const string Arg_EntryPointNotFoundExceptionParameterized = "Unable to find an entry point named '{0}' in DLL '{1}'.";
@@ -114,7 +114,7 @@ partial class SR
     //public const string Arg_ThreadStartException = "Thread failed to start.";
     //public const string Arg_ThreadStateException = "Thread was in an invalid state for the operation being executed.";
     //public const string Arg_TimeoutException = "The operation has timed out.";
-    //public const string Arg_TypeAccessException = "Attempt to access the type failed.";
+    public const string Arg_TypeAccessException = "Attempt to access the type failed.";
     //public const string Arg_TypeLoadException = "Failure has occurred while loading a type.";
     //public const string Arg_UnauthorizedAccessException = "Attempted to perform an unauthorized operation.";
     //public const string Arg_VersionString = "Version string portion was too short or too long.";
@@ -421,7 +421,7 @@ partial class SR
     //public const string Threading_WaitHandleCannotBeOpenedException_InvalidHandle = "A WaitHandle with system-wide name '{0}' cannot be created. A WaitHandle of a different type might have the same name.";
     //public const string TimeZoneNotFound_MissingRegistryData = "The time zone ID '{0}' was not found on the local computer.";
     //public const string TypeInitialization_Default = "Type constructor threw an exception.";
-    //public const string TypeInitialization_Type = "The type initializer for '{0}' threw an exception.";
+    public const string TypeInitialization_Type = "The type initializer for '{0}' threw an exception.";
     //public const string TypeInitialization_Type_NoTypeAvailable = "A type initializer threw an exception. To determine which type, inspect the InnerException's StackTrace property.";
     //public const string Verification_Exception = "Operation could destabilize the runtime.";
     //public const string Arg_EnumFormatUnderlyingTypeAndObjectMustBeSameType = "Enum underlying type and the object must be same type or object. Type passed in was '{0}'; the enum underlying type was '{1}'.";

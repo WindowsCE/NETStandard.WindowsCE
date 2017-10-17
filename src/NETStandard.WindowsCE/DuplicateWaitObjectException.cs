@@ -26,19 +26,17 @@ namespace Mock.System
     [Serializable]
     public class DuplicateWaitObjectException : ArgumentException2
     {
-        private const string s_duplicateWaitObjectMessage = "Duplicate objects in argument.";
-
         // Creates a new DuplicateWaitObjectException with its message 
         // string set to a default message.
         public DuplicateWaitObjectException()
-            : base(s_duplicateWaitObjectMessage)
+            : base(SR.Arg_DuplicateWaitObjectException)
         {
             //HResult = HResults.COR_E_DUPLICATEWAITOBJECT;
             HResult = unchecked((int)0x80131529L);
         }
 
         public DuplicateWaitObjectException(string parameterName)
-            : base(s_duplicateWaitObjectMessage, parameterName)
+            : base(SR.Arg_DuplicateWaitObjectException, parameterName)
         {
             //HResult = HResults.COR_E_DUPLICATEWAITOBJECT;
             HResult = unchecked((int)0x80131529L);
