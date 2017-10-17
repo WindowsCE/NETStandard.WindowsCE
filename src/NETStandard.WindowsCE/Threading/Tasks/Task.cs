@@ -1680,10 +1680,24 @@ namespace System.Threading.Tasks
             if (millisecondsDelay == 0)
                 return new Task((Exception)null);
 
-            return Run(() =>
-            {
-                Thread.Sleep(millisecondsDelay);
-            });
+            var state = new DelayTaskState();
+            state.Task = new Task();
+            state.Timer = new Timer(DelayCallback, state, millisecondsDelay, Timeout.Infinite);
+            return state.Task;
+        }
+
+        private static void DelayCallback(object state)
+        {
+            var dts = state as DelayTaskState;
+            var timer = Interlocked.Exchange(ref dts.Timer, null);
+            timer?.Dispose();
+            dts.Task.TrySetCompleted();
+        }
+
+        private sealed class DelayTaskState
+        {
+            public Task Task;
+            public Timer Timer;
         }
 
         #endregion
