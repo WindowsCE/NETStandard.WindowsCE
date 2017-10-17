@@ -3,11 +3,11 @@
   <metadata>
     <id>NETStandard.WindowsCE</id>
     <version>$version$</version>
-    <title>NETStandard compatibility layer for WindowsCE</title>
+    <title>NETStandard implementation on WindowsCE platform</title>
     <authors>Fabricio Godoy</authors>
     <owners>skarllot</owners>
-    <licenseUrl>https://github.com/skarllot/NETStandard.WindowsCE/blob/master/LICENSE.txt</licenseUrl>
-    <projectUrl>https://github.com/skarllot/NETStandard.WindowsCE</projectUrl>
+    <licenseUrl>https://github.com/WindowsCE/NETStandard.WindowsCE/blob/master/LICENSE.txt</licenseUrl>
+    <projectUrl>https://github.com/WindowsCE/NETStandard.WindowsCE</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <copyright>Copyright © Fabrício Godoy</copyright>
     <summary>Library that implements NETStandard specification onto Windows CE platform</summary>
