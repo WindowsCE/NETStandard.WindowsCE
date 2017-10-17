@@ -12,6 +12,13 @@ namespace Mock.System
         public const float MaxValue = float.MaxValue;
         public const float MinValue = float.MinValue;
 
+        public const float Epsilon = float.Epsilon;
+        public const float PositiveInfinity = float.PositiveInfinity;
+        public const float NegativeInfinity = float.NegativeInfinity;
+        public const float NaN = float.NaN;
+
+        internal static float NegativeZero = BitConverter2.Int32BitsToSingle(unchecked((int)0x80000000));
+
         public static bool IsInfinity(float f)
             => float.IsInfinity(f);
 
@@ -25,16 +32,26 @@ namespace Mock.System
             => float.IsPositiveInfinity(f);
 
         public static float Parse(string s)
-            => float.Parse(s);
+        {
+            return Number.ParseSingle(s, NumberStyles.Float | NumberStyles.AllowThousands, NumberFormatInfo.CurrentInfo);
+        }
 
         public static float Parse(string s, IFormatProvider provider)
-            => float.Parse(s, provider);
+        {
+            return Number.ParseSingle(s, NumberStyles.Float | NumberStyles.AllowThousands, NumberFormatInfo.GetInstance(provider));
+        }
 
         public static float Parse(string s, NumberStyles style)
-            => float.Parse(s, style);
+        {
+            NumberFormatInfo2.ValidateParseStyleFloatingPoint(style);
+            return Number.ParseSingle(s, style, NumberFormatInfo.CurrentInfo);
+        }
 
         public static float Parse(string s, NumberStyles style, IFormatProvider provider)
-            => float.Parse(s, style, provider);
+        {
+            NumberFormatInfo2.ValidateParseStyleFloatingPoint(style);
+            return Number.ParseSingle(s, style, NumberFormatInfo.GetInstance(provider));
+        }
 
         public static bool TryParse(string s, NumberStyles style, IFormatProvider provider, out float result)
         {

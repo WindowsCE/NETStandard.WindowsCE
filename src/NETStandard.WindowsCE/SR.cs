@@ -401,7 +401,7 @@ partial class SR
     //public const string Overflow_NegateTwosCompNum = "Negating the minimum value of a twos complement number is invalid.";
     //public const string Overflow_NegativeUnsigned = "The string was being parsed as an unsigned number and could not have a negative sign.";
     public const string Overflow_SByte = "Value was either too large or too small for a signed byte.";
-    //public const string Overflow_Single = "Value was either too large or too small for a Single.";
+    public const string Overflow_Single = "Value was either too large or too small for a Single.";
     //public const string Overflow_TimeSpanTooLong = "TimeSpan overflowed because the duration is too long.";
     public const string Overflow_UInt16 = "Value was either too large or too small for a UInt16.";
     public const string Overflow_UInt32 = "Value was either too large or too small for a UInt32.";

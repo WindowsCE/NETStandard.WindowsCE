@@ -543,6 +543,52 @@ namespace System
             }
         }
 
+        internal unsafe static Single ParseSingle(String value, NumberStyles options, NumberFormatInfo numfmt)
+        {
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
+            fixed (Byte* numberBufferBytes = new Byte[NumberBuffer.NumberBufferBytes])
+            {
+                NumberBuffer number = new NumberBuffer(numberBufferBytes);
+                Double d = 0;
+
+                if (!TryStringToNumber(value, options, ref number, numfmt, false))
+                {
+                    //If we failed TryStringToNumber, it may be from one of our special strings.
+                    //Check the three with which we're concerned and rethrow if it's not one of
+                    //those strings.
+                    String sTrim = value.Trim();
+                    if (sTrim.Equals(numfmt.PositiveInfinitySymbol))
+                    {
+                        return Single.PositiveInfinity;
+                    }
+                    if (sTrim.Equals(numfmt.NegativeInfinitySymbol))
+                    {
+                        return Single.NegativeInfinity;
+                    }
+                    if (sTrim.Equals(numfmt.NaNSymbol))
+                    {
+                        return Single.NaN;
+                    }
+                    throw new FormatException(SR.Format_InvalidString);
+                }
+
+                if (!NumberBufferToDouble(number, ref d))
+                {
+                    throw new OverflowException(SR.Overflow_Single);
+                }
+                Single castSingle = (Single)d;
+                if (Single.IsInfinity(castSingle))
+                {
+                    throw new OverflowException(SR.Overflow_Single);
+                }
+                return castSingle;
+            }
+        }
+
         internal unsafe static UInt32 ParseUInt32(String value, NumberStyles options, NumberFormatInfo numfmt)
         {
             fixed (Byte* numberBufferBytes = new Byte[NumberBuffer.NumberBufferBytes])

@@ -9,6 +9,12 @@ namespace Mock.System
 {
     public static class Decimal2
     {
+        public const Decimal Zero = decimal.Zero;
+        public const Decimal One = decimal.One;
+        public const Decimal MinusOne = decimal.MinusOne;
+        public const Decimal MaxValue = decimal.MaxValue;
+        public const Decimal MinValue = decimal.MinValue;
+
         public static decimal Add(decimal d1, decimal d2)
             => decimal.Add(d1, d2);
 
@@ -37,16 +43,26 @@ namespace Mock.System
             => decimal.Negate(d);
 
         public static decimal Parse(string s)
-            => decimal.Parse(s);
+        {
+            return Number.ParseDecimal(s, NumberStyles.Number, NumberFormatInfo.CurrentInfo);
+        }
 
         public static decimal Parse(string s, IFormatProvider provider)
-            => decimal.Parse(s, provider);
+        {
+            return Number.ParseDecimal(s, NumberStyles.Number, NumberFormatInfo.GetInstance(provider));
+        }
 
         public static decimal Parse(string s, NumberStyles style)
-            => decimal.Parse(s, style);
+        {
+            NumberFormatInfo2.ValidateParseStyleFloatingPoint(style);
+            return Number.ParseDecimal(s, style, NumberFormatInfo.CurrentInfo);
+        }
 
         public static decimal Parse(string s, NumberStyles style, IFormatProvider provider)
-            => decimal.Parse(s, style, provider);
+        {
+            NumberFormatInfo2.ValidateParseStyleFloatingPoint(style);
+            return Number.ParseDecimal(s, style, NumberFormatInfo.GetInstance(provider));
+        }
 
         public static decimal Remainder(decimal d1, decimal d2)
             => decimal.Remainder(d1, d2);
