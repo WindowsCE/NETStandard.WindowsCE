@@ -301,7 +301,7 @@ partial class SR
     //public const string Exception_WasThrown = "Exception of type '{0}' was thrown.";
     //public const string Format_BadBase64Char = "The input is not a valid Base-64 string as it contains a non-base 64 character, more than two padding characters, or an illegal character among the padding characters.";
     //public const string Format_BadBase64CharArrayLength = "Invalid length for a Base-64 char array or string.";
-    //public const string Format_BadBoolean = "String was not recognized as a valid Boolean.";
+    public const string Format_BadBoolean = "String was not recognized as a valid Boolean.";
     //public const string Format_BadFormatSpecifier = "Format specifier was invalid.";
     //public const string Format_BadQuote = "Cannot find a matching quote character for the character '{0}'.";
     //public const string Format_EmptyInputString = "Input string was either empty or contained only whitespace.";
