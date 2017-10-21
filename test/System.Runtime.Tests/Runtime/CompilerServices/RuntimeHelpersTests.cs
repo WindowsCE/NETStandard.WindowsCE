@@ -12,7 +12,7 @@ namespace Tests.Runtime.CompilerServices
     public partial class RuntimeHelpersTests
     {
         [TestMethod]
-#if !NET35_CF
+#if !WindowsCE
         [ExpectedException(typeof(PlatformNotSupportedException))]
 #endif
         public void RuntimeHelpers_GetHashCodeTest()
@@ -50,7 +50,10 @@ namespace Tests.Runtime.CompilerServices
                 return i1 == that.i1 && i2 == that.i2;
             }
 
-            public override int GetHashCode() => i1 ^ i2;
+            public override int GetHashCode()
+            {
+                return i1 ^ i2;
+            }
         }
 
         [TestMethod]
@@ -94,6 +97,9 @@ namespace Tests.Runtime.CompilerServices
         }
 
         [TestMethod]
+#if WindowsCE
+        [ExpectedException(typeof(NotSupportedException))]
+#endif
         public void RuntimeHelpers_RunClassConstructor()
         {
             RuntimeTypeHandle t = typeof(HasCctor).TypeHandle;
@@ -113,26 +119,6 @@ namespace Tests.Runtime.CompilerServices
         internal class HasCctorReceiver
         {
             public static string S;
-        }
-    }
-
-    public struct Age
-    {
-        public int years;
-        public int months;
-    }
-
-    public class FixedClass
-    {
-        [FixedAddressValueType]
-        public static Age FixedAge;
-
-        public static unsafe IntPtr AddressOfFixedAge()
-        {
-            fixed (Age* pointer = &FixedAge)
-            {
-                return (IntPtr)pointer;
-            }
         }
     }
 }

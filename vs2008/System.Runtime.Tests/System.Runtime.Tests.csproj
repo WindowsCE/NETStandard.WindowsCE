@@ -107,6 +107,9 @@
     <Compile Include="..\..\test\System.Runtime.Tests\LazyTestsMS.cs">
       <Link>LazyTestsMS.cs</Link>
     </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\Runtime\CompilerServices\RuntimeHelpersTests.cs">
+      <Link>Runtime\CompilerServices\RuntimeHelpersTests.cs</Link>
+    </Compile>
     <Compile Include="..\..\test\System.Runtime.Tests\Runtime\Serialization\FormatterConverterTests.cs">
       <Link>Runtime\Serialization\FormatterConverterTests.cs</Link>
     </Compile>
