@@ -8,7 +8,7 @@ using InternalOCE = Mock.System.OperationCanceledException;
 
 namespace System.Runtime.CompilerServices
 {
-    public class AsyncTaskMethodBuilder<TResult>
+    public struct AsyncTaskMethodBuilder<TResult>
     {
         Task<TResult> _task;
 
