@@ -11,6 +11,8 @@ namespace Mock.System
 {
     public static class Type2
     {
+        internal const string MSCorLibQualifiedName = "mscorlib, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac";
+
         public static readonly char Delimiter = Type.Delimiter;
         public static readonly Type[] EmptyTypes = new Type[0];
         public static readonly object Missing = Type.Missing;
@@ -45,7 +47,6 @@ namespace Mock.System
             StringComparison cmp = ignoreCase ?
                 StringComparison.OrdinalIgnoreCase :
                 StringComparison.Ordinal;
-
 
             Type[] ifaces = t.GetInterfaces();
             for (int i = 0; i < ifaces.Length; i++)

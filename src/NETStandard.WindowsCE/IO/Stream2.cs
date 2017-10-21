@@ -2,17 +2,24 @@
 using System.Threading;
 using System.Threading.Tasks;
 
+#if !WindowsCE
+using Mock.System;
+#endif
+
 namespace System.IO
 {
     public static class Stream2
     {
-        //public static readonly Stream Null
-        //    = Stream.Null;
+        private static readonly Type HttpReadStreamType = Type.GetType("System.Net.HttpReadStream, " + Type2.MSCorLibQualifiedName, false, false);
+        private static readonly Type HttpWriteStreamType = Type.GetType("System.Net.HttpWriteStream, " + Type2.MSCorLibQualifiedName, false, false);
+        private static readonly Type SerialStreamType = Type.GetType("System.IO.Ports.SerialStream, " + Type2.MSCorLibQualifiedName, false, false);
 
         // We pick a value that is multiple of 4096.
         // The CopyTo/CopyToAsync buffer is short-lived and is likely to be collected at Gen0, and it offers a significant
         // improvement in Copy performance.
-        internal const int DefaultCopyBufferSize = 40960;
+        // The .NET Compact Framework 3.5 GC does not have generations them we should reduce the collect pressure by
+        // reducing this value
+        internal const int DefaultCopyBufferSize = 16384;
 
         public static void CopyTo(this Stream source, Stream destination)
         {
@@ -349,9 +356,17 @@ namespace System.IO
             // These are the types known to implement APM on Compact Framework
             if (stream is Compression.DeflateStream)
                 return true;
-            else if (stream is Compression.GZipStream)
+            if (stream is Compression.GZipStream)
                 return true;
-            else if (stream is Net.Sockets.NetworkStream)
+            if (stream is Net.Sockets.NetworkStream)
+                return true;
+
+            var streamType = stream.GetType();
+            if (HttpReadStreamType.IsAssignableFrom(streamType))
+                return true;
+            if (HttpWriteStreamType.IsAssignableFrom(streamType))
+                return true;
+            if (SerialStreamType.IsAssignableFrom(streamType))
                 return true;
 
             return false;
