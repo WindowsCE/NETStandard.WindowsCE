@@ -19,6 +19,7 @@
     <GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <RootNamespace>System</RootNamespace>
   </PropertyGroup>
 	<PropertyGroup Condition="'$(TargetFramework)' == 'net35-cf'">
 		<TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>

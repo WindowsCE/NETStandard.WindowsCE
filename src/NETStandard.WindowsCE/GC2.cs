@@ -27,10 +27,11 @@ namespace Mock.System
         public static void Collect()
             => GC.Collect();
 
-        [Obsolete(Consts.PlatformNotSupportedDescription)]
         public static void Collect(int generation)
         {
-            throw new PlatformNotSupportedException();
+            // We ignore generation here because the GC of Compact Framework
+            // does not have generations.
+            GC.Collect();
         }
 
         [Obsolete(Consts.PlatformNotSupportedDescription)]

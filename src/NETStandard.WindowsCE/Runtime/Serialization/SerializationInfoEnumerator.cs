@@ -71,7 +71,7 @@ namespace Mock.System.Runtime.Serialization
             {
                 if (m_current == false)
                 {
-                    throw new InvalidOperationException("InvalidOperation_EnumOpCantHappen");
+                    throw new InvalidOperationException(SR.InvalidOperation_EnumOpCantHappen);
                 }
                 return (object)(new SerializationEntry(m_members[m_currItem], m_data[m_currItem], m_types[m_currItem]));
             }
@@ -83,7 +83,7 @@ namespace Mock.System.Runtime.Serialization
             {
                 if (m_current == false)
                 {
-                    throw new InvalidOperationException("InvalidOperation_EnumOpCantHappen");
+                    throw new InvalidOperationException(SR.InvalidOperation_EnumOpCantHappen);
                 }
                 return (new SerializationEntry(m_members[m_currItem], m_data[m_currItem], m_types[m_currItem]));
             }
@@ -101,7 +101,7 @@ namespace Mock.System.Runtime.Serialization
             {
                 if (m_current == false)
                 {
-                    throw new InvalidOperationException("InvalidOperation_EnumOpCantHappen");
+                    throw new InvalidOperationException(SR.InvalidOperation_EnumOpCantHappen);
                 }
                 return m_members[m_currItem];
             }
@@ -112,7 +112,7 @@ namespace Mock.System.Runtime.Serialization
             {
                 if (m_current == false)
                 {
-                    throw new InvalidOperationException("InvalidOperation_EnumOpCantHappen");
+                    throw new InvalidOperationException(SR.InvalidOperation_EnumOpCantHappen);
                 }
                 return m_data[m_currItem];
             }
@@ -123,7 +123,7 @@ namespace Mock.System.Runtime.Serialization
             {
                 if (m_current == false)
                 {
-                    throw new InvalidOperationException("InvalidOperation_EnumOpCantHappen");
+                    throw new InvalidOperationException(SR.InvalidOperation_EnumOpCantHappen);
                 }
                 return m_types[m_currItem];
             }
