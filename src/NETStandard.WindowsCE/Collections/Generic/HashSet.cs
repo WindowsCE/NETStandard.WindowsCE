@@ -431,7 +431,7 @@ namespace Mock.System.Collections.Generic
 
                 if (array == null)
                 {
-                    throw new SerializationException("Some key was missing on serialization");//SR.Serialization_MissingKeys);
+                    throw new SerializationException(SR.Serialization_MissingKeys);
                 }
 
                 // there are no resizes here because we already set capacity above
@@ -969,13 +969,13 @@ namespace Mock.System.Collections.Generic
             // check array index valid index into array
             if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "The array index must be positive");//SR.ArgumentOutOfRange_NeedNonNegNum);
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), SR.ArgumentOutOfRange_NeedNonNegNum);
             }
 
             // also throw if count less than 0
             if (count < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(count), "The couting must be positive");//SR.ArgumentOutOfRange_NeedNonNegNum);
+                throw new ArgumentOutOfRangeException(nameof(count), SR.ArgumentOutOfRange_NeedNonNegNum);
             }
 
             // will array, starting at arrayIndex, be able to hold elements? Note: not
@@ -983,7 +983,7 @@ namespace Mock.System.Collections.Generic
             // count of 0; subsequent check takes care of the rest)
             if (arrayIndex > array.Length || count > array.Length - arrayIndex)
             {
-                throw new ArgumentException("Array is too small to copy elements");//SR.Arg_ArrayPlusOffTooSmall);
+                throw new ArgumentException(SR.Arg_ArrayPlusOffTooSmall);
             }
 
             int numCopied = 0;
@@ -1757,7 +1757,7 @@ namespace Mock.System.Collections.Generic
             {
                 if (_version != _set._version)
                 {
-                    throw new InvalidOperationException("The collection was changed while enumerating");//SR.InvalidOperation_EnumFailedVersion);
+                    throw new InvalidOperationException(SR.InvalidOperation_EnumFailedVersion);
                 }
 
                 while (_index < _set._lastIndex)
@@ -1789,7 +1789,7 @@ namespace Mock.System.Collections.Generic
                 {
                     if (_index == 0 || _index == _set._lastIndex + 1)
                     {
-                        throw new InvalidOperationException("Enumeration was not initialized");//SR.InvalidOperation_EnumOpCantHappen);
+                        throw new InvalidOperationException(SR.InvalidOperation_EnumOpCantHappen);
                     }
                     return Current;
                 }
@@ -1799,7 +1799,7 @@ namespace Mock.System.Collections.Generic
             {
                 if (_version != _set._version)
                 {
-                    throw new InvalidOperationException("The collection was changed while enumerating");//SR.InvalidOperation_EnumFailedVersion);
+                    throw new InvalidOperationException(SR.InvalidOperation_EnumFailedVersion);
                 }
 
                 _index = 0;

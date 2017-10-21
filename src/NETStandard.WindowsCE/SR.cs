@@ -10,7 +10,7 @@ partial class SR
     //public const string Arg_ArgumentException = "Value does not fall within the expected range.";
     //public const string Arg_ArgumentOutOfRangeException = "Specified argument was out of the range of valid values.";
     //public const string Arg_ArithmeticException = "Overflow or underflow in the arithmetic operation.";
-    //public const string Arg_ArrayPlusOffTooSmall = "Destination array is not long enough to copy all the items in the collection. Check array index and length.";
+    public const string Arg_ArrayPlusOffTooSmall = "Destination array is not long enough to copy all the items in the collection. Check array index and length.";
     //public const string Arg_ArrayTypeMismatchException = "Attempted to access an element as a type incompatible with the array.";
     //public const string Arg_ArrayZeroError = "Array must not be of length zero.";
     //public const string Arg_BadImageFormatException = "Format of the executable (.exe) or library (.dll) is invalid.";
@@ -180,7 +180,7 @@ partial class SR
     //public const string Argument_InvalidNeutralRegionName = "The region name {0} should not correspond to neutral culture; a specific culture name is required.";
     //public const string Argument_InvalidNormalizationForm = "Invalid normalization form.";
     public const string Argument_InvalidNumberStyles = "An undefined NumberStyles value is being used.";
-    //public const string Argument_InvalidOffLen = "Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.";
+    public const string Argument_InvalidOffLen = "Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.";
     //public const string Argument_InvalidPathChars = "Illegal characters in path.";
     //public const string Argument_InvalidREG_TZI_FORMAT = "The REG_TZI_FORMAT structure is corrupt.";
     //public const string Argument_InvalidResourceCultureName = "The given culture name '{0}' cannot be used to locate a resource file. Resource filenames must consist of only letters, numbers, hyphens or underscores.";
@@ -201,8 +201,8 @@ partial class SR
     public const string ArgumentOutOfRange_Index = "Index was out of range. Must be non-negative and less than the size of the collection.";
     //public const string ArgumentOutOfRange_Length = "The specified length exceeds maximum capacity of SecureString.";
     //public const string ArgumentOutOfRange_LengthTooLarge = "The specified length exceeds the maximum value of {0}.";
-    //public const string ArgumentOutOfRange_NeedNonNegNum = "Non-negative number required.";
-    //public const string ArgumentOutOfRange_NeedNonNegNumRequired = "Non-negative number required.";
+    public const string ArgumentOutOfRange_NeedNonNegNum = "Non-negative number required.";
+    public const string ArgumentOutOfRange_NeedNonNegNumRequired = "Non-negative number required.";
     //public const string Argument_PathFormatNotSupported = "The given path's format is not supported.";
     //public const string Argument_RecursiveFallback = "Recursive fallback not allowed for character \\\\u{0:X4}.";
     //public const string Argument_RecursiveFallbackBytes = "Recursive fallback not allowed for bytes {0}.";
@@ -332,9 +332,9 @@ partial class SR
     //public const string InvalidOperation_Calling = "WinRT Interop has already been initialized and cannot be initialized again.";
     //public const string InvalidOperation_DateTimeParsing = "Internal Error in DateTime and Calendar operations.";
     //public const string InvalidOperation_EnumEnded = "Enumeration already finished.";
-    //public const string InvalidOperation_EnumFailedVersion = "Collection was modified; enumeration operation may not execute.";
+    public const string InvalidOperation_EnumFailedVersion = "Collection was modified; enumeration operation may not execute.";
     //public const string InvalidOperation_EnumNotStarted = "Enumeration has not started. Call MoveNext.";
-    //public const string InvalidOperation_EnumOpCantHappen = "Enumeration has either not started or has already finished.";
+    public const string InvalidOperation_EnumOpCantHappen = "Enumeration has either not started or has already finished.";
     //public const string InvalidOperation_HandleIsNotInitialized = "Handle is not initialized.";
     //public const string InvalidOperation_IComparerFailed = "Failed to compare two elements in the array.";
     //public const string InvalidOperation_NoValue = "Nullable object must have a value.";
@@ -590,7 +590,7 @@ partial class SR
     //public const string UnauthorizedAccess_RegistryKeyGeneric_Key = "Access to the registry key '{0}' is denied.";
     //public const string UnknownError_Num = "Unknown error '{0}'.";
     //public const string Argument_NeedStructWithNoRefs = "The specified Type must be a struct containing no references.";
-    //public const string ArgumentNull_Buffer = "Buffer cannot be null.";
+    public const string ArgumentNull_Buffer = "Buffer cannot be null.";
     //public const string ArgumentOutOfRange_AddressSpace = "The number of bytes cannot exceed the virtual address space on a 32 bit machine.";
     //public const string ArgumentOutOfRange_UIntPtrMaxMinusOne = "The length of the buffer must be less than the maximum UIntPtr value for your platform.";
     //public const string Arg_BufferTooSmall = "Not enough space available in the buffer.";
@@ -655,7 +655,7 @@ partial class SR
     //public const string BadImageFormat_InvalidType = "Corrupt .resources file.  The specified type doesn't exist.";
     //public const string ResourceReaderIsClosed = "ResourceReader is closed.";
     //public const string Arg_MissingManifestResourceException = "Unable to find manifest resource.";
-    //public const string Serialization_MissingKeys = "The keys for this dictionary are missing.";
+    public const string Serialization_MissingKeys = "The keys for this dictionary are missing.";
     //public const string Serialization_NullKey = "One of the serialized keys is null.";
     //public const string NotSupported_KeyCollectionSet = "Mutating a key collection derived from a dictionary is not allowed.";
     //public const string NotSupported_ValueCollectionSet = "Mutating a value collection derived from a dictionary is not allowed.";
