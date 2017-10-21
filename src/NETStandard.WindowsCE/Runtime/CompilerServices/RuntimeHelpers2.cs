@@ -26,9 +26,6 @@ namespace System.Runtime.CompilerServices
 
         public static int GetHashCode(object o)
         {
-            if (o == null)
-                throw new ArgumentNullException(nameof(o));
-
             if (_IdentityHashCode == null)
                 throw new PlatformNotSupportedException();
 
@@ -42,16 +39,16 @@ namespace System.Runtime.CompilerServices
             => RuntimeHelpers.InitializeArray(array, fldHandle);
 
         // TODO: Improve for real usage
-        public static void RunClassConstructor(RuntimeTypeHandle type)
+        public static void RunClassConstructor(RuntimeTypeHandle typeHandle)
         {
             const BindingFlags flags =
                 BindingFlags.Instance |
                 BindingFlags.Public |
                 BindingFlags.NonPublic;
 
-            var ctType = type.GetType();
-            var ctor = ctType.GetConstructor(flags, null, new Type[0], null);
-            ctType = null;
+            var type = Type.GetTypeFromHandle(typeHandle);
+            var ctor = type.GetConstructor(flags, null, new Type[0], null);
+            type = null;
 
             ctor.Invoke(new object[0]);
             ctor = null;
