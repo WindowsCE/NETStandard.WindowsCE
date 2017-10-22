@@ -5,49 +5,62 @@ namespace System.IO
 {
     public abstract class AsyncStream : Stream
     {
-        public void CopyTo(Stream destination)
+        private readonly StreamCopyTo copyToExternal;
+        private readonly StreamCopyToWithCustomBufferSize copyToWithCustomBufferSizeExternal;
+        private readonly StreamCopyToAsync copyToAsyncExternal;
+        private readonly StreamCopyToAsyncWithCustomBufferSize copyToAsyncWithCustomBufferSizeExternal;
+        private readonly StreamFlushAsync flushAsyncExternal;
+        private readonly StreamReadAsync readAsyncExternal;
+        private readonly StreamWriteAsync writeAsyncExternal;
+
+        protected AsyncStream()
         {
-            int bufferSize = Stream2.ResolveBufferSize(this);
-            CopyTo(destination, bufferSize);
+            var factory = new StreamNativeAsyncFactory(this, false);
+            flushAsyncExternal = factory.CreateFlushAsyncMethod();
+            readAsyncExternal = factory.CreateReadAsyncMethod();
+            writeAsyncExternal = factory.CreateWriteAsyncMethod();
+
+            var copyToFactory = new StreamCopyToFactory(this, factory);
+            copyToExternal = copyToFactory.CreateStreamCopyToMethod();
+            copyToWithCustomBufferSizeExternal = copyToFactory.CreateStreamCopyToWithCustomBufferSizeMethod();
+            copyToAsyncExternal = copyToFactory.CreateStreamCopyToAsyncMethod();
+            copyToAsyncWithCustomBufferSizeExternal = copyToFactory.CreateStreamCopyToAsyncWithCustomBufferSizeMethod();
         }
+
+        public void CopyTo(Stream destination)
+            => copyToExternal(destination);
 
         public virtual void CopyTo(Stream destination, int bufferSize)
-        {
-            Stream2.ValidateCopyToArgs(this, destination, bufferSize);
-            Stream2.CopyToInternal(this, destination, bufferSize);
-        }
+            => copyToWithCustomBufferSizeExternal(destination, bufferSize);
 
         public Task CopyToAsync(Stream destination)
-        {
-            int bufferSize = Stream2.ResolveBufferSize(this);
-            return CopyToAsync(destination, bufferSize, default(CancellationToken));
-        }
+            => copyToAsyncExternal(destination);
+
+        public Task CopyToAsync(Stream destination, CancellationToken cancellationToken)
+            => copyToAsyncExternal(destination, cancellationToken);
 
         public Task CopyToAsync(Stream destination, int bufferSize)
-            => CopyToAsync(destination, bufferSize, default(CancellationToken));
+            => copyToAsyncWithCustomBufferSizeExternal(destination, bufferSize);
 
         public virtual Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
-        {
-            Stream2.ValidateCopyToArgs(this, destination, bufferSize);
-            return Stream2.CopyToInternalAsync(this, destination, bufferSize, cancellationToken);
-        }
+            => copyToAsyncWithCustomBufferSizeExternal(destination, bufferSize, cancellationToken);
 
         public Task FlushAsync()
-            => FlushAsync(default(CancellationToken));
+            => flushAsyncExternal();
 
         public virtual Task FlushAsync(CancellationToken cancellationToken)
-            => Stream2.FlushAsyncInternal(this, cancellationToken);
+            => flushAsyncExternal(cancellationToken);
 
         public Task<int> ReadAsync(byte[] buffer, int offset, int count)
-            => ReadAsync(buffer, offset, count, default(CancellationToken));
+            => readAsyncExternal(buffer, offset, count);
 
         public virtual Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
-            => Stream2.ReadAsyncInternal(this, buffer, offset, count, cancellationToken);
+            => readAsyncExternal(buffer, offset, count, cancellationToken);
 
         public Task WriteAsync(byte[] buffer, int offset, int count)
-            => WriteAsync(buffer, offset, count, default(CancellationToken));
+            => writeAsyncExternal(buffer, offset, count);
 
         public virtual Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
-            => Stream2.WriteAsyncInternal(this, buffer, offset, count, cancellationToken);
+            => writeAsyncExternal(buffer, offset, count, cancellationToken);
     }
 }
