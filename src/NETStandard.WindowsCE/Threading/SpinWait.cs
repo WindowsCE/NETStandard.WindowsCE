@@ -199,7 +199,7 @@ namespace System.Threading
             if (totalMilliseconds < -1 || totalMilliseconds > int.MaxValue)
             {
                 throw new ArgumentOutOfRangeException(
-                    "timeout", Properties.Resources.SpinWait_SpinUntil_TimeoutWrong);
+                    "timeout", SR.SpinWait_SpinUntil_TimeoutWrong);
             }
 
             // Call wait with the timeout milliseconds
@@ -221,7 +221,7 @@ namespace System.Threading
             if (millisecondsTimeout < Timeout.Infinite)
             {
                 throw new ArgumentOutOfRangeException(
-                   "millisecondsTimeout", Properties.Resources.SpinWait_SpinUntil_TimeoutWrong);
+                   "millisecondsTimeout", SR.SpinWait_SpinUntil_TimeoutWrong);
             }
             if (condition == null)
             {

@@ -297,7 +297,7 @@ namespace System.Collections.ObjectModel
                 // invalid for later listeners.  This keeps existing code working
                 // (e.g. Selector.SelectedItems).
                 if (CollectionChanged?.GetInvocationList().Length > 1)
-                    throw new InvalidOperationException(Properties.Resources.ObservableCollectionReentrancyNotAllowed);
+                    throw new InvalidOperationException(SR.ObservableCollectionReentrancyNotAllowed);
             }
         }
 

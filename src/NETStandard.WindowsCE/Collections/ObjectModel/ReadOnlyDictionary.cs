@@ -99,12 +99,12 @@ namespace System.Collections.ObjectModel
 
         void IDictionary<TKey, TValue>.Add(TKey key, TValue value)
         {
-            throw new NotSupportedException(Properties.Resources.NotSupported_ReadOnlyCollection);
+            throw new NotSupportedException(SR.NotSupported_ReadOnlyCollection);
         }
 
         bool IDictionary<TKey, TValue>.Remove(TKey key)
         {
-            throw new NotSupportedException(Properties.Resources.NotSupported_ReadOnlyCollection);
+            throw new NotSupportedException(SR.NotSupported_ReadOnlyCollection);
         }
 
         TValue IDictionary<TKey, TValue>.this[TKey key]
@@ -115,7 +115,7 @@ namespace System.Collections.ObjectModel
             }
             set
             {
-                throw new NotSupportedException(Properties.Resources.NotSupported_ReadOnlyCollection);
+                throw new NotSupportedException(SR.NotSupported_ReadOnlyCollection);
             }
         }
 
@@ -145,17 +145,17 @@ namespace System.Collections.ObjectModel
 
         void ICollection<KeyValuePair<TKey, TValue>>.Add(KeyValuePair<TKey, TValue> item)
         {
-            throw new NotSupportedException(Properties.Resources.NotSupported_ReadOnlyCollection);
+            throw new NotSupportedException(SR.NotSupported_ReadOnlyCollection);
         }
 
         void ICollection<KeyValuePair<TKey, TValue>>.Clear()
         {
-            throw new NotSupportedException(Properties.Resources.NotSupported_ReadOnlyCollection);
+            throw new NotSupportedException(SR.NotSupported_ReadOnlyCollection);
         }
 
         bool ICollection<KeyValuePair<TKey, TValue>>.Remove(KeyValuePair<TKey, TValue> item)
         {
-            throw new NotSupportedException(Properties.Resources.NotSupported_ReadOnlyCollection);
+            throw new NotSupportedException(SR.NotSupported_ReadOnlyCollection);
         }
 
         #endregion
@@ -191,12 +191,12 @@ namespace System.Collections.ObjectModel
 
         void IDictionary.Add(object key, object value)
         {
-            throw new NotSupportedException(Properties.Resources.NotSupported_ReadOnlyCollection);
+            throw new NotSupportedException(SR.NotSupported_ReadOnlyCollection);
         }
 
         void IDictionary.Clear()
         {
-            throw new NotSupportedException(Properties.Resources.NotSupported_ReadOnlyCollection);
+            throw new NotSupportedException(SR.NotSupported_ReadOnlyCollection);
         }
 
         bool IDictionary.Contains(object key)
@@ -234,7 +234,7 @@ namespace System.Collections.ObjectModel
 
         void IDictionary.Remove(object key)
         {
-            throw new NotSupportedException(Properties.Resources.NotSupported_ReadOnlyCollection);
+            throw new NotSupportedException(SR.NotSupported_ReadOnlyCollection);
         }
 
         ICollection IDictionary.Values
@@ -257,7 +257,7 @@ namespace System.Collections.ObjectModel
             }
             set
             {
-                throw new NotSupportedException(Properties.Resources.NotSupported_ReadOnlyCollection);
+                throw new NotSupportedException(SR.NotSupported_ReadOnlyCollection);
             }
         }
 
@@ -270,22 +270,22 @@ namespace System.Collections.ObjectModel
 
             if (array.Rank != 1)
             {
-                throw new ArgumentException(Properties.Resources.Arg_RankMultiDimNotSupported);
+                throw new ArgumentException(SR.Arg_RankMultiDimNotSupported);
             }
 
             if (array.GetLowerBound(0) != 0)
             {
-                throw new ArgumentException(Properties.Resources.Arg_NonZeroLowerBound);
+                throw new ArgumentException(SR.Arg_NonZeroLowerBound);
             }
 
             if (index < 0 || index > array.Length)
             {
-                throw new ArgumentOutOfRangeException(nameof(index), Properties.Resources.ArgumentOutOfRange_NeedNonNegNum);
+                throw new ArgumentOutOfRangeException(nameof(index), SR.ArgumentOutOfRange_NeedNonNegNum);
             }
 
             if (array.Length - index < Count)
             {
-                throw new ArgumentException(Properties.Resources.Arg_ArrayPlusOffTooSmall);
+                throw new ArgumentException(SR.Arg_ArrayPlusOffTooSmall);
             }
 
             KeyValuePair<TKey, TValue>[] pairs = array as KeyValuePair<TKey, TValue>[];
@@ -308,7 +308,7 @@ namespace System.Collections.ObjectModel
                     object[] objects = array as object[];
                     if (objects == null)
                     {
-                        throw new ArgumentException(Properties.Resources.Argument_InvalidArrayType);
+                        throw new ArgumentException(SR.Argument_InvalidArrayType);
                     }
 
                     try
@@ -320,7 +320,7 @@ namespace System.Collections.ObjectModel
                     }
                     catch (ArrayTypeMismatchException)
                     {
-                        throw new ArgumentException(Properties.Resources.Argument_InvalidArrayType);
+                        throw new ArgumentException(SR.Argument_InvalidArrayType);
                     }
                 }
             }
@@ -436,12 +436,12 @@ namespace System.Collections.ObjectModel
 
             void ICollection<TKey>.Add(TKey item)
             {
-                throw new NotSupportedException(Properties.Resources.NotSupported_ReadOnlyCollection);
+                throw new NotSupportedException(SR.NotSupported_ReadOnlyCollection);
             }
 
             void ICollection<TKey>.Clear()
             {
-                throw new NotSupportedException(Properties.Resources.NotSupported_ReadOnlyCollection);
+                throw new NotSupportedException(SR.NotSupported_ReadOnlyCollection);
             }
 
             bool ICollection<TKey>.Contains(TKey item)
@@ -466,7 +466,7 @@ namespace System.Collections.ObjectModel
 
             bool ICollection<TKey>.Remove(TKey item)
             {
-                throw new NotSupportedException(Properties.Resources.NotSupported_ReadOnlyCollection);
+                throw new NotSupportedException(SR.NotSupported_ReadOnlyCollection);
             }
 
             #endregion
@@ -544,12 +544,12 @@ namespace System.Collections.ObjectModel
 
             void ICollection<TValue>.Add(TValue item)
             {
-                throw new NotSupportedException(Properties.Resources.NotSupported_ReadOnlyCollection);
+                throw new NotSupportedException(SR.NotSupported_ReadOnlyCollection);
             }
 
             void ICollection<TValue>.Clear()
             {
-                throw new NotSupportedException(Properties.Resources.NotSupported_ReadOnlyCollection);
+                throw new NotSupportedException(SR.NotSupported_ReadOnlyCollection);
             }
 
             bool ICollection<TValue>.Contains(TValue item)
@@ -574,7 +574,7 @@ namespace System.Collections.ObjectModel
 
             bool ICollection<TValue>.Remove(TValue item)
             {
-                throw new NotSupportedException(Properties.Resources.NotSupported_ReadOnlyCollection);
+                throw new NotSupportedException(SR.NotSupported_ReadOnlyCollection);
             }
 
             #endregion
@@ -647,22 +647,22 @@ namespace System.Collections.ObjectModel
 
             if (array.Rank != 1)
             {
-                throw new ArgumentException(Properties.Resources.Arg_RankMultiDimNotSupported);
+                throw new ArgumentException(SR.Arg_RankMultiDimNotSupported);
             }
 
             if (array.GetLowerBound(0) != 0)
             {
-                throw new ArgumentException(Properties.Resources.Arg_NonZeroLowerBound);
+                throw new ArgumentException(SR.Arg_NonZeroLowerBound);
             }
 
             if (index < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(index), Properties.Resources.ArgumentOutOfRange_NeedNonNegNum);
+                throw new ArgumentOutOfRangeException(nameof(index), SR.ArgumentOutOfRange_NeedNonNegNum);
             }
 
             if (array.Length - index < collection.Count)
             {
-                throw new ArgumentException(Properties.Resources.Arg_ArrayPlusOffTooSmall);
+                throw new ArgumentException(SR.Arg_ArrayPlusOffTooSmall);
             }
 
             // Easy out if the ICollection<T> implements the non-generic ICollection
@@ -703,7 +703,7 @@ namespace System.Collections.ObjectModel
                 object[] objects = array as object[];
                 if (objects == null)
                 {
-                    throw new ArgumentException(Properties.Resources.Argument_InvalidArrayType);
+                    throw new ArgumentException(SR.Argument_InvalidArrayType);
                 }
 
                 try
@@ -715,7 +715,7 @@ namespace System.Collections.ObjectModel
                 }
                 catch (ArrayTypeMismatchException)
                 {
-                    throw new ArgumentException(Properties.Resources.Argument_InvalidArrayType);
+                    throw new ArgumentException(SR.Argument_InvalidArrayType);
                 }
             }
         }

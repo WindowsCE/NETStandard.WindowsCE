@@ -29,7 +29,7 @@ namespace System
         /// Initializes a new instance of the <see cref="AggregateException"/> class.
         /// </summary>
         public AggregateException()
-            : base(Properties.Resources.AggregateException_ctor_DefaultMessage)
+            : base(SR.AggregateException_ctor_DefaultMessage)
         {
             m_innerExceptions = new ReadOnlyCollection<Exception>(new Exception[0]);
         }
@@ -72,7 +72,7 @@ namespace System
         /// <exception cref="T:System.ArgumentException">An element of <paramref name="innerExceptions"/> is
         /// null.</exception>
         public AggregateException(IEnumerable<Exception> innerExceptions)
-            : this(Properties.Resources.AggregateException_ctor_DefaultMessage, innerExceptions)
+            : this(SR.AggregateException_ctor_DefaultMessage, innerExceptions)
         { }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace System
         /// <exception cref="T:System.ArgumentException">An element of <paramref name="innerExceptions"/> is
         /// null.</exception>
         public AggregateException(params Exception[] innerExceptions)
-            : this(Properties.Resources.AggregateException_ctor_DefaultMessage, innerExceptions)
+            : this(SR.AggregateException_ctor_DefaultMessage, innerExceptions)
         { }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace System
                 exceptionsCopy[i] = innerExceptions[i];
 
                 if (exceptionsCopy[i] == null)
-                    throw new ArgumentException(Properties.Resources.AggregateException_ctor_InnerExceptionNull);
+                    throw new ArgumentException(SR.AggregateException_ctor_InnerExceptionNull);
             }
 
             m_innerExceptions = new ReadOnlyCollection<Exception>(exceptionsCopy);
@@ -173,7 +173,7 @@ namespace System
 
             Exception[] innerExceptions = info.GetValue("InnerExceptions", typeof(Exception[])) as Exception[];
             if (innerExceptions == null)
-                throw new SerializationException(Properties.Resources.AggregateException_DeserializationFailure);
+                throw new SerializationException(SR.AggregateException_DeserializationFailure);
 
             m_innerExceptions = new ReadOnlyCollection<Exception>(innerExceptions);
         }
@@ -361,7 +361,7 @@ namespace System
             {
                 text = String.Format(
                     CultureInfo.InvariantCulture,
-                    Properties.Resources.AggregateException_ToString,
+                    SR.AggregateException_ToString,
                     text, Environment.NewLine, i, m_innerExceptions[i].ToString(), "<---", Environment.NewLine);
             }
 
