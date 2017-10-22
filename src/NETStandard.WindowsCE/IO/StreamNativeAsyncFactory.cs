@@ -78,6 +78,7 @@ namespace System.IO
                 return true;
 
             // TODO: Very expensive to call on loop
+#if WindowsCE
             var streamType = stream.GetType();
             if (HttpReadStreamType.IsAssignableFrom(streamType))
                 return true;
@@ -85,6 +86,7 @@ namespace System.IO
                 return true;
             if (SerialStreamType.IsAssignableFrom(streamType))
                 return true;
+#endif
 
             return false;
         }

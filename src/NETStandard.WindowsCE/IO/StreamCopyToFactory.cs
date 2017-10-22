@@ -88,7 +88,7 @@ namespace System.IO
             int bufferSize = GetCopyBufferSize(source);
             ValidateCopyToArgs(source, destination, bufferSize);
 
-            return CopyToAsync(destination, bufferSize, cancellationToken);
+            return CopyToAsyncInternal(destination, bufferSize, cancellationToken);
         }
 
         private Task CopyToAsync(Stream destination, Int32 bufferSize, CancellationToken cancellationToken)
