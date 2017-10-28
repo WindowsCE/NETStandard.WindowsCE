@@ -1,13 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CFF33A7E-D3D2-4F7D-BAAF-82882477E893}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A73F9B3F-3DD5-4548-B00B-732A1BFA32D5}"
 	ProjectSection(SolutionItems) = preProject
 		NETStandard.WindowsCE.nuspec = NETStandard.WindowsCE.nuspec
+		README.md = README.md
 		References.txt = References.txt
 	EndProjectSection
 EndProject
