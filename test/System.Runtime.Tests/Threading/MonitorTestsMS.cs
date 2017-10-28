@@ -271,10 +271,12 @@ namespace Tests
 
             Monitor.Enter(obj);
             t.Start();
+            int counter = 0;
             foreach (var waitTest in waitTests)
             {
-                Assert.IsTrue(waitTest());
+                Assert.IsTrue(waitTest(), "#" + counter.ToString());
                 Monitor.Pulse(obj);
+                counter++;
             }
             Monitor.Exit(obj);
         }

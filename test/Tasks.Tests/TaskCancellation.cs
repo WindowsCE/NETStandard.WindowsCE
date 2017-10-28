@@ -158,28 +158,28 @@ namespace Tests
                     var result = false;
                     var thrown = false;
 
-                    var task = Task.Factory.StartNew(() => evt.WaitOne(100));
+                    var task = Task.Factory.StartNew(() => { Assert.IsTrue(evt.WaitOne(2000), "#1"); });
                     // TODO: Create TaskContinuationOptions
                     //var cont = task.ContinueWith(t => result = true, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
                     var cont = task.ContinueWith(t => result = true, token);
 
                     source.Cancel();
                     evt.Set();
-                    task.Wait(100);
+                    Assert.IsTrue(task.Wait(2000), "#2");
                     try
                     {
-                        cont.Wait(100);
+                        Assert.IsFalse(cont.Wait(4000), "#3");
                     }
-                    catch (Exception ex)
+                    catch (AggregateException ex)
                     {
                         GC.KeepAlive(ex);
                         thrown = true;
                     }
 
-                    Assert.IsTrue(task.IsCompleted);
-                    Assert.IsTrue(cont.IsCanceled);
-                    Assert.IsFalse(result);
-                    Assert.IsTrue(thrown);
+                    Assert.IsTrue(task.IsCompleted, "#4");
+                    Assert.IsTrue(cont.IsCanceled, "#5");
+                    Assert.IsFalse(result, "#6");
+                    Assert.IsTrue(thrown, "#7");
                 }
             }
         }
