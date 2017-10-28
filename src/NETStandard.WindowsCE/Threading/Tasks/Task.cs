@@ -1652,10 +1652,27 @@ namespace System.Threading.Tasks
         /// </remarks>
         public static Task Delay(TimeSpan delay)
         {
+            return Delay(delay, default(CancellationToken));
+        }
+
+        /// <summary>
+        /// Creates a Task that will complete after a time delay.
+        /// </summary>
+        /// <param name="delay">The time span to wait before completing the returned Task</param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        /// <returns>A Task that represents the time delay</returns>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// The <paramref name="delay"/> is less than -1 or greater than Int32.MaxValue.
+        /// </exception>
+        /// <remarks>
+        /// After the specified time delay, the Task is completed in RanToCompletion state.
+        /// </remarks>
+        public static Task Delay(TimeSpan delay, CancellationToken cancellationToken)
+        {
             long totalMilliseconds = (long)delay.TotalMilliseconds;
             if (totalMilliseconds < -1 || totalMilliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("delay");
+                throw new ArgumentOutOfRangeException(nameof(delay));
             }
 
             return Delay((int)totalMilliseconds);
@@ -1674,30 +1691,42 @@ namespace System.Threading.Tasks
         /// </remarks>
         public static Task Delay(int millisecondsDelay)
         {
+            return Delay(millisecondsDelay, default(CancellationToken));
+        }
+
+        /// <summary>
+        /// Creates a Task that will complete after a time delay.
+        /// </summary>
+        /// <param name="millisecondsDelay">The number of milliseconds to wait before completing the returned Task</param>
+        /// <param name="cancellationToken">The cancellation token that will be checked prior to completing the returned task.</param>
+        /// <returns>A Task that represents the time delay</returns>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// The <paramref name="millisecondsDelay"/> is less than -1.
+        /// </exception>
+        /// <remarks>
+        /// After the specified time delay, the Task is completed in RanToCompletion state.
+        /// </remarks>
+        public static Task Delay(int millisecondsDelay, CancellationToken cancellationToken)
+        {
             if (millisecondsDelay < -1)
-                throw new ArgumentOutOfRangeException("millisecondsDelay");
-
+                throw new ArgumentOutOfRangeException(nameof(millisecondsDelay));
+            if (cancellationToken.IsCancellationRequested)
+                return new Task((Exception)null, cancellationToken);
             if (millisecondsDelay == 0)
-                return new Task((Exception)null);
+                return CompletedTask;
 
-            var state = new DelayTaskState();
-            state.Task = new Task();
-            state.Timer = new Timer(DelayCallback, state, millisecondsDelay, Timeout.Infinite);
-            return state.Task;
-        }
+            var promise = new DelayPromise(cancellationToken);
+            if (cancellationToken.CanBeCanceled)
+            {
+                promise.Registration = cancellationToken.Register(state => ((DelayPromise)state).Complete(), promise, false);
+            }
 
-        private static void DelayCallback(object state)
-        {
-            var dts = state as DelayTaskState;
-            var timer = Interlocked.Exchange(ref dts.Timer, null);
-            timer?.Dispose();
-            dts.Task.TrySetCompleted();
-        }
+            if (millisecondsDelay != -1)
+            {
+                promise.Timer = new Timer(state => ((DelayPromise)state).Complete(), promise, millisecondsDelay, Timeout.Infinite);
+            }
 
-        private sealed class DelayTaskState
-        {
-            public Task Task;
-            public Timer Timer;
+            return promise;
         }
 
         #endregion
@@ -1962,6 +1991,36 @@ namespace System.Threading.Tasks
         #endregion
 
         #region Promises
+
+        private sealed class DelayPromise : Task
+        {
+            public CancellationTokenRegistration Registration;
+            public Timer Timer;
+
+            public DelayPromise(CancellationToken cancellationToken)
+            {
+                m_cancellationToken = cancellationToken;
+            }
+
+            public void Complete()
+            {
+                bool flag;
+                if (m_cancellationToken.IsCancellationRequested)
+                {
+                    flag = TrySetCanceled(m_cancellationToken);
+                }
+                else
+                {
+                    flag = TrySetCompleted();
+                }
+
+                if (!flag)
+                    return;
+
+                Timer?.Dispose();
+                Registration.Dispose();
+            }
+        }
 
         private sealed class WhenAllPromise : Task
         {
