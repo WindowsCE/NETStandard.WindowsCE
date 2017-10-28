@@ -241,30 +241,6 @@ namespace Tests
         }
 
         /// <summary>
-        /// A test for EndWait
-        /// </summary>
-        [TestMethod]
-        public void Future_EndWaitTest()
-        {
-            Exception ex = new ArgumentNullException("none");
-            Func<int> action = () => { throw ex; };
-            Task<int> target = new Task<int>(action);
-            target.Start();
-            var ar = target.BeginWait(null, null);
-
-            bool throwException = false;
-            try { target.EndWait(ar); }
-            catch (AggregateException)
-            {
-                throwException = true;
-            }
-
-            Assert.IsTrue(throwException);
-            Assert.AreEqual(1, target.Exception.InnerExceptions.Count);
-            Assert.IsTrue(target.Exception.InnerExceptions[0] is ArgumentNullException);
-        }
-
-        /// <summary>
         /// A test for Dispose
         /// </summary>
         [TestMethod]
@@ -309,25 +285,6 @@ namespace Tests
             Assert.IsTrue(target.IsCompleted);
             Assert.IsTrue(target2.IsCompleted);
             Assert.AreEqual(3, value);
-        }
-
-        /// <summary>
-        /// A test for BeginWait
-        /// </summary>
-        [TestMethod]
-        public void Future_BeginWaitTest()
-        {
-            int counter = 0;
-            Func<int> action = () => Interlocked.Increment(ref counter);
-            Task<int> target = new Task<int>(action);
-            target.Start();
-            target.BeginWait(ar =>
-            {
-                target.EndWait(ar);
-                Assert.AreEqual(1, counter);
-                Assert.IsNull(target.Exception);
-            }, null);
-            target.Wait();
         }
 
         /// <summary>
