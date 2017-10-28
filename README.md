@@ -42,7 +42,7 @@ namespace Tests
 }
 ```
 
-## How not Supported API are marked
+## How not supported API are marked
 
 The API that is not supported on Microsoft Windows CE platform throw `PlatformNotSupportedException` exception when called
 and are marked as deprecated using `ObsoleteAttribute` attribute.
