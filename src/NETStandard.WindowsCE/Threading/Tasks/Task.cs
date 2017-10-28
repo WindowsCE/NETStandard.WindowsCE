@@ -1721,7 +1721,7 @@ namespace System.Threading.Tasks
                 promise.Registration = cancellationToken.Register(state => ((DelayPromise)state).Complete(), promise, false);
             }
 
-            if (millisecondsDelay != -1)
+            if (millisecondsDelay != Timeout.Infinite)
             {
                 promise.Timer = new Timer(state => ((DelayPromise)state).Complete(), promise, millisecondsDelay, Timeout.Infinite);
             }
@@ -1999,6 +1999,7 @@ namespace System.Threading.Tasks
 
             public DelayPromise(CancellationToken cancellationToken)
             {
+                _stateFlags = TASK_STATE_WAITINGFORACTIVATION;
                 m_cancellationToken = cancellationToken;
             }
 

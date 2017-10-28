@@ -78,6 +78,7 @@
     <Compile Include="SynchronizationContextTests.cs" />
     <Compile Include="TaskBasicTests.cs" />
     <Compile Include="TaskCancellation.cs" />
+    <Compile Include="TaskDelayTests.cs" />
     <Compile Include="TaskMembersTests.cs" />
     <Compile Include="UnwrapTests.cs" />
     <Compile Include="WaitHandleTests.cs" />
