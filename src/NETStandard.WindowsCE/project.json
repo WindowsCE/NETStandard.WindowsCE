@@ -23,6 +23,11 @@
         "mscorlib": "",
         "System": "",
         "System.Core": ""
+      },
+      "buildOptions": {
+        "define": [
+          "WindowsCE"
+        ]
       }
     },
     "net35-client": {
