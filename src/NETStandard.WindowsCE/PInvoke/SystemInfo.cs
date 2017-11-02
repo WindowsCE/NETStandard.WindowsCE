@@ -1,9 +1,8 @@
-﻿#if DEBUG
-// Ref: https://opennetcf.codeplex.com/
+﻿// Ref: https://opennetcf.codeplex.com/
 
-namespace Internal
+namespace System.PInvoke
 {
-#pragma warning disable 0649
+#pragma warning disable CS0649
     /// <summary>
     /// This structure contains information about the current computer system. This includes the processor type, page size, memory addresses, and OEM identifier.
     /// </summary>
@@ -53,6 +52,5 @@ namespace Internal
         /// </summary>
         public short ProcessorRevision;
     }
-#pragma warning restore 0649
+#pragma warning restore CS0649
 }
-#endif

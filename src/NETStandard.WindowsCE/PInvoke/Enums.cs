@@ -1,8 +1,7 @@
-#if DEBUG
 // Ref: https://opennetcf.codeplex.com/
 using System;
 
-namespace Internal
+namespace System.PInvoke
 {
     /// <summary>
     /// Defines for the current Stdio Stream
@@ -471,4 +470,3 @@ namespace Internal
     }
 
 }
-#endif

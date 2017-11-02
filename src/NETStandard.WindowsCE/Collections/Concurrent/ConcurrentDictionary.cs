@@ -1828,7 +1828,7 @@ namespace Mock.System.Collections.Concurrent
         /// </summary>
         private static int DefaultConcurrencyLevel
         {
-            get { return DEFAULT_CONCURRENCY_MULTIPLIER * FrameworkTraits.PlatformHelper.ProcessorCount; }
+            get { return DEFAULT_CONCURRENCY_MULTIPLIER * Environment2.ProcessorCount; }
         }
 
         /// <summary>

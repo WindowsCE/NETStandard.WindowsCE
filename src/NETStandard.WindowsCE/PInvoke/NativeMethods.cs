@@ -1,11 +1,10 @@
-#if DEBUG
 // Ref: https://opennetcf.codeplex.com/
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Runtime.InteropServices;
 
-namespace Internal
+namespace System.PInvoke
 {
 #pragma warning disable 0649
     internal static class NativeMethods
@@ -239,10 +238,10 @@ namespace Internal
         [DllImport("coredll.dll", SetLastError = true)]
         internal static extern int SetSystemPowerState(IntPtr psState, PowerStateFlags flags, uint Options);
 
-        [DllImport("coredll.dll", SetLastError = true)]
+        [DllImport("coredll.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         internal static extern int SetSystemPowerState(string psState, PowerStateFlags flags, uint Options);
 
-        [DllImport("coredll.dll", SetLastError = true)]
+        [DllImport("coredll.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         internal static extern int GetSystemPowerState(string pBuffer, uint dwBufChars, ref uint pdwFlags);
 
         [DllImport("coredll.dll", SetLastError = true)]
@@ -251,7 +250,7 @@ namespace Internal
         [DllImport("coredll.dll", SetLastError = true)]
         internal static extern void TouchCalibrate();
 
-        [DllImport("coredll.dll", EntryPoint = "CeRunAppAtEvent", SetLastError = true)]
+        [DllImport("coredll.dll", EntryPoint = "CeRunAppAtEvent", SetLastError = true, CharSet = CharSet.Unicode)]
         internal static extern bool CeRunAppAtEvent(string pwszAppName, NotificationEvent lWhichEvent);
 
         [DllImport("coredll.dll", SetLastError = true)]
@@ -260,10 +259,10 @@ namespace Internal
         [DllImport("coredll.dll", SetLastError = true)]
         public static extern bool StopPowerNotifications(IntPtr hNotifHandle);
 
-        [DllImport("coredll.dll", SetLastError = true)]
+        [DllImport("coredll.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int GetStdioPath(StdIoStream id, StringBuilder pwszBuf, int lpdwLength);
 
-        [DllImport("coredll.dll", SetLastError = true)]
+        [DllImport("coredll.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern int SetStdioPath(StdIoStream id, string pwszPath);
 
         [DllImport("coredll.dll", SetLastError = true)]
@@ -534,4 +533,3 @@ namespace Internal
     }
 #pragma warning restore 0649
 }
-#endif
