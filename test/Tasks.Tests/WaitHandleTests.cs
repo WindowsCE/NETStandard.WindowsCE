@@ -113,6 +113,7 @@ namespace Tests
             AssertExtensions.Throws<ObjectDisposedException>(() => wh.WaitOne(0));
         }
 
+#if !WindowsCE
         [TestMethod]
         public void WaitHandle_CloseVirtual_ThroughDispose()
         {
@@ -120,10 +121,18 @@ namespace Tests
             wh.Close();
             Assert.IsTrue(wh.WasExplicitlyDisposed);
         }
+#endif
 
+#if WindowsCE
+        private partial class TestWaitHandle : EventWaitHandle
+#else
         private partial class TestWaitHandle : NativeWaitHandle
+#endif
         {
             public TestWaitHandle()
+#if WindowsCE
+                : base(false, EventResetMode.ManualReset)
+#endif
             {
                 WasExplicitlyDisposed = false;
             }
@@ -172,7 +181,11 @@ namespace Tests
         }
 #endif
 
+#if WindowsCE
+        private partial class TestWaitHandle : EventWaitHandle
+#else
         private partial class TestWaitHandle : NativeWaitHandle
+#endif
         {
 #pragma warning disable 0618 // 'WaitHandle.Handle' is obsolete: 'Use the SafeWaitHandle property instead.'
             public void ClearHandle()
