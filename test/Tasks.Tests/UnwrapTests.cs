@@ -10,7 +10,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-#if NET35_CF
+#if WindowsCE
 using InternalOCE = System.OperationCanceledException;
 #else
 using InternalOCE = Mock.System.OperationCanceledException;

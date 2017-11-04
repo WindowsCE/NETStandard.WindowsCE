@@ -88,6 +88,7 @@ namespace Tests
 
         //[TestMethod]
         //[PlatformSpecific(TestPlatforms.Windows)] // names aren't supported on Unix
+#if !WindowsCE  // names aren't supported on Windows CE either
         public void WaitHandle_WaitAll_SameNames()
         {
             Mutex[] wh = new Mutex[2];
@@ -96,6 +97,7 @@ namespace Tests
 
             AssertExtensions.Throws<ArgumentException>(null, () => WaitHandle.WaitAll(wh));
         }
+#endif
 
         [TestMethod]
         public void WaitHandle_WaitTimeout()
@@ -121,7 +123,12 @@ namespace Tests
 
         private partial class TestWaitHandle : NativeWaitHandle
         {
-            public bool WasExplicitlyDisposed { get; private set; } = false;
+            public TestWaitHandle()
+            {
+                WasExplicitlyDisposed = false;
+            }
+
+            public bool WasExplicitlyDisposed { get; private set; }
 
             protected override void Dispose(bool explicitDisposing)
             {
@@ -149,6 +156,7 @@ namespace Tests
         }
 #pragma warning restore 0618 // 'WaitHandle.Handle' is obsolete: 'Use the SafeWaitHandle property instead.'
 
+#if !WindowsCE
         [TestMethod]
         public void WaitHandle_SafeWaitHandle()
         {
@@ -162,6 +170,7 @@ namespace Tests
             testWaitHandle.SafeWaitHandle = null;
             AssertExtensions.Throws<ObjectDisposedException>(() => testWaitHandle.WaitOne(0));
         }
+#endif
 
         private partial class TestWaitHandle : NativeWaitHandle
         {
