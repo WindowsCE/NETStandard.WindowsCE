@@ -9,6 +9,15 @@ namespace System.IO
 {
     public static class Stream2
     {
+        public static AsyncStream ConvertToAsync(this Stream stream)
+        {
+            AsyncStream asyncStream = stream as AsyncStream;
+            if (asyncStream != null)
+                return asyncStream;
+
+            return new AsyncStreamWrapper(stream);
+        }
+
         public static void CopyTo(this Stream source, Stream destination)
         {
             var copyTo = new StreamCopyToFactory(source, false).CreateStreamCopyToMethod();

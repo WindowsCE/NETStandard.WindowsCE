@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Runtime.InteropServices;
 
 #if NET35_CF
 using HashSetOfInt32 = System.Collections.Generic.HashSet<int>;

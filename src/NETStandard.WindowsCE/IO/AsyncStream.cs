@@ -5,62 +5,80 @@ namespace System.IO
 {
     public abstract class AsyncStream : Stream
     {
-        private readonly StreamCopyTo copyToExternal;
-        private readonly StreamCopyToWithCustomBufferSize copyToWithCustomBufferSizeExternal;
-        private readonly StreamCopyToAsync copyToAsyncExternal;
-        private readonly StreamCopyToAsyncWithCustomBufferSize copyToAsyncWithCustomBufferSizeExternal;
-        private readonly StreamFlushAsync flushAsyncExternal;
-        private readonly StreamReadAsync readAsyncExternal;
-        private readonly StreamWriteAsync writeAsyncExternal;
+        private readonly ContingentAsyncMethods externalAsyncMethods;
 
         protected AsyncStream()
         {
-            var factory = new StreamNativeAsyncFactory(this, false);
-            flushAsyncExternal = factory.CreateFlushAsyncMethod();
-            readAsyncExternal = factory.CreateReadAsyncMethod();
-            writeAsyncExternal = factory.CreateWriteAsyncMethod();
+            this.externalAsyncMethods = new ContingentAsyncMethods(this);
+        }
 
-            var copyToFactory = new StreamCopyToFactory(this, factory);
-            copyToExternal = copyToFactory.CreateStreamCopyToMethod();
-            copyToWithCustomBufferSizeExternal = copyToFactory.CreateStreamCopyToWithCustomBufferSizeMethod();
-            copyToAsyncExternal = copyToFactory.CreateStreamCopyToAsyncMethod();
-            copyToAsyncWithCustomBufferSizeExternal = copyToFactory.CreateStreamCopyToAsyncWithCustomBufferSizeMethod();
+        internal AsyncStream(Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+
+            this.externalAsyncMethods = new ContingentAsyncMethods(stream);
         }
 
         public void CopyTo(Stream destination)
-            => copyToExternal(destination);
+            => externalAsyncMethods.copyTo(destination);
 
         public virtual void CopyTo(Stream destination, int bufferSize)
-            => copyToWithCustomBufferSizeExternal(destination, bufferSize);
+            => externalAsyncMethods.copyToWithCustomBufferSize(destination, bufferSize);
 
         public Task CopyToAsync(Stream destination)
-            => copyToAsyncExternal(destination);
+            => externalAsyncMethods.copyToAsync(destination);
 
         public Task CopyToAsync(Stream destination, CancellationToken cancellationToken)
-            => copyToAsyncExternal(destination, cancellationToken);
+            => externalAsyncMethods.copyToAsync(destination, cancellationToken);
 
         public Task CopyToAsync(Stream destination, int bufferSize)
-            => copyToAsyncWithCustomBufferSizeExternal(destination, bufferSize);
+            => externalAsyncMethods.copyToAsyncWithCustomBufferSize(destination, bufferSize);
 
         public virtual Task CopyToAsync(Stream destination, int bufferSize, CancellationToken cancellationToken)
-            => copyToAsyncWithCustomBufferSizeExternal(destination, bufferSize, cancellationToken);
+            => externalAsyncMethods.copyToAsyncWithCustomBufferSize(destination, bufferSize, cancellationToken);
 
         public Task FlushAsync()
-            => flushAsyncExternal();
+            => externalAsyncMethods.flushAsync();
 
         public virtual Task FlushAsync(CancellationToken cancellationToken)
-            => flushAsyncExternal(cancellationToken);
+            => externalAsyncMethods.flushAsync(cancellationToken);
 
         public Task<int> ReadAsync(byte[] buffer, int offset, int count)
-            => readAsyncExternal(buffer, offset, count);
+            => externalAsyncMethods.readAsync(buffer, offset, count);
 
         public virtual Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
-            => readAsyncExternal(buffer, offset, count, cancellationToken);
+            => externalAsyncMethods.readAsync(buffer, offset, count, cancellationToken);
 
         public Task WriteAsync(byte[] buffer, int offset, int count)
-            => writeAsyncExternal(buffer, offset, count);
+            => externalAsyncMethods.writeAsync(buffer, offset, count);
 
         public virtual Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
-            => writeAsyncExternal(buffer, offset, count, cancellationToken);
+            => externalAsyncMethods.writeAsync(buffer, offset, count, cancellationToken);
+
+        internal sealed class ContingentAsyncMethods
+        {
+            public readonly StreamCopyTo copyTo;
+            public readonly StreamCopyToWithCustomBufferSize copyToWithCustomBufferSize;
+            public readonly StreamCopyToAsync copyToAsync;
+            public readonly StreamCopyToAsyncWithCustomBufferSize copyToAsyncWithCustomBufferSize;
+            public readonly StreamFlushAsync flushAsync;
+            public readonly StreamReadAsync readAsync;
+            public readonly StreamWriteAsync writeAsync;
+
+            public ContingentAsyncMethods(Stream stream)
+            {
+                var factory = new StreamNativeAsyncFactory(stream, false);
+                flushAsync = factory.CreateFlushAsyncMethod();
+                readAsync = factory.CreateReadAsyncMethod();
+                writeAsync = factory.CreateWriteAsyncMethod();
+
+                var copyToFactory = new StreamCopyToFactory(stream, factory);
+                copyTo = copyToFactory.CreateStreamCopyToMethod();
+                copyToWithCustomBufferSize = copyToFactory.CreateStreamCopyToWithCustomBufferSizeMethod();
+                copyToAsync = copyToFactory.CreateStreamCopyToAsyncMethod();
+                copyToAsyncWithCustomBufferSize = copyToFactory.CreateStreamCopyToAsyncWithCustomBufferSizeMethod();
+            }
+        }
     }
 }
