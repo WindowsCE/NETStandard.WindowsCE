@@ -23,6 +23,20 @@ namespace System.Threading
         private const uint WaitInfinite = 0xFFFFFFFF;
         private const uint WaitFailed = 0xFFFFFFFF;
 
+        public static bool WaitOne(this WaitHandle handle, TimeSpan timeout)
+        {
+            long totalMilliseconds = (long)timeout.TotalMilliseconds;
+            if (totalMilliseconds < -1 || totalMilliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException(nameof(timeout));
+            }
+
+            return handle.WaitOne((int)totalMilliseconds, false);
+        }
+
+        public static bool WaitOne(this WaitHandle handle, int millisecondsTimeout)
+            => handle.WaitOne(millisecondsTimeout, false);
+
         #region WaitAll
 
         /// <summary>
