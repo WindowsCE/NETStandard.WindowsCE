@@ -98,9 +98,6 @@ namespace System.Threading
         /// </exception>
         public static bool WaitAll(WaitHandle[] waitHandles, int millisecondsTimeout)
         {
-            Stopwatch timeTrack = new Stopwatch();
-            timeTrack.Start();
-
             if (waitHandles == null)
                 throw new ArgumentNullException("waitHandles");
             if (waitHandles.Length == 0)
@@ -110,13 +107,24 @@ namespace System.Threading
             if (millisecondsTimeout < Timeout.Infinite)
                 throw new ArgumentOutOfRangeException("millisecondsTimeout");
 
+            Stopwatch timeTrack = new Stopwatch();
+            timeTrack.Start();
+
             ValidateHandles(waitHandles, true);
 
             foreach (var w in waitHandles)
             {
-                int remainderTimeMs = millisecondsTimeout - (int)timeTrack.ElapsedMilliseconds;
-                if (remainderTimeMs < 0)
-                    remainderTimeMs = 0;
+                int remainderTimeMs;
+                if (millisecondsTimeout == Timeout.Infinite)
+                {
+                    remainderTimeMs = Timeout.Infinite;
+                }
+                else
+                {
+                    remainderTimeMs = millisecondsTimeout - (int)timeTrack.ElapsedMilliseconds;
+                    if (remainderTimeMs < 0)
+                        remainderTimeMs = 0;
+                }
 
                 bool isSignaled = w.WaitOne(remainderTimeMs, false);
                 if (!isSignaled)
@@ -250,31 +258,51 @@ namespace System.Threading
             if (millisecondsTimeout < Timeout.Infinite)
                 throw new ArgumentOutOfRangeException("millisecondsTimeout");
 
+            Stopwatch timeTrack = new Stopwatch();
+            timeTrack.Start();
+
             ValidateHandles(waitHandles, false);
 
-            uint dwMilliseconds;
-            if (millisecondsTimeout == Timeout.Infinite)
-                dwMilliseconds = WaitInfinite;
-            else
-                dwMilliseconds = (uint)millisecondsTimeout;
-
-            IntPtr[] lpHandles = new IntPtr[waitHandles.Length];
-            for (int i = 0; i < lpHandles.Length; i++)
+            int index = 0;
+            int maxIndex = waitHandles.Length;
+            int singleWaitTimeout = 0;
+            int doubleThreshold = 100;
+            while (true)
             {
-#pragma warning disable 0618    // Obsolete
-                lpHandles[i] = waitHandles[i].Handle;
-#pragma warning restore 0618
+                int elapsedMs = (int)timeTrack.ElapsedMilliseconds;
+                int remainderMs = Timeout.Infinite;
+                if (millisecondsTimeout != Timeout.Infinite)
+                {
+                    if (elapsedMs > millisecondsTimeout)
+                        return WaitTimeout;
+
+                    remainderMs = millisecondsTimeout - elapsedMs;
+                }
+
+                if (elapsedMs >= doubleThreshold)
+                {
+                    if (singleWaitTimeout == 0)
+                        singleWaitTimeout = 1;
+                    else
+                        singleWaitTimeout *= 2;
+
+                    doubleThreshold *= 2;
+                }
+
+                if (remainderMs != Timeout.Infinite &&
+                    singleWaitTimeout > remainderMs)
+                {
+                    singleWaitTimeout = remainderMs;
+                }
+
+                bool isSignaled = waitHandles[index].WaitOne(singleWaitTimeout, false);
+                if (isSignaled)
+                    return index;
+
+                index++;
+                if (index == maxIndex)
+                    index = 0;
             }
-
-            uint result = WaitForMultipleObjects((uint)lpHandles.Length, lpHandles, false, dwMilliseconds);
-
-            if (result == WaitFailed)
-            {
-                int lastError = Marshal.GetLastWin32Error();
-                throw new ComponentModel.Win32Exception(lastError);
-            }
-
-            return (int)result;
         }
 
         /// <summary>
@@ -352,13 +380,5 @@ namespace System.Threading
                 dups.TrimExcess();
             }
         }
-
-#if NET35_CF
-        [DllImport("coredll.dll", EntryPoint = "WaitForMultipleObjects", SetLastError = true)]
-        static extern uint WaitForMultipleObjects(uint nCount, IntPtr[] lpHandles, bool fWaitAll, uint dwMilliseconds);
-#else
-        [DllImport("kernel32.dll", EntryPoint = "WaitForMultipleObjects", SetLastError = true)]
-        static extern uint WaitForMultipleObjects(uint nCount, IntPtr[] lpHandles, bool fWaitAll, uint dwMilliseconds);
-#endif
     }
 }

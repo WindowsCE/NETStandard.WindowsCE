@@ -14,7 +14,7 @@ namespace Tests
     public partial class WaitHandleTests
     {
         [TestMethod]
-        public void WaitOne()
+        public void WaitHandle_WaitOne()
         {
             ManualResetEvent h = new ManualResetEvent(true);
 
@@ -29,7 +29,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void WaitAny()
+        public void WaitHandle_WaitAny()
         {
             var handles = new ManualResetEvent[] {
                 new ManualResetEvent(false),
@@ -48,7 +48,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void WaitAny_SameHandles()
+        public void WaitHandle_WaitAny_SameHandles()
         {
             ManualResetEvent[] wh = new ManualResetEvent[2];
             wh[0] = new ManualResetEvent(true);
@@ -58,7 +58,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void WaitAll()
+        public void WaitHandle_WaitAll()
         {
             var handles = new ManualResetEvent[] {
                 new ManualResetEvent(true),
@@ -77,7 +77,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void WaitAll_SameHandles()
+        public void WaitHandle_WaitAll_SameHandles()
         {
             ManualResetEvent[] wh = new ManualResetEvent[2];
             wh[0] = new ManualResetEvent(true);
@@ -88,7 +88,7 @@ namespace Tests
 
         //[TestMethod]
         //[PlatformSpecific(TestPlatforms.Windows)] // names aren't supported on Unix
-        public void WaitAll_SameNames()
+        public void WaitHandle_WaitAll_SameNames()
         {
             Mutex[] wh = new Mutex[2];
             wh[0] = new Mutex(false, "test");
@@ -98,13 +98,13 @@ namespace Tests
         }
 
         [TestMethod]
-        public void WaitTimeout()
+        public void WaitHandle_WaitTimeout()
         {
             Assert.AreEqual(WaitHandle.WaitTimeout, WaitHandle.WaitAny(new[] { new ManualResetEvent(false) }, 0));
         }
 
         [TestMethod]
-        public void Close()
+        public void WaitHandle_Close()
         {
             var wh = new ManualResetEvent(false);
             wh.Close();
@@ -112,7 +112,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void CloseVirtual_ThroughDispose()
+        public void WaitHandle_CloseVirtual_ThroughDispose()
         {
             var wh = new TestWaitHandle();
             wh.Close();
@@ -135,7 +135,7 @@ namespace Tests
 
 #pragma warning disable 0618 // 'WaitHandle.Handle' is obsolete: 'Use the SafeWaitHandle property instead.'
         [TestMethod]
-        public void Handle()
+        public void WaitHandle_Handle()
         {
             var eventWaitHandle = new ManualResetEvent(false);
             var eventRawWaitHandle = eventWaitHandle.Handle;
@@ -150,7 +150,7 @@ namespace Tests
 #pragma warning restore 0618 // 'WaitHandle.Handle' is obsolete: 'Use the SafeWaitHandle property instead.'
 
         [TestMethod]
-        public void SafeWaitHandle()
+        public void WaitHandle_SafeWaitHandle()
         {
             var eventWaitHandle = new ManualResetEvent(false);
             var eventSafeWaitHandle = eventWaitHandle.SafeWaitHandle;
