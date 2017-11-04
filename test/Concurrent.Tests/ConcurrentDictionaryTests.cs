@@ -2,10 +2,15 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Mock.System.Collections.Concurrent;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+
+#if WindowsCE
+using System.Collections.Concurrent;
+#else
+using Mock.System.Collections.Concurrent;
+#endif
 
 namespace Tests
 {

@@ -1,10 +1,14 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Mock.System.Collections.Concurrent;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using static Tests.ConcurrentDictionaryTests;
+
+#if WindowsCE
+using System.Collections.Concurrent;
+#else
+using Mock.System.Collections.Concurrent;
+#endif
 
 namespace Tests
 {
