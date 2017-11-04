@@ -18,6 +18,17 @@ namespace Tests
             TaskContinueExceptionTestAsync().Wait();
         }
 
+#if WindowsCE
+        private Task TaskContinueExceptionTestAsync()
+        {
+            return Task.Factory
+                .StartNew(() => { throw new Exception(ExceptionMessage); })
+                .ContinueWith(t =>
+                {
+                    Assert.IsTrue(t.IsFaulted);
+                });
+        }
+#else
         private async Task TaskContinueExceptionTestAsync()
         {
             var task = Task.Factory
@@ -28,6 +39,7 @@ namespace Tests
                 });
             await task;
         }
+#endif
 
         [TestMethod]
         [ExpectedException(typeof(AggregateException))]
@@ -67,6 +79,23 @@ namespace Tests
             TaskAwaitCreatedTestAsync().Wait();
         }
 
+#if WindowsCE
+        private Task TaskAwaitCreatedTestAsync()
+        {
+            int counter = 0;
+            var task = new Task(() => Interlocked.Increment(ref counter));
+            return Task.WhenAny(task, Task.Delay(Timeout))
+                .ContinueWith(t =>
+                {
+                    var result = ((Task<Task>)t).Result;
+                    if (result == task)
+                        Assert.Fail("Awaiting for task should not start it");
+
+                    Assert.AreEqual(0, counter);
+                    Assert.AreEqual(TaskStatus.Created, task.Status);
+                });
+        }
+#else
         private async Task TaskAwaitCreatedTestAsync()
         {
             int counter = 0;
@@ -77,6 +106,7 @@ namespace Tests
             Assert.AreEqual(0, counter);
             Assert.AreEqual(TaskStatus.Created, task.Status);
         }
+#endif
 
         [TestMethod]
         public void TaskWaitCreatedTest()

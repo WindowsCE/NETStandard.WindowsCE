@@ -193,7 +193,7 @@ namespace Tests
             Func<int> action = () => Interlocked.Increment(ref counter);
             Task<int> target = new Task<int>(action);
             PrivateObject pvTarget = new PrivateObject(target);
-            pvTarget.Invoke("TaskStartAction", new object[] { null });
+            pvTarget.Invoke("TaskStartAction", new[] { typeof(object) }, new object[] { null });
             Assert.AreEqual(1, counter);
         }
 
