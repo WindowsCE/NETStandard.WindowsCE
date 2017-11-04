@@ -259,44 +259,43 @@ namespace Tests
             }
         }
 
-        // TODO: Implement CountdownEvent
-        //[TestMethod]
-        //public void CancellationTokenSource_ConcurrentCancelLinkedTokenSourceWhileDisposing()
-        //{
-        //    ParallelTestHelper.Repeat(delegate
-        //    {
-        //        using (var src = new CancellationTokenSource())
-        //        {
-        //            var linked = CancellationTokenSource.CreateLinkedTokenSource(src.Token);
-        //            using (var cntd = new CountdownEvent(2))
-        //            {
-        //                var t1 = new Thread(() =>
-        //                {
-        //                    if (!cntd.Signal())
-        //                    {
-        //                        cntd.Wait(200);
-        //                    }
+        [TestMethod]
+        public void CancellationTokenSource_ConcurrentCancelLinkedTokenSourceWhileDisposing()
+        {
+            ParallelTestHelper.Repeat(delegate
+            {
+                using (var src = new CancellationTokenSource())
+                {
+                    var linked = CancellationTokenSource.CreateLinkedTokenSource(src.Token);
+                    using (var cntd = new CountdownEvent(2))
+                    {
+                        var t1 = new Thread(() =>
+                        {
+                            if (!cntd.Signal())
+                            {
+                                cntd.Wait(200);
+                            }
 
-        //                    src.Cancel();
-        //                });
-        //                var t2 = new Thread(() =>
-        //                {
-        //                    if (!cntd.Signal())
-        //                    {
-        //                        cntd.Wait(200);
-        //                    }
+                            src.Cancel();
+                        });
+                        var t2 = new Thread(() =>
+                        {
+                            if (!cntd.Signal())
+                            {
+                                cntd.Wait(200);
+                            }
 
-        //                    linked.Dispose();
-        //                });
+                            linked.Dispose();
+                        });
 
-        //                t1.Start();
-        //                t2.Start();
-        //                t1.Join(500);
-        //                t2.Join(500);
-        //            }
-        //        }
-        //    }, 500);
-        //}
+                        t1.Start();
+                        t2.Start();
+                        t1.Join(500);
+                        t2.Join(500);
+                    }
+                }
+            }, 500);
+        }
 
         [TestMethod]
         public void CancellationTokenSource_CreateLinkedTokenSource()

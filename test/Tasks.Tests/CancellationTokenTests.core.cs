@@ -8,7 +8,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+
+#if !WindowsCE
 using OperationCanceledException = Mock.System.OperationCanceledException;
+#endif
 
 namespace Tests
 {
@@ -377,7 +380,7 @@ namespace Tests
             CancellationToken tokenNoSource = new CancellationToken();
             tokenSource.Cancel();
 
-            WaitHandle.WaitAny(new[] { token.WaitHandle, tokenNoSource.WaitHandle }); //make sure the dummy tokens has a valid WaitHanle
+            WaitHandle2.WaitAny(new[] { token.WaitHandle, tokenNoSource.WaitHandle }); //make sure the dummy tokens has a valid WaitHanle
             Assert.IsTrue(token.IsCancellationRequested,
                "CancellationTokenWaitHandle_WaitAny:  The token should have been canceled.");
         }
@@ -496,7 +499,7 @@ namespace Tests
 
             Task t = new Task(() =>
             {
-                WaitHandle.WaitAll(new WaitHandle[] { tokenSource.Token.WaitHandle, signal2.Token.WaitHandle, mre });
+                WaitHandle2.WaitAll(new WaitHandle[] { tokenSource.Token.WaitHandle, signal2.Token.WaitHandle, mre });
                 mre2.Set();
             });
 
@@ -563,7 +566,7 @@ namespace Tests
             });
 
             mre_CancelHasBeenEnacted.WaitOne();
-            Assert.IsNull(wrongException, $"Cancel_ThrowOnFirstException:  The wrong exception type was thrown. ex={wrongException}");
+            Assert.IsNull(wrongException, string.Format("Cancel_ThrowOnFirstException:  The wrong exception type was thrown. ex={0}", wrongException));
             Assert.IsNotNull(caughtException);
         }
 

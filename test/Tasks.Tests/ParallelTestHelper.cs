@@ -9,7 +9,7 @@ namespace Tests
 
         public static void ParallelStressTest<TSource>(TSource obj, Action<TSource> action)
         {
-            ParallelStressTest(obj, action, Environment.ProcessorCount + 2);
+            ParallelStressTest(obj, action, Environment2.ProcessorCount + 2);
         }
 
         public static void ParallelStressTest<TSource>(TSource obj, Action<TSource> action, int numThread)

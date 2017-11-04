@@ -52,12 +52,19 @@
       <HintPath>C:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE\PublicAssemblies\Microsoft.VisualStudio.SmartDevice.UnitTestFramework.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib" />
+    <Reference Include="NETStandard.WindowsCE, Version=1.0.0.0, Culture=neutral, PublicKeyToken=961e8a38a128a442, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\NETStandard.WindowsCE.Debug\NETStandard.WindowsCE.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\test\Common.Tests\AssertExtensions.cs">
       <Link>AssertExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\Common.Tests\ThreadTestHelpers.cs">
+      <Link>ThreadTestHelpers.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

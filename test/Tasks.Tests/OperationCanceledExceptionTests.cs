@@ -5,7 +5,10 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading;
+
+#if !WindowsCE
 using OperationCanceledException = Mock.System.OperationCanceledException;
+#endif
 
 namespace Tests
 {

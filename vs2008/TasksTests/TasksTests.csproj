@@ -60,8 +60,38 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\test\Tasks.Tests\AggregateExceptionTests.cs">
+      <Link>AggregateExceptionTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\Tasks.Tests\CancellationTokenSourceTest.cs">
+      <Link>CancellationTokenSourceTest.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\Tasks.Tests\CancellationTokenTests.core.cs">
+      <Link>CancellationTokenTests.core.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\Tasks.Tests\CancellationTokenTests.cs">
+      <Link>CancellationTokenTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\Tasks.Tests\ContinueWithTests.cs">
+      <Link>ContinueWithTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\Tasks.Tests\CountdownEventTests.cs">
+      <Link>CountdownEventTests.cs</Link>
+    </Compile>
     <Compile Include="..\..\test\Tasks.Tests\FutureMembersTests.cs">
       <Link>FutureMembersTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\Tasks.Tests\ManualResetEventSlimTests.cs">
+      <Link>ManualResetEventSlimTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\Tasks.Tests\OperationCanceledExceptionTests.cs">
+      <Link>OperationCanceledExceptionTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\Tasks.Tests\ParallelTestHelper.cs">
+      <Link>ParallelTestHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\Tasks.Tests\SynchronizationContextTests.cs">
+      <Link>SynchronizationContextTests.cs</Link>
     </Compile>
     <Compile Include="..\..\test\Tasks.Tests\TaskBasicTests.cs">
       <Link>TaskBasicTests.cs</Link>

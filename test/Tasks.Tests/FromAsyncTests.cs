@@ -118,10 +118,14 @@ namespace Tests
             volatile int sendCount = 0;
 
             public int PostCount
-                => postCount;
+            {
+                get{return postCount;}
+            }
 
             public int SendCount
-                => sendCount;
+            {
+                get{return sendCount;}
+            }
 
             public override void Post(SendOrPostCallback d, object state)
             {

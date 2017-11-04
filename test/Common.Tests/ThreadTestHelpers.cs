@@ -56,6 +56,7 @@ namespace Tests
             return t;
         }
 
+#if !WindowsCE
         public static Thread CreateGuardedThread(out Action waitForThread, Action<object> start)
         {
             Action checkForThreadErrors;
@@ -97,6 +98,7 @@ namespace Tests
                 };
             return t;
         }
+#endif
 
         public static void RunTestInBackgroundThread(Action test)
         {
