@@ -43,7 +43,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="NETStandard.WindowsCE">
-      <HintPath>..\..\src\NETStandard.WindowsCE\bin\Debug\net35-client\NETStandard.WindowsCE.dll</HintPath>
+      <HintPath>$(SolutionDir)src\NETStandard.WindowsCE\bin\Debug\net35-client\NETStandard.WindowsCE.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Threading, Version=1.0.2856.102, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">

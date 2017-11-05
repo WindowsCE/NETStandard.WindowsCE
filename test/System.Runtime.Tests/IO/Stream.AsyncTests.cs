@@ -20,11 +20,6 @@ namespace Tests.IO
         [TestMethod]
         public void Stream_CopyToAsyncTest()
         {
-            CopyToAsyncTestInternal().Wait();
-        }
-
-        private Task CopyToAsyncTestInternal()
-        {
             byte[] data = Enumerable.Range(0, 1000).Select(i => (byte)(i % 256)).ToArray();
 
             Stream ms = CreateStream();
@@ -32,14 +27,14 @@ namespace Tests.IO
             ms.Position = 0;
 
             var ms2 = new MemoryStream();
-            return ms.CopyToAsync(ms2)
+            var task = ms.CopyToAsync(ms2)
                 .ContinueWith(t =>
                 {
                     if (!data.SequenceEqual(ms2.ToArray()))
                         Assert.Fail("Stream was not copied correctly");
                     //Assert.AreEqual(data, ms2.ToArray());
                 });
-            //await ms.CopyToAsync(ms2);
+            task.Wait();
         }
     }
 }

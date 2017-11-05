@@ -87,8 +87,7 @@ namespace Tests.Threading
                     string value = tlocal.Value;
                     Debug.WriteLine("Val: " + value);
                     seenValuesFromAllThreads.Add(value);
-                });
-                //}, TaskCreationOptions.LongRunning);
+                }, TaskCreationOptions.LongRunning);
                 //threads[i].Start(TaskScheduler.Default);
                 threads[i].Start();
                 threads[i].Wait();
@@ -133,8 +132,9 @@ namespace Tests.Threading
             // there is no guarantee that the Task will be created on another thread.
             // There is also no guarantee that using this TaskCreationOption will force
             // it to be run on another thread.
-            //new Task(() => { threadLocal.Value = new SetMreOnFinalize(mres); }, TaskCreationOptions.LongRunning).Start(TaskScheduler.Default);
-            new Task(() => { threadLocal.Value = new SetMreOnFinalize(mres); }).Start();
+            new Task(() => { threadLocal.Value = new SetMreOnFinalize(mres); }, TaskCreationOptions.LongRunning)
+                //.Start(TaskScheduler.Default);
+                .Start();
 
             SpinWait.SpinUntil(() =>
             {
@@ -259,8 +259,7 @@ namespace Tests.Threading
                     // there is no guarantee that the Task will be created on another thread.
                     // There is also no guarantee that using this TaskCreationOption will force
                     // it to be run on another thread.
-                    //var task = Task.Factory.StartNew(() => threadLocal.Value = i, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
-                    var task = Task.Factory.StartNew(() => threadLocal.Value = i, CancellationToken.None);
+                    var task = Task.Factory.StartNew(() => threadLocal.Value = i, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
                     task.Wait();
                 }
 

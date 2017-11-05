@@ -66,7 +66,7 @@ namespace System.Threading.Tasks
         internal CancellationToken CancellationToken
             => m_cancellationToken;
 
-        private ManualResetEvent CompletedEvent
+        private ManualResetEventSlim CompletedEvent
         {
             get
             {
@@ -74,9 +74,9 @@ namespace System.Threading.Tasks
                 if (contingentProperties.m_taskCompletedEvent == null)
                 {
                     bool isCompleted = IsCompleted;
-                    ManualResetEvent mre = new ManualResetEvent(isCompleted);
+                    ManualResetEventSlim mre = new ManualResetEventSlim(isCompleted);
                     if (Interlocked.CompareExchange(ref contingentProperties.m_taskCompletedEvent, mre, null) != null)
-                        mre.Close();
+                        mre.Dispose();
                     else if (!isCompleted && IsCompleted)
                         mre.Set();
                 }
@@ -171,6 +171,15 @@ namespace System.Threading.Tasks
         public bool IsCompletedSuccessfully
         {
             get { return (_stateFlags & TASK_STATE_COMPLETED_MASK) == TASK_STATE_RAN_TO_COMPLETION; }
+        }
+
+        /// <summary>
+        /// Gets the <see cref="TaskCreationOptions"/> used
+        /// to create this task.
+        /// </summary>
+        public TaskCreationOptions CreationOptions
+        {
+            get { return Options & (TaskCreationOptions)(~InternalTaskOptions.InternalOptionsMask); }
         }
 
         /// <summary>
@@ -272,20 +281,34 @@ namespace System.Threading.Tasks
         /// <param name="action">The delegate that represents the code to execute in the Task.</param>
         /// <param name="state">An object representing data to be used by the action.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken" /> that will be assigned to the new task.</param>
+        /// <param name="creationOptions">The <see cref="TaskCreationOptions"/> used to customize the Task's behavior.</param>
         /// <param name="continueSource">The task that run before current one.</param>
-        protected Task(Delegate action, object state, CancellationToken cancellationToken, Task continueSource)
+        protected Task(Delegate action, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, Task continueSource)
         {
             if (action == null)
                 throw new ArgumentNullException(nameof(action));
 
+            // Check for validity of options
+            if ((creationOptions &
+                    ~(TaskCreationOptions.AttachedToParent |
+                      TaskCreationOptions.LongRunning |
+                      TaskCreationOptions.DenyChildAttach |
+                      TaskCreationOptions.HideScheduler |
+                      TaskCreationOptions.PreferFairness |
+                      TaskCreationOptions.RunContinuationsAsynchronously)) != 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(creationOptions));
+                //ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.creationOptions);
+            }
+
             if (cancellationToken.IsCancellationRequested)
             {
-                _stateFlags = TASK_STATE_CANCELED;
+                _stateFlags = TASK_STATE_CANCELED | (int)creationOptions;
                 m_cancellationToken = cancellationToken;
                 return;
             }
 
-            _stateFlags = 0;
+            _stateFlags = (int)creationOptions;
             m_contingentProperties = new ContingentProperties(action, continueSource);
             m_stateObject = state;
 
@@ -310,12 +333,63 @@ namespace System.Threading.Tasks
         /// <param name="action">The delegate that represents the code to execute in the Task.</param>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="action"/> argument is null.</exception>
         public Task(Action action)
-            : this(action, null, default(CancellationToken), null)
+            : this(action, null, default(CancellationToken), TaskCreationOptions.None, null)
         { }
 
+        /// <summary>
+        /// Initializes a new <see cref="Task"/> with the specified action and <see cref="Threading.CancellationToken">CancellationToken</see>.
+        /// </summary>
+        /// <param name="action">The delegate that represents the code to execute in the Task.</param>
+        /// <param name="cancellationToken">The <see cref="Threading.CancellationToken">CancellationToken</see>
+        /// that will be assigned to the new Task.</param>
+        /// <exception cref="T:System.ArgumentNullException">The <paramref name="action"/> argument is null.</exception>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="Threading.CancellationToken">CancellationToken</see>
+        /// has already been disposed.
+        /// </exception>
         public Task(Action action, CancellationToken cancellationToken)
-            : this(action, null, cancellationToken, null)
+            : this(action, null, cancellationToken, TaskCreationOptions.None, null)
         { }
+
+        /// <summary>
+        /// Initializes a new <see cref="Task"/> with the specified action and creation options.
+        /// </summary>
+        /// <param name="action">The delegate that represents the code to execute in the task.</param>
+        /// <param name="creationOptions">The <see cref="TaskCreationOptions"/> used to customize the Task's behavior.</param>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="action"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// The <paramref name="creationOptions"/> argument specifies an invalid value for <see
+        /// cref="T:System.Threading.Tasks.TaskCreationOptions"/>.
+        /// </exception>
+        public Task(Action action, TaskCreationOptions creationOptions)
+            : this(action, null, default(CancellationToken), creationOptions, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new <see cref="Task"/> with the specified action and creation options.
+        /// </summary>
+        /// <param name="action">The delegate that represents the code to execute in the task.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new task.</param>
+        /// <param name="creationOptions">
+        /// The <see cref="System.Threading.Tasks.TaskCreationOptions">TaskCreationOptions</see> used to
+        /// customize the Task's behavior.
+        /// </param>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="action"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// The <paramref name="creationOptions"/> argument specifies an invalid value for <see
+        /// cref="T:System.Threading.Tasks.TaskCreationOptions"/>.
+        /// </exception>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// has already been disposed.
+        /// </exception>
+        public Task(Action action, CancellationToken cancellationToken, TaskCreationOptions creationOptions)
+            : this(action, null, cancellationToken, creationOptions, null)
+        {
+        }
 
         /// <summary>
         /// Initializes a new <see cref="Task"/> with the specified action and state.
@@ -326,16 +400,85 @@ namespace System.Threading.Tasks
         /// The <paramref name="action"/> argument is null.
         /// </exception>
         public Task(Action<object> action, object state)
-            : this(action, state, default(CancellationToken), null)
+            : this(action, state, default(CancellationToken), TaskCreationOptions.None, null)
         { }
 
+        /// <summary>
+        /// Initializes a new <see cref="Task"/> with the specified action, state, and options.
+        /// </summary>
+        /// <param name="action">The delegate that represents the code to execute in the task.</param>
+        /// <param name="state">An object representing data to be used by the action.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new task.</param>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="action"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// has already been disposed.
+        /// </exception>
         public Task(Action<object> action, object state, CancellationToken cancellationToken)
-            : this(action, state, cancellationToken, null)
+            : this(action, state, cancellationToken, TaskCreationOptions.None, null)
         { }
+
+        /// <summary>
+        /// Initializes a new <see cref="Task"/> with the specified action, state, and options.
+        /// </summary>
+        /// <param name="action">The delegate that represents the code to execute in the task.</param>
+        /// <param name="state">An object representing data to be used by the action.</param>
+        /// <param name="creationOptions">
+        /// The <see cref="System.Threading.Tasks.TaskCreationOptions">TaskCreationOptions</see> used to
+        /// customize the Task's behavior.
+        /// </param>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="action"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// The <paramref name="creationOptions"/> argument specifies an invalid value for <see
+        /// cref="T:System.Threading.Tasks.TaskCreationOptions"/>.
+        /// </exception>
+        public Task(Action<object> action, object state, TaskCreationOptions creationOptions)
+            : this(action, state, default(CancellationToken), creationOptions, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new <see cref="Task"/> with the specified action, state, and options.
+        /// </summary>
+        /// <param name="action">The delegate that represents the code to execute in the task.</param>
+        /// <param name="state">An object representing data to be used by the action.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new task.</param>
+        /// <param name="creationOptions">
+        /// The <see cref="System.Threading.Tasks.TaskCreationOptions">TaskCreationOptions</see> used to
+        /// customize the Task's behavior.
+        /// </param>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="action"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// The <paramref name="creationOptions"/> argument specifies an invalid value for <see
+        /// cref="T:System.Threading.Tasks.TaskCreationOptions"/>.
+        /// </exception>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// has already been disposed.
+        /// </exception>
+        public Task(Action<object> action, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions)
+            : this(action, state, cancellationToken, creationOptions, null)
+        {
+        }
 
         #endregion
 
         #region Helper methods
+
+        // Internal property to process TaskCreationOptions access and mutation.
+        internal TaskCreationOptions Options => OptionsMethod(_stateFlags);
+
+        // Similar to Options property, but allows for the use of a cached flags value rather than
+        // a read of the volatile m_stateFlags field.
+        internal static TaskCreationOptions OptionsMethod(int flags)
+        {
+            Diagnostics.Debug.Assert((OptionsMask & 1) == 1, "OptionsMask needs a shift in Options.get");
+            return (TaskCreationOptions)(flags & OptionsMask);
+        }
 
         // Atomically OR-in newBits to _stateFlags, while making sure that
         // no illegalBits are set.  Returns true on success, false on failure.
@@ -446,7 +589,9 @@ namespace System.Threading.Tasks
         private void SendCompletedSignal()
         {
             // TODO: Avoid initialization race
-            m_contingentProperties?.m_taskCompletedEvent?.Set();
+            var contingentProperties = m_contingentProperties;
+            if (contingentProperties != null)
+                contingentProperties.SetCompleted();
 
             // Execute wait callback if any
             lock (_lockObj)
@@ -479,8 +624,16 @@ namespace System.Threading.Tasks
             EnsureStartOnce();
             AtomicStateUpdate(TASK_STATE_WAITINGFORACTIVATION, TASK_STATE_COMPLETED_MASK);
 
-            if (!ThreadPool.QueueUserWorkItem(TaskStartAction))
-                throw new NotSupportedException("Could not enqueue task for execution");
+            bool isLongRunning = (_stateFlags & (int)TaskCreationOptions.LongRunning) > 0;
+            if (!isLongRunning)
+            {
+                if (!ThreadPool.QueueUserWorkItem(TaskStartAction))
+                    throw new NotSupportedException("Could not enqueue task for execution");
+            }
+            else
+            {
+                new Thread((ThreadStart)TaskStartAction).Start();
+            }
         }
 
         private void StartContinuation(Task source)
@@ -488,11 +641,20 @@ namespace System.Threading.Tasks
             EnsureStartOnce();
             AtomicStateUpdate(TASK_STATE_WAITINGFORACTIVATION, TASK_STATE_COMPLETED_MASK);
 
+            // TODO: Long running continuation should not run on ThreadPool
             if (source.EnqueueContinuation(TaskStartAction))
                 return;
 
-            if (!ThreadPool.QueueUserWorkItem(TaskStartAction))
-                throw new NotSupportedException("Could not enqueue task for execution");
+            bool isLongRunning = (_stateFlags & (int)TaskCreationOptions.LongRunning) > 0;
+            if (!isLongRunning)
+            {
+                if (!ThreadPool.QueueUserWorkItem(TaskStartAction))
+                    throw new NotSupportedException("Could not enqueue task for execution");
+            }
+            else
+            {
+                new Thread((ThreadStart)TaskStartAction).Start();
+            }
         }
 
         private bool EnqueueContinuation(Action<object> callback)
@@ -521,6 +683,14 @@ namespace System.Threading.Tasks
         #endregion
 
         #region Task thread execution
+
+        /// <summary>
+        /// Executes the action designed for current task.
+        /// </summary>
+        private void TaskStartAction()
+        {
+            TaskStartAction(null);
+        }
 
         /// <summary>
         /// Executes the action designed for current task.
@@ -616,14 +786,6 @@ namespace System.Threading.Tasks
 
         #region Wait methods
 
-        private ManualResetEvent GetWaitHandleIfNotCompleted()
-        {
-            if (IsCompleted)
-                return null;
-
-            return CompletedEvent;
-        }
-
         /// <summary>
         /// Waits for the <see cref="Task"/> to complete execution.
         /// </summary>
@@ -632,13 +794,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public void Wait()
         {
-            GetWaitHandleIfNotCompleted()?.WaitOne();
-
-            if (m_exceptions.Count > 0)
-                ExceptionDispatchInfo.Capture(this.Exception).Throw();
-
-            if (m_cancellationToken.IsCancellationRequested)
-                throw new AggregateException(new TaskCanceledException(this));
+            Wait(Timeout.Infinite);
         }
 
         /// <summary>
@@ -674,6 +830,24 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
+        /// Waits for the <see cref="Task"/> to complete execution.
+        /// </summary>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
+        /// </param>
+        /// <exception cref="T:System.OperationCanceledException">
+        /// The <paramref name="cancellationToken"/> was canceled.
+        /// </exception>
+        /// <exception cref="T:System.AggregateException">
+        /// The <see cref="Task"/> was canceled -or- an exception was thrown during the execution of the <see
+        /// cref="Task"/>.
+        /// </exception>
+        public void Wait(CancellationToken cancellationToken)
+        {
+            Wait(Timeout.Infinite, cancellationToken);
+        }
+
+        /// <summary>
         /// Waits for the System.Threading.Tasks.Task to complete execution
         /// within a specified number of milliseconds.
         /// </summary>
@@ -695,12 +869,41 @@ namespace System.Threading.Tasks
         /// </exception>
         public bool Wait(int millisecondsTimeout)
         {
+            return Wait(millisecondsTimeout, default(CancellationToken));
+        }
+
+        /// <summary>
+        /// Waits for the <see cref="Task"/> to complete execution.
+        /// </summary>
+        /// <param name="millisecondsTimeout">
+        /// The number of milliseconds to wait, or <see cref="System.Threading.Timeout.Infinite"/> (-1) to
+        /// wait indefinitely.
+        /// </param>
+        /// <param name="cancellationToken">
+        /// A <see cref="CancellationToken"/> to observe while waiting for the task to complete.
+        /// </param>
+        /// <returns>
+        /// true if the <see cref="Task"/> completed execution within the allotted time; otherwise, false.
+        /// </returns>
+        /// <exception cref="T:System.AggregateException">
+        /// The <see cref="Task"/> was canceled -or- an exception was thrown during the execution of the <see
+        /// cref="Task"/>.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// <paramref name="millisecondsTimeout"/> is a negative number other than -1, which represents an
+        /// infinite time-out.
+        /// </exception>
+        /// <exception cref="T:System.OperationCanceledException">
+        /// The <paramref name="cancellationToken"/> was canceled.
+        /// </exception>
+        public bool Wait(int millisecondsTimeout, CancellationToken cancellationToken)
+        {
             if (millisecondsTimeout < -1)
             {
-                throw new ArgumentOutOfRangeException("millisecondsTimeout");
+                throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
             }
 
-            bool success = GetWaitHandleIfNotCompleted()?.WaitOne(millisecondsTimeout, false) ?? true;
+            bool success = CompletedEvent.Wait(millisecondsTimeout, cancellationToken);
 
             switch (Status)
             {
@@ -806,7 +1009,7 @@ namespace System.Threading.Tasks
                 if (isDisposed)
                     throw new ObjectDisposedException("Task");
 
-                return CompletedEvent;
+                return CompletedEvent.WaitHandle;
             }
         }
 
@@ -821,75 +1024,6 @@ namespace System.Threading.Tasks
 
         #endregion
 
-        #region IAsyncResult Objects
-
-        private class WaitAsyncResult : IAsyncResult, IDisposable
-        {
-            private ManualResetEvent _doneEvent;
-            private int _isCompleted;
-            private readonly object _stateObject;
-
-            public WaitAsyncResult(object stateObject)
-            {
-                _doneEvent = null;
-                _isCompleted = 0;
-                _stateObject = stateObject;
-            }
-
-            public object AsyncState
-            {
-                get { return _stateObject; }
-            }
-
-            public WaitHandle AsyncWaitHandle
-            {
-                get
-                {
-                    if (_doneEvent == null)
-                    {
-                        bool isCompleted = _isCompleted > 0;
-                        var mre = new ManualResetEvent(isCompleted);
-                        if (Interlocked.CompareExchange(ref _doneEvent, mre, null) != null)
-                            mre.Close();
-                        else if (!isCompleted && _isCompleted > 0)
-                            mre.Set();
-
-                        mre = null;
-                    }
-
-                    return _doneEvent;
-                }
-            }
-
-            public bool CompletedSynchronously
-                => false;
-
-            public bool IsCompleted
-            {
-                get { return _isCompleted > 0; }
-            }
-
-            public bool Result { get; set; }
-
-            public void Dispose()
-            {
-                _doneEvent?.Close();
-            }
-
-            public bool TrySetCompleted()
-            {
-                // Overflow is ignored (should not be set too much)
-                if (Interlocked.Increment(ref _isCompleted) > 1)
-                    return false;
-
-                var mre = _doneEvent;
-                mre?.Set();
-                return true;
-            }
-        }
-
-        #endregion
-
         #region Continuation Methods
 
         private Task InternalContinueWith(Delegate continuationAction, object state, CancellationToken cancellationToken)
@@ -898,7 +1032,7 @@ namespace System.Threading.Tasks
             if (continuationAction == null)
                 throw new ArgumentNullException("continuationAction");
 
-            return new Task(continuationAction, state, cancellationToken, this);
+            return new Task(continuationAction, state, cancellationToken, TaskCreationOptions.None, this);
         }
 
         /// <summary>
@@ -952,7 +1086,7 @@ namespace System.Threading.Tasks
             if (continuationFunction == null)
                 throw new ArgumentNullException("continuationFunction");
 
-            return new Task<TResult>(continuationFunction, state, cancellationToken, this);
+            return new Task<TResult>(continuationFunction, state, cancellationToken, TaskCreationOptions.None, this);
         }
 
         /// <summary>
@@ -1721,7 +1855,7 @@ namespace System.Threading.Tasks
             /// <summary>
             /// A thread-safe event which notifies that current task is completed its execution.
             /// </summary>
-            public ManualResetEvent m_taskCompletedEvent;
+            public ManualResetEventSlim m_taskCompletedEvent;
 
             public CancellationTokenRegistration m_cancelRegistration;
 
@@ -1731,12 +1865,24 @@ namespace System.Threading.Tasks
             {
                 m_action = action;
                 m_parent = parent;
+
+                // TODO: Should be lazy initialized
+                //m_taskCompletedEvent = new ManualResetEventSlim();
             }
 
             public void Dispose()
             {
-                m_taskCompletedEvent?.Close();
+                m_taskCompletedEvent?.Dispose();
                 m_cancelRegistration.Dispose();
+            }
+
+            /// <summary>
+            /// Sets the internal completion event.
+            /// </summary>
+            internal void SetCompleted()
+            {
+                var mres = m_taskCompletedEvent;
+                if (mres != null) mres.Set();
             }
         }
 

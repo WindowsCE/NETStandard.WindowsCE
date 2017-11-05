@@ -137,7 +137,7 @@ namespace Tests
                             Interlocked.Decrement(ref remainingItems);
                         }
                     }
-                }, CancellationToken.None));//, TaskCreationOptions.LongRunning, TaskScheduler.Default));
+                }, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default));
             }
 
             for (int i = 0; i < producers; i++)
@@ -148,7 +148,7 @@ namespace Tests
                     {
                         cq.Enqueue(item);
                     }
-                }, CancellationToken.None));//, TaskCreationOptions.LongRunning, TaskScheduler.Default));
+                }, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default));
             }
 
             Task.WaitAll(tasks.ToArray());

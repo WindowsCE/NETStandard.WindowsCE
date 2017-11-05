@@ -146,7 +146,7 @@ namespace System.IO
                 cancellationToken);
         }
 
-        private struct AsyncOperationParameters
+        private sealed class AsyncOperationParameters
         {
             public Stream Source;
             public byte[] Buffer;

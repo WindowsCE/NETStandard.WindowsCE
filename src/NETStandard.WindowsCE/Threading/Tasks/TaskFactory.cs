@@ -14,7 +14,7 @@ namespace System.Threading.Tasks
         /// </summary>
         public TaskFactory() { }
 
-        #region StartNew
+        #region StartNew Task
 
         /// <summary>
         /// Creates and starts a task.
@@ -23,19 +23,70 @@ namespace System.Threading.Tasks
         /// <returns>The started task.</returns>
         /// <exception cref="ArgumentNullException">The <paramref name="action"/> argument is null.</exception>
         public Task StartNew(Action action)
-            => StartNew(action, default(CancellationToken));
+            => StartNew(action, default(CancellationToken), TaskCreationOptions.None, TaskScheduler.Default);
 
+        /// <summary>
+        /// Creates and starts a <see cref="T:System.Threading.Tasks.Task">Task</see>.
+        /// </summary>
+        /// <param name="action">The action delegate to execute asynchronously.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new task.</param>
+        /// <returns>The started <see cref="T:System.Threading.Tasks.Task">Task</see>.</returns>
+        /// <exception cref="T:System.ArgumentNullException">The exception that is thrown when the <paramref name="action"/> 
+        /// argument is null.</exception>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// has already been disposed.
+        /// </exception>
         public Task StartNew(Action action, CancellationToken cancellationToken)
+            => StartNew(action, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
+
+        /// <summary>
+        /// Creates and starts a <see cref="T:System.Threading.Tasks.Task">Task</see>.
+        /// </summary>
+        /// <param name="action">The action delegate to execute asynchronously.</param>
+        /// <param name="creationOptions">A TaskCreationOptions value that controls the behavior of the
+        /// created
+        /// <see cref="T:System.Threading.Tasks.Task">Task.</see></param>
+        /// <returns>The started <see cref="T:System.Threading.Tasks.Task">Task</see>.</returns>
+        /// <exception cref="T:System.ArgumentNullException">The exception that is thrown when the <paramref
+        /// name="action"/>
+        /// argument is null.</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">The exception that is thrown when the
+        /// <paramref name="creationOptions"/> argument specifies an invalid TaskCreationOptions
+        /// value.</exception>
+        public Task StartNew(Action action, TaskCreationOptions creationOptions)
+            => StartNew(action, default(CancellationToken), creationOptions, TaskScheduler.Default);
+
+        /// <summary>
+        /// Creates and starts a <see cref="T:System.Threading.Tasks.Task">Task</see>.
+        /// </summary>
+        /// <param name="action">The action delegate to execute asynchronously.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new <see cref="Task"/></param>
+        /// <param name="creationOptions">A TaskCreationOptions value that controls the behavior of the
+        /// created
+        /// <see cref="T:System.Threading.Tasks.Task">Task.</see></param>
+        /// <param name="scheduler">The <see
+        /// cref="T:System.Threading.Tasks.TaskScheduler">TaskScheduler</see>
+        /// that is used to schedule the created <see
+        /// cref="T:System.Threading.Tasks.Task">Task</see>.</param>
+        /// <returns>The started <see cref="T:System.Threading.Tasks.Task">Task</see>.</returns>
+        /// <exception cref="T:System.ArgumentNullException">The exception that is thrown when the <paramref
+        /// name="action"/>
+        /// argument is null.</exception>
+        /// <exception cref="T:System.ArgumentNullException">The exception that is thrown when the <paramref
+        /// name="scheduler"/>
+        /// argument is null.</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">The exception that is thrown when the
+        /// <paramref name="creationOptions"/> argument specifies an invalid TaskCreationOptions
+        /// value.</exception>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// has already been disposed.
+        /// </exception>
+        public Task StartNew(Action action, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
             if (action == null)
                 throw new ArgumentNullException(nameof(action));
 
-            Task task;
-            if (cancellationToken.CanBeCanceled)
-                task = new Task(action, cancellationToken);
-            else
-                task = new Task(action);
-
+            var task = new Task(action, cancellationToken, creationOptions);
             task.Start();
             return task;
         }
@@ -48,22 +99,84 @@ namespace System.Threading.Tasks
         /// <returns>The started <see cref="Task"/>.</returns>
         /// <exception cref="ArgumentNullException">The <paramref name="action"/> argument is null.</exception>
         public Task StartNew(Action<object> action, object state)
-            => StartNew(action, state, default(CancellationToken));
+            => StartNew(action, state, default(CancellationToken), TaskCreationOptions.None, TaskScheduler.Default);
 
+        /// <summary>
+        /// Creates and starts a <see cref="T:System.Threading.Tasks.Task">Task</see>.
+        /// </summary>
+        /// <param name="action">The action delegate to execute asynchronously.</param>
+        /// <param name="state">An object containing data to be used by the <paramref name="action"/>
+        /// delegate.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new <see cref="Task"/></param>
+        /// <returns>The started <see cref="T:System.Threading.Tasks.Task">Task</see>.</returns>
+        /// <exception cref="T:System.ArgumentNullException">The exception that is thrown when the <paramref
+        /// name="action"/>
+        /// argument is null.</exception>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// has already been disposed.
+        /// </exception>
         public Task StartNew(Action<object> action, object state, CancellationToken cancellationToken)
+            => StartNew(action, state, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
+
+        /// <summary>
+        /// Creates and starts a <see cref="T:System.Threading.Tasks.Task">Task</see>.
+        /// </summary>
+        /// <param name="action">The action delegate to execute asynchronously.</param>
+        /// <param name="state">An object containing data to be used by the <paramref name="action"/>
+        /// delegate.</param>
+        /// <param name="creationOptions">A TaskCreationOptions value that controls the behavior of the
+        /// created
+        /// <see cref="T:System.Threading.Tasks.Task">Task.</see></param>
+        /// <returns>The started <see cref="T:System.Threading.Tasks.Task">Task</see>.</returns>
+        /// <exception cref="T:System.ArgumentNullException">The exception that is thrown when the <paramref
+        /// name="action"/>
+        /// argument is null.</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">The exception that is thrown when the
+        /// <paramref name="creationOptions"/> argument specifies an invalid TaskCreationOptions
+        /// value.</exception>
+        public Task StartNew(Action<Object> action, Object state, TaskCreationOptions creationOptions)
+            => StartNew(action, state, default(CancellationToken), creationOptions, TaskScheduler.Default);
+
+        /// <summary>
+        /// Creates and starts a <see cref="T:System.Threading.Tasks.Task">Task</see>.
+        /// </summary>
+        /// <param name="action">The action delegate to execute asynchronously.</param>
+        /// <param name="state">An object containing data to be used by the <paramref name="action"/>
+        /// delegate.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new task.</param>
+        /// <param name="creationOptions">A TaskCreationOptions value that controls the behavior of the
+        /// created
+        /// <see cref="T:System.Threading.Tasks.Task">Task.</see></param>
+        /// <param name="scheduler">The <see
+        /// cref="T:System.Threading.Tasks.TaskScheduler">TaskScheduler</see>
+        /// that is used to schedule the created <see
+        /// cref="T:System.Threading.Tasks.Task">Task</see>.</param>
+        /// <returns>The started <see cref="T:System.Threading.Tasks.Task">Task</see>.</returns>
+        /// <exception cref="T:System.ArgumentNullException">The exception that is thrown when the <paramref
+        /// name="action"/>
+        /// argument is null.</exception>
+        /// <exception cref="T:System.ArgumentNullException">The exception that is thrown when the <paramref
+        /// name="scheduler"/>
+        /// argument is null.</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">The exception that is thrown when the
+        /// <paramref name="creationOptions"/> argument specifies an invalid TaskCreationOptions
+        /// value.</exception>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// has already been disposed.
+        /// </exception>
+        public Task StartNew(Action<Object> action, Object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
             if (action == null)
                 throw new ArgumentNullException(nameof(action));
 
-            Task task;
-            if (cancellationToken.CanBeCanceled)
-                task = new Task(action, state, cancellationToken);
-            else
-                task = new Task(action, state);
-
+            var task = new Task(action, state, cancellationToken, creationOptions);
             task.Start();
             return task;
         }
+
+        #endregion
+
+        #region StartNew Task<TResult>
 
         /// <summary>
         /// Creates and starts a <see cref="Task{TResult}"/>.
@@ -76,26 +189,83 @@ namespace System.Threading.Tasks
         /// <returns>The started <see cref="Task{TResult}"/>.</returns>
         /// <exception cref="ArgumentNullException">The exception that is thrown when the <paramref name="function"/> argument is null.</exception>
         public Task<TResult> StartNew<TResult>(Func<TResult> function)
-        {
-            if (function == null)
-                throw new ArgumentNullException("function");
+            => StartNew(function, default(CancellationToken), TaskCreationOptions.None, TaskScheduler.Default);
 
-            var task = new Task<TResult>(function);
-            task.Start();
-            return task;
-        }
-
+        /// <summary>
+        /// Creates and starts a <see cref="T:System.Threading.Tasks.Task{TResult}"/>.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result available through the
+        /// <see cref="T:System.Threading.Tasks.Task{TResult}">Task</see>.
+        /// </typeparam>
+        /// <param name="function">A function delegate that returns the future result to be available through
+        /// the <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new <see cref="Task"/></param>
+        /// <returns>The started <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</returns>
+        /// <exception cref="T:System.ArgumentNullException">The exception that is thrown when the <paramref
+        /// name="function"/>
+        /// argument is null.</exception>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// has already been disposed.
+        /// </exception>
         public Task<TResult> StartNew<TResult>(Func<TResult> function, CancellationToken cancellationToken)
+            => StartNew(function, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
+
+        /// <summary>
+        /// Creates and starts a <see cref="T:System.Threading.Tasks.Task{TResult}"/>.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result available through the
+        /// <see cref="T:System.Threading.Tasks.Task{TResult}">Task</see>.
+        /// </typeparam>
+        /// <param name="function">A function delegate that returns the future result to be available through
+        /// the <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
+        /// <param name="creationOptions">A TaskCreationOptions value that controls the behavior of the
+        /// created
+        /// <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
+        /// <returns>The started <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</returns>
+        /// <exception cref="T:System.ArgumentNullException">The exception that is thrown when the <paramref
+        /// name="function"/>
+        /// argument is null.</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">The exception that is thrown when the
+        /// <paramref name="creationOptions"/> argument specifies an invalid TaskCreationOptions
+        /// value.</exception>
+        public Task<TResult> StartNew<TResult>(Func<TResult> function, TaskCreationOptions creationOptions)
+            => StartNew(function, default(CancellationToken), creationOptions, TaskScheduler.Default);
+
+        /// <summary>
+        /// Creates and starts a <see cref="T:System.Threading.Tasks.Task{TResult}"/>.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result available through the
+        /// <see cref="T:System.Threading.Tasks.Task{TResult}">Task</see>.
+        /// </typeparam>
+        /// <param name="function">A function delegate that returns the future result to be available through
+        /// the <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new task.</param>
+        /// <param name="creationOptions">A TaskCreationOptions value that controls the behavior of the
+        /// created
+        /// <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
+        /// <param name="scheduler">The <see
+        /// cref="T:System.Threading.Tasks.TaskScheduler">TaskScheduler</see>
+        /// that is used to schedule the created <see cref="T:System.Threading.Tasks.Task{TResult}">
+        /// Task{TResult}</see>.</param>
+        /// <returns>The started <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</returns>
+        /// <exception cref="T:System.ArgumentNullException">The exception that is thrown when the <paramref
+        /// name="function"/>
+        /// argument is null.</exception>
+        /// <exception cref="T:System.ArgumentNullException">The exception that is thrown when the <paramref
+        /// name="scheduler"/>
+        /// argument is null.</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">The exception that is thrown when the
+        /// <paramref name="creationOptions"/> argument specifies an invalid TaskCreationOptions
+        /// value.</exception>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// has already been disposed.
+        /// </exception>
+        public Task<TResult> StartNew<TResult>(Func<TResult> function, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
             if (function == null)
                 throw new ArgumentNullException(nameof(function));
 
-            Task<TResult> task;
-            if (cancellationToken.CanBeCanceled)
-                task = new Task<TResult>(function, cancellationToken);
-            else
-                task = new Task<TResult>(function);
-
+            var task = new Task<TResult>(function, cancellationToken, creationOptions);
             task.Start();
             return task;
         }
@@ -116,19 +286,89 @@ namespace System.Threading.Tasks
         /// <returns>The started <see cref="Task{TResult}"/>.</returns>
         /// <exception cref="ArgumentNullException">The exception that is thrown when the <paramref name="function"/> argument is null.</exception>
         public Task<TResult> StartNew<TResult>(Func<object, TResult> function, object state)
-            => StartNew(function, state, default(CancellationToken));
+            => StartNew(function, state, default(CancellationToken), TaskCreationOptions.None, TaskScheduler.Default);
 
+        /// <summary>
+        /// Creates and starts a <see cref="T:System.Threading.Tasks.Task{TResult}"/>.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result available through the
+        /// <see cref="T:System.Threading.Tasks.Task{TResult}">Task</see>.
+        /// </typeparam>
+        /// <param name="function">A function delegate that returns the future result to be available through
+        /// the <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
+        /// <param name="state">An object containing data to be used by the <paramref name="function"/>
+        /// delegate.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new <see cref="Task"/></param>
+        /// <returns>The started <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</returns>
+        /// <exception cref="T:System.ArgumentNullException">The exception that is thrown when the <paramref
+        /// name="function"/>
+        /// argument is null.</exception>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// has already been disposed.
+        /// </exception>
         public Task<TResult> StartNew<TResult>(Func<object, TResult> function, object state, CancellationToken cancellationToken)
+            => StartNew(function, state, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
+
+        /// <summary>
+        /// Creates and starts a <see cref="T:System.Threading.Tasks.Task{TResult}"/>.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result available through the
+        /// <see cref="T:System.Threading.Tasks.Task{TResult}">Task</see>.
+        /// </typeparam>
+        /// <param name="function">A function delegate that returns the future result to be available through
+        /// the <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
+        /// <param name="state">An object containing data to be used by the <paramref name="function"/>
+        /// delegate.</param>
+        /// <param name="creationOptions">A TaskCreationOptions value that controls the behavior of the
+        /// created
+        /// <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
+        /// <returns>The started <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</returns>
+        /// <exception cref="T:System.ArgumentNullException">The exception that is thrown when the <paramref
+        /// name="function"/>
+        /// argument is null.</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">The exception that is thrown when the
+        /// <paramref name="creationOptions"/> argument specifies an invalid TaskCreationOptions
+        /// value.</exception>
+        public Task<TResult> StartNew<TResult>(Func<Object, TResult> function, Object state, TaskCreationOptions creationOptions)
+            => StartNew(function, state, default(CancellationToken), creationOptions, TaskScheduler.Default);
+
+        /// <summary>
+        /// Creates and starts a <see cref="T:System.Threading.Tasks.Task{TResult}"/>.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result available through the
+        /// <see cref="T:System.Threading.Tasks.Task{TResult}">Task</see>.
+        /// </typeparam>
+        /// <param name="function">A function delegate that returns the future result to be available through
+        /// the <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
+        /// <param name="state">An object containing data to be used by the <paramref name="function"/>
+        /// delegate.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new task.</param>
+        /// <param name="creationOptions">A TaskCreationOptions value that controls the behavior of the
+        /// created
+        /// <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</param>
+        /// <param name="scheduler">The <see
+        /// cref="T:System.Threading.Tasks.TaskScheduler">TaskScheduler</see>
+        /// that is used to schedule the created <see cref="T:System.Threading.Tasks.Task{TResult}">
+        /// Task{TResult}</see>.</param>
+        /// <returns>The started <see cref="T:System.Threading.Tasks.Task{TResult}"/>.</returns>
+        /// <exception cref="T:System.ArgumentNullException">The exception that is thrown when the <paramref
+        /// name="function"/>
+        /// argument is null.</exception>
+        /// <exception cref="T:System.ArgumentNullException">The exception that is thrown when the <paramref
+        /// name="scheduler"/>
+        /// argument is null.</exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">The exception that is thrown when the
+        /// <paramref name="creationOptions"/> argument specifies an invalid TaskCreationOptions
+        /// value.</exception>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// has already been disposed.
+        /// </exception>
+        public Task<TResult> StartNew<TResult>(Func<Object, TResult> function, Object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
         {
             if (function == null)
                 throw new ArgumentNullException(nameof(function));
 
-            Task<TResult> task;
-            if (cancellationToken.CanBeCanceled)
-                task = new Task<TResult>(function, state, cancellationToken);
-            else
-                task = new Task<TResult>(function, state);
-
+            var task = new Task<TResult>(function, state, cancellationToken, creationOptions);
             task.Start();
             return task;
         }

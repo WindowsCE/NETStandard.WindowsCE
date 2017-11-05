@@ -75,12 +75,76 @@ namespace System.Threading.Tasks
         /// The <paramref name="function"/> argument is null.
         /// </exception>
         public Task(Func<TResult> function)
-            : base(function, null, default(CancellationToken), null)
+            : this(function, null, default(CancellationToken), TaskCreationOptions.None, null)
         { }
 
+        /// <summary>
+        /// Initializes a new <see cref="Task{TResult}"/> with the specified function.
+        /// </summary>
+        /// <param name="function">
+        /// The delegate that represents the code to execute in the task. When the function has completed,
+        /// the task's <see cref="Result"/> property will be set to return the result value of the function.
+        /// </param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to be assigned to this task.</param>
+        /// <exception cref="T:System.ArgumentException">
+        /// The <paramref name="function"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// has already been disposed.
+        /// </exception>
         public Task(Func<TResult> function, CancellationToken cancellationToken)
-            : base(function, null, cancellationToken, null)
+            : this(function, null, cancellationToken, TaskCreationOptions.None, null)
         { }
+
+        /// <summary>
+        /// Initializes a new <see cref="Task{TResult}"/> with the specified function and creation options.
+        /// </summary>
+        /// <param name="function">
+        /// The delegate that represents the code to execute in the task. When the function has completed,
+        /// the task's <see cref="Result"/> property will be set to return the result value of the function.
+        /// </param>
+        /// <param name="creationOptions">
+        /// The <see cref="System.Threading.Tasks.TaskCreationOptions">TaskCreationOptions</see> used to
+        /// customize the task's behavior.
+        /// </param>
+        /// <exception cref="T:System.ArgumentException">
+        /// The <paramref name="function"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// The <paramref name="creationOptions"/> argument specifies an invalid value for <see
+        /// cref="T:System.Threading.Tasks.TaskCreationOptions"/>.
+        /// </exception>
+        public Task(Func<TResult> function, TaskCreationOptions creationOptions)
+            : this(function, null, default(CancellationToken), creationOptions, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new <see cref="Task{TResult}"/> with the specified function and creation options.
+        /// </summary>
+        /// <param name="function">
+        /// The delegate that represents the code to execute in the task. When the function has completed,
+        /// the task's <see cref="Result"/> property will be set to return the result value of the function.
+        /// </param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that will be assigned to the new task.</param>
+        /// <param name="creationOptions">
+        /// The <see cref="System.Threading.Tasks.TaskCreationOptions">TaskCreationOptions</see> used to
+        /// customize the task's behavior.
+        /// </param>
+        /// <exception cref="T:System.ArgumentException">
+        /// The <paramref name="function"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// The <paramref name="creationOptions"/> argument specifies an invalid value for <see
+        /// cref="T:System.Threading.Tasks.TaskCreationOptions"/>.
+        /// </exception>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// has already been disposed.
+        /// </exception>
+        public Task(Func<TResult> function, CancellationToken cancellationToken, TaskCreationOptions creationOptions)
+            : this(function, null, cancellationToken, creationOptions, null)
+        {
+        }
 
         /// <summary>
         /// Initializes a new <see cref="Task{TResult}"/> with the specified function and state.
@@ -94,18 +158,85 @@ namespace System.Threading.Tasks
         /// The <paramref name="function"/> argument is null.
         /// </exception>
         public Task(Func<object, TResult> function, object state)
-            : base(function, state, default(CancellationToken), null)
+            : base(function, state, default(CancellationToken), TaskCreationOptions.None, null)
         { }
 
+        /// <summary>
+        /// Initializes a new <see cref="Task{TResult}"/> with the specified action, state, and options.
+        /// </summary>
+        /// <param name="function">
+        /// The delegate that represents the code to execute in the task. When the function has completed,
+        /// the task's <see cref="Result"/> property will be set to return the result value of the function.
+        /// </param>
+        /// <param name="state">An object representing data to be used by the function.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to be assigned to the new task.</param>
+        /// <exception cref="T:System.ArgumentException">
+        /// The <paramref name="function"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// has already been disposed.
+        /// </exception>
         public Task(Func<object, TResult> function, object state, CancellationToken cancellationToken)
-            : base(function, state, cancellationToken, null)
+            : base(function, state, cancellationToken, TaskCreationOptions.None, null)
         { }
+
+        /// <summary>
+        /// Initializes a new <see cref="Task{TResult}"/> with the specified action, state, and options.
+        /// </summary>
+        /// <param name="function">
+        /// The delegate that represents the code to execute in the task. When the function has completed,
+        /// the task's <see cref="Result"/> property will be set to return the result value of the function.
+        /// </param>
+        /// <param name="state">An object representing data to be used by the function.</param>
+        /// <param name="creationOptions">
+        /// The <see cref="System.Threading.Tasks.TaskCreationOptions">TaskCreationOptions</see> used to
+        /// customize the task's behavior.
+        /// </param>
+        /// <exception cref="T:System.ArgumentException">
+        /// The <paramref name="function"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// The <paramref name="creationOptions"/> argument specifies an invalid value for <see
+        /// cref="T:System.Threading.Tasks.TaskCreationOptions"/>.
+        /// </exception>
+        public Task(Func<object, TResult> function, object state, TaskCreationOptions creationOptions)
+            : this(function, state, default(CancellationToken), creationOptions, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new <see cref="Task{TResult}"/> with the specified action, state, and options.
+        /// </summary>
+        /// <param name="function">
+        /// The delegate that represents the code to execute in the task. When the function has completed,
+        /// the task's <see cref="Result"/> property will be set to return the result value of the function.
+        /// </param>
+        /// <param name="state">An object representing data to be used by the function.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> to be assigned to the new task.</param>
+        /// <param name="creationOptions">
+        /// The <see cref="System.Threading.Tasks.TaskCreationOptions">TaskCreationOptions</see> used to
+        /// customize the task's behavior.
+        /// </param>
+        /// <exception cref="T:System.ArgumentException">
+        /// The <paramref name="function"/> argument is null.
+        /// </exception>
+        /// <exception cref="T:System.ArgumentOutOfRangeException">
+        /// The <paramref name="creationOptions"/> argument specifies an invalid value for <see
+        /// cref="T:System.Threading.Tasks.TaskCreationOptions"/>.
+        /// </exception>
+        /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
+        /// has already been disposed.
+        /// </exception>
+        public Task(Func<object, TResult> function, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions)
+            : this(function, state, cancellationToken, creationOptions, null)
+        {
+        }
 
         /// <summary>
         /// Internal constructor to allow creation of continue tasks.
         /// </summary>
-        internal Task(Delegate function, object state, CancellationToken cancellationToken, Task continueSource)
-            : base(function, state, cancellationToken, continueSource)
+        internal Task(Delegate function, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, Task continueSource)
+            : base(function, state, cancellationToken, creationOptions, continueSource)
         { }
 
         #endregion
