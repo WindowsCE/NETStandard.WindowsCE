@@ -81,6 +81,7 @@
     <Compile Include="Threading\MonitorTests.cs" />
     <Compile Include="Threading\MonitorTestsMS.cs" />
     <Compile Include="Threading\SpinWaitTests.cs" />
+    <Compile Include="Threading\ThreadLocalTests.cs" />
     <Compile Include="Threading\VolatileTests.cs" />
     <Compile Include="TypeTests.cs" />
     <Compile Include="WeakReferenceOfTTests.cs" />

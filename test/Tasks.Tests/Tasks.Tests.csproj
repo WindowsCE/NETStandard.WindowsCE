@@ -75,6 +75,7 @@
     <Compile Include="OperationCanceledExceptionTests.cs" />
     <Compile Include="ParallelTestHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SemaphoreSlimTests.cs" />
     <Compile Include="SynchronizationContextTests.cs" />
     <Compile Include="TaskBasicTests.cs" />
     <Compile Include="TaskCancellation.cs" />

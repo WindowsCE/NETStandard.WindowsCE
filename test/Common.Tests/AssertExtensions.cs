@@ -9,6 +9,30 @@ namespace Tests
 {
     public static class AssertExtensions
     {
+        public static void IsType(Type expectedType, object @object)
+        {
+            if (expectedType == null)
+                throw new ArgumentNullException(nameof(expectedType));
+
+            if (@object == null)
+                throw new ArgumentNullException(nameof(@object));
+
+            Type actualType = @object.GetType();
+            if (expectedType != actualType)
+            {
+                string expectedTypeName = expectedType.FullName;
+                string actualTypeName = actualType.FullName;
+
+                if (expectedTypeName == actualTypeName)
+                {
+                    expectedTypeName += string.Format(" ({0})", expectedType.Assembly.GetName().FullName);
+                    actualTypeName += string.Format(" ({0})", actualType.Assembly.GetName().FullName);
+                }
+
+                Assert.AreEqual(expectedTypeName, actualTypeName);
+            }
+        }
+
         public static T Throws<T>(Action action)
             where T : Exception
         {
