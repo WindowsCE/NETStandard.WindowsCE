@@ -797,9 +797,9 @@ partial class SR
     public const string BlockingCollection_ValidateCollectionsArray_NullElems = "The collections argument contains at least one null element.";
     public const string BlockingCollection_ValidateCollectionsArray_ZeroSize = "The collections argument is a zero-length array.";
     public const string Common_OperationCanceled = "The operation was canceled.";
-    //public const string ConcurrentBag_Ctor_ArgumentNullException = "The collection argument is null.";
-    //public const string ConcurrentBag_CopyTo_ArgumentNullException = "The array argument is null.";
-    //public const string Collection_CopyTo_ArgumentOutOfRangeException = "The index argument must be greater than or equal zero.";
+    public const string ConcurrentBag_Ctor_ArgumentNullException = "The collection argument is null.";
+    public const string ConcurrentBag_CopyTo_ArgumentNullException = "The array argument is null.";
+    public const string Collection_CopyTo_ArgumentOutOfRangeException = "The index argument must be greater than or equal zero.";
     public const string ConcurrentCollection_SyncRoot_NotSupported = "The SyncRoot property may not be used for the synchronization of concurrent collections.";
     //public const string ConcurrentDictionary_ArrayIncorrectType = "The array is multidimensional, or the type parameter for the set cannot be cast automatically to the type of the destination array.";
     //public const string ConcurrentDictionary_SourceContainsDuplicateKeys = "The source argument contains duplicate keys.";
@@ -817,7 +817,7 @@ partial class SR
     //public const string Partitioner_DynamicPartitionsNotSupported = "Dynamic partitions are not supported by this partitioner.";
     //public const string PartitionerStatic_CanNotCallGetEnumeratorAfterSourceHasBeenDisposed = "Can not call GetEnumerator on partitions after the source enumerable is disposed";
     //public const string PartitionerStatic_CurrentCalledBeforeMoveNext = "MoveNext must be called at least once before calling Current.";
-    //public const string ConcurrentBag_Enumerator_EnumerationNotStartedOrAlreadyFinished = "Enumeration has either not started or has already finished.";
+    public const string ConcurrentBag_Enumerator_EnumerationNotStartedOrAlreadyFinished = "Enumeration has either not started or has already finished.";
     //public const string ArrayTypeMustBeExactMatch = "The array type must be exactly {0}.";
     //public const string CannotCallEqualsOnSpan = "Equals() on Span and ReadOnlySpan is not supported. Use operator== instead.";
     //public const string CannotCallGetHashCodeOnSpan = "GetHashCode() on Span and ReadOnlySpan is not supported.";

@@ -27,13 +27,17 @@ using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 
+#if !NET35_CF
+using Mock.System.Collections.Generic;
+#endif
+
 namespace System.Collections.Concurrent
 {
 
     [System.Diagnostics.DebuggerDisplay("Count={Count}")]
     //[System.Diagnostics.DebuggerTypeProxy(typeof(CollectionDebuggerView<>))]
-    public class ConcurrentQueue<T> : IProducerConsumerCollection<T>, IEnumerable<T>, ICollection,
-                                      IEnumerable
+    [Diagnostics.DebuggerTypeProxy(typeof(IProducerConsumerCollectionDebugView<>))]
+    public class ConcurrentQueue<T> : IProducerConsumerCollection<T>, IReadOnlyCollection<T>
     {
         class Node
         {

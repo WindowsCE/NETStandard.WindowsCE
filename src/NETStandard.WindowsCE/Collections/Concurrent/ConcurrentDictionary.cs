@@ -1714,7 +1714,7 @@ namespace Mock.System.Collections.Concurrent
 
                         Assert(newLength % 2 != 0);
 
-                        if (newLength > 0X7FEFFFFF) // Array.MaxArrayLength
+                        if (newLength > Array2.MaxArrayLength)
                         {
                             maximizeTableSize = true;
                         }
@@ -1727,7 +1727,7 @@ namespace Mock.System.Collections.Concurrent
 
                 if (maximizeTableSize)
                 {
-                    newLength = 0X7FEFFFFF; // Array.MaxArrayLength
+                    newLength = Array2.MaxArrayLength;
 
                     // We want to make sure that GrowTable will not be called again, since table is at the maximum size.
                     // To achieve that, we set the budget to int.MaxValue.

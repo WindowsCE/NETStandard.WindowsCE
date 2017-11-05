@@ -35,8 +35,6 @@ namespace System.Threading
     [DebuggerDisplay("IsValueCreated={IsValueCreated}, Value={ValueForDebugDisplay}, Count={ValuesCountForDebugDisplay}")]
     public class ThreadLocal<T> : IDisposable
     {
-        internal const int MaxArrayLength = 0X7FEFFFFF;
-
         // a delegate that returns the created value, if null the created value will be default(T)
         private Func<T> m_valueFactory;
 
@@ -593,7 +591,7 @@ namespace System.Threading
         /// </summary>
         private static int GetNewTableSize(int minSize)
         {
-            if ((uint)minSize > MaxArrayLength)
+            if ((uint)minSize > Array2.MaxArrayLength)
             {
                 // Intentionally return a value that will result in an OutOfMemoryException
                 return int.MaxValue;
@@ -628,9 +626,9 @@ namespace System.Threading
             newSize++;
 
             // Don't set newSize to more than Array.MaxArrayLength
-            if ((uint)newSize > MaxArrayLength)
+            if ((uint)newSize > Array2.MaxArrayLength)
             {
-                newSize = MaxArrayLength;
+                newSize = Array2.MaxArrayLength;
             }
 
             return newSize;
