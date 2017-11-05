@@ -74,6 +74,20 @@ namespace Mock.System.Threading
         }
 
         /// <summary>
+        ///     Optional override for subclasses, for responding to notification that operation is starting.
+        /// </summary>
+        public virtual void OperationStarted()
+        {
+        }
+
+        /// <summary>
+        ///     Optional override for subclasses, for responding to notification that operation has completed.
+        /// </summary>
+        public virtual void OperationCompleted()
+        {
+        }
+
+        /// <summary>
         /// When overridden in a derived class, creates a copy of the
         /// synchronization context.
         /// </summary>

@@ -34,7 +34,7 @@ namespace Tests.IO
                         Assert.Fail("Stream was not copied correctly");
                     //Assert.AreEqual(data, ms2.ToArray());
                 });
-            task.Wait();
+            Assert.IsTrue(task.Wait(10000));
         }
     }
 }

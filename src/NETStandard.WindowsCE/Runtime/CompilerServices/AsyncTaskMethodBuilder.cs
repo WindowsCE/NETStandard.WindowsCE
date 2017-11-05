@@ -10,7 +10,7 @@ namespace System.Runtime.CompilerServices
 {
     public struct AsyncTaskMethodBuilder
     {
-        static readonly Task completedTask = new Task((Exception)null);
+        static readonly Task completedTask = Task.CompletedTask;
         Task _task;
 
         public Task Task

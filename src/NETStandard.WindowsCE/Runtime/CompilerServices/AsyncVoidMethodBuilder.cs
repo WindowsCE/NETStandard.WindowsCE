@@ -1,4 +1,6 @@
-﻿#if NET35_CF
+﻿using System.Threading;
+
+#if NET35_CF
 using System.Runtime.ExceptionServices;
 #else
 using Mock.System.Runtime.ExceptionServices;
@@ -8,8 +10,14 @@ namespace System.Runtime.CompilerServices
 {
     public struct AsyncVoidMethodBuilder
     {
+        /// <summary>The synchronization context associated with this operation.</summary>
+        private SynchronizationContext m_synchronizationContext;
+
         public static AsyncVoidMethodBuilder Create()
-            => new AsyncVoidMethodBuilder();
+        {
+            var sc = SynchronizationContext.Current;
+            return new AsyncVoidMethodBuilder() { m_synchronizationContext = sc };
+        }
 
         public void Start<TStateMachine>(ref TStateMachine stateMachine)
             where TStateMachine : IAsyncStateMachine
@@ -45,7 +53,21 @@ namespace System.Runtime.CompilerServices
             if (exception == null)
                 throw new ArgumentNullException(nameof(exception));
 
-            ExceptionDispatchInfo.Capture(exception).Throw();
+            var edi = ExceptionDispatchInfo.Capture(exception);
+            if (m_synchronizationContext != null)
+            {
+                try
+                {
+                    m_synchronizationContext.Post(state => ((ExceptionDispatchInfo)state).Throw(), edi);
+                    return;
+                }
+                catch (Exception postException)
+                {
+                    throw new AggregateException(exception, postException);
+                }
+            }
+
+            edi.Throw();
         }
     }
 }

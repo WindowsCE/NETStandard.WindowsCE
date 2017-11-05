@@ -3,8 +3,10 @@ using System.Threading.Tasks;
 
 #if NET35_CF
 using System.Runtime.ExceptionServices;
+using InternalOCE = System.OperationCanceledException;
 #else
 using Mock.System.Runtime.ExceptionServices;
+using InternalOCE = Mock.System.OperationCanceledException;
 #endif
 
 namespace System.Runtime.CompilerServices
@@ -33,19 +35,21 @@ namespace System.Runtime.CompilerServices
 
         internal static void ValidateEnd(Task task)
         {
-            if (task.Status == TaskStatus.RanToCompletion)
-                return;
-
-            IAsyncResult asyncResult = task;
-            if (!asyncResult.AsyncWaitHandle.WaitOne())
-                throw new InvalidOperationException("Error waiting for wait handle signal");
+            if (!task.IsCompleted)
+            {
+                bool taskCompleted = task.Wait(Timeout.Infinite, default(CancellationToken));
+                Diagnostics.Debug.Assert(taskCompleted, "With an infinite timeout, the task should have always completed.");
+            }
 
             switch (task.Status)
             {
                 case TaskStatus.RanToCompletion:
                     return;
                 case TaskStatus.Canceled:
-                    throw new TaskCanceledException(task);
+                    if (task.CancellationToken.IsCancellationRequested)
+                        throw new TaskCanceledException(task);
+                    else
+                        throw new InternalOCE(task.CancellationToken);
                 case TaskStatus.Faulted:
                     ExceptionDispatchInfo.Capture(task.Exception.InnerExceptions[0]).Throw();
                     break;
@@ -62,10 +66,10 @@ namespace System.Runtime.CompilerServices
             var syncContext = continueOnCapturedContext ? SynchronizationContext.Current : null;
             if (syncContext != null && syncContext.GetType() != typeof(SynchronizationContext))
             {
-                task.ContinueWith(t =>
+                task.ContinueWith((t, state) =>
                 {
-                    syncContext.Post(state => ((Action)state)(), continuation);
-                });
+                    syncContext.Post(s => ((Action)s)(), state);
+                }, continuation);
             }
             // TODO: TaskScheduler?
             else

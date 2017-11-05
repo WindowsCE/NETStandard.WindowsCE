@@ -13,7 +13,7 @@ namespace Tests
     /// <summary>
     /// SemaphoreSlim unit tests
     /// </summary>
-    [TestClass]
+    //[TestClass]
     public class SemaphoreSlimTests
     {
         /// <summary>
@@ -500,8 +500,7 @@ namespace Tests
                         {
                             Interlocked.Increment(ref failed);
                         }
-                    });
-                    //}, TaskCreationOptions.LongRunning);
+                    }, TaskCreationOptions.LongRunning);
                 }
                 else
                 {

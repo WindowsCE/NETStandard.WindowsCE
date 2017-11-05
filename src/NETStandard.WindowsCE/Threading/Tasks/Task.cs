@@ -118,10 +118,10 @@ namespace System.Threading.Tasks
         {
             get
             {
-                if (m_exceptions.Count > 0)
-                    return new AggregateException(m_exceptions);
-                else
+                if (!IsFaulted)
                     return null;
+
+                return new AggregateException(m_exceptions);
             }
         }
 
@@ -190,7 +190,14 @@ namespace System.Threading.Tasks
         /// <see cref="TaskStatus.Faulted">TaskStatus.Faulted</see>, and its
         /// <see cref="Exception"/> property will be non-null.
         /// </remarks>
-        public bool IsFaulted { get { return m_exceptions.Count > 0; } }
+        public bool IsFaulted
+        {
+            get
+            {
+                // Faulted is "king" -- if that bit is present (regardless of other bits), we are faulted.
+                return ((_stateFlags & TASK_STATE_FAULTED) != 0);
+            }
+        }
 
         /// <summary>
         /// Provides access to factory methods for creating
@@ -235,7 +242,7 @@ namespace System.Threading.Tasks
         /// </summary>
         internal Task()
         {
-            _stateFlags = 0;
+            _stateFlags = TASK_STATE_WAITINGFORACTIVATION;
         }
 
         /// <summary>
@@ -244,7 +251,7 @@ namespace System.Threading.Tasks
         /// <param name="state">An object representing data to be used by the action.</param>
         internal Task(object state)
         {
-            _stateFlags = 0;
+            _stateFlags = TASK_STATE_WAITINGFORACTIVATION;
             m_stateObject = state;
         }
 
@@ -537,7 +544,7 @@ namespace System.Threading.Tasks
 
         internal bool TrySetException(Exception e)
         {
-            if (!AtomicStateUpdate(TASK_STATE_FAULTED, TASK_STATE_CANCELED | TASK_STATE_RAN_TO_COMPLETION))
+            if (!AtomicStateUpdate(TASK_STATE_FAULTED, TASK_STATE_COMPLETED_MASK))
                 return false;
 
             AggregateException agg = e as AggregateException;
@@ -794,7 +801,7 @@ namespace System.Threading.Tasks
         /// </exception>
         public void Wait()
         {
-            Wait(Timeout.Infinite);
+            Wait(Timeout.Infinite, default(CancellationToken));
         }
 
         /// <summary>
@@ -826,7 +833,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentOutOfRangeException("timeout");
             }
 
-            return Wait((int)totalMilliseconds);
+            return Wait((int)totalMilliseconds, default(CancellationToken));
         }
 
         /// <summary>
