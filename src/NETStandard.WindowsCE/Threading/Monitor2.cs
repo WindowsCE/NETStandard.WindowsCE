@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+
+#if !NET35_CF
+using Mock.System.Collections.Concurrent;
+#endif
 
 #if NET35_CF
 namespace System.Threading
@@ -13,6 +18,18 @@ namespace Mock.System.Threading
     {
         private static readonly Dictionary<object, List<AutoResetEvent>> _waiters
             = new Dictionary<object, List<AutoResetEvent>>();
+
+        private static ConcurrentDictionary<object, Condition> s_conditionTable = new ConcurrentDictionary<object, Condition>();
+        private static Func<object, Condition> s_createCondition = (o) => new Condition(o);
+
+        private static Condition GetCondition(object obj)
+        {
+            if (obj == null)
+                throw new ArgumentNullException(nameof(obj));
+
+            // TODO: Dictionary is leaking obj
+            return s_conditionTable.GetOrAdd(obj, s_createCondition);
+        }
 
         public static void Enter(object obj)
         {
@@ -27,10 +44,7 @@ namespace Mock.System.Threading
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
             if (lockTaken)
-            {
-                lockTaken = false;
-                ThrowLockTakenException();
-            }
+                throw new ArgumentException(SR.Argument_MustBeFalse, nameof(lockTaken));
 
             Monitor.Enter(obj);
             lockTaken = true;
@@ -62,42 +76,12 @@ namespace Mock.System.Threading
 
         public static void Pulse(object obj)
         {
-            if (obj == null)
-                throw new ArgumentNullException(nameof(obj));
-
-            lock (_waiters)
-            {
-                if (!_waiters.ContainsKey(obj))
-                    return;
-
-                var queue = _waiters[obj];
-                if (queue.Count > 0)
-                    queue[0].Set();
-            }
-
-            Thread.Sleep(0);
+            GetCondition(obj).SignalOne();
         }
 
         public static void PulseAll(object obj)
         {
-            if (obj == null)
-                throw new ArgumentNullException(nameof(obj));
-
-            int counter = 0;
-            lock (_waiters)
-            {
-                if (!_waiters.ContainsKey(obj))
-                    return;
-
-                var queue = _waiters[obj];
-                counter = queue.Count;
-
-                for (int i = 0; i < counter; i++)
-                    queue[i].Set();
-            }
-
-            for (int i = 0; i < counter; i++)
-                Thread.Sleep(0);
+            GetCondition(obj).SignalAll();
         }
 
         public static bool TryEnter(object obj)
@@ -113,10 +97,7 @@ namespace Mock.System.Threading
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
             if (lockTaken)
-            {
-                lockTaken = false;
-                ThrowLockTakenException();
-            }
+                throw new ArgumentException(SR.Argument_MustBeFalse, nameof(lockTaken));
 
             lockTaken = Monitor.TryEnter(obj);
         }
@@ -136,10 +117,7 @@ namespace Mock.System.Threading
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
             if (lockTaken)
-            {
-                lockTaken = false;
-                ThrowLockTakenException();
-            }
+                throw new ArgumentException(SR.Argument_MustBeFalse, nameof(lockTaken));
 
             if (millisecondsTimeout == Timeout.Infinite)
             {
@@ -180,71 +158,7 @@ namespace Mock.System.Threading
 
         public static bool Wait(object obj, int millisecondsTimeout)
         {
-            if (obj == null)
-                throw new ArgumentNullException(nameof(obj));
-
-            bool objUnlocked = false;
-            bool waitersLocked = false;
-            AutoResetEvent waitHandle = null;
-            bool enqueued = false;
-            bool gotSignal = false;
-            try
-            {
-                Monitor.Exit(obj);
-                objUnlocked = true;
-
-                // Enqueue a new AutoResetEvent
-                Monitor.Enter(_waiters);
-                waitersLocked = true;
-
-                List<AutoResetEvent> queue;
-                if (_waiters.ContainsKey(obj))
-                    queue = _waiters[obj];
-                else
-                {
-                    queue = new List<AutoResetEvent>();
-                    _waiters.Add(obj, queue);
-                }
-
-                waitHandle = new AutoResetEvent(false);
-                queue.Add(waitHandle);
-                enqueued = true;
-
-                Monitor.Exit(_waiters);
-                waitersLocked = false;
-                // ----------------------------
-
-                gotSignal = waitHandle.WaitOne(millisecondsTimeout, false);
-            }
-            finally
-            {
-                if (enqueued)
-                {
-                    if (!waitersLocked)
-                    {
-                        Monitor.Enter(_waiters);
-                        waitersLocked = true;
-                    }
-
-                    List<AutoResetEvent> queue;
-                    if (_waiters.TryGetValue(obj, out queue))
-                    {
-                        queue.Remove(waitHandle);
-
-                        // If last handle for object, remove it from list
-                        if (queue.Count == 0)
-                            _waiters.Remove(obj);
-                    }
-                }
-
-                if (waitersLocked)
-                    Monitor.Exit(_waiters);
-
-                if (objUnlocked)
-                    Monitor.Enter(obj);
-            }
-
-            return gotSignal;
+            return GetCondition(obj).Wait(millisecondsTimeout);
         }
 
         public static bool Wait(object obj, TimeSpan timeout)
@@ -274,16 +188,15 @@ namespace Mock.System.Threading
                     Monitor.Exit(obj);
                     recursionCount++;
                 }
-                catch (Exception)
+#if NET35_CF
+                catch (ArgumentException)
+#else
+                catch (SynchronizationLockException)
+#endif
                 {
                     return recursionCount;
                 }
             }
-        }
-
-        private static void ThrowLockTakenException()
-        {
-            throw new ArgumentException("The lock is taken already", "lockTaken");
         }
     }
 }

@@ -121,7 +121,8 @@ namespace Tests
 
             lockTaken = true;
             AssertExtensions.Throws<ArgumentException>("lockTaken", () => Monitor.Enter(obj, ref lockTaken));
-            Assert.IsFalse(lockTaken);
+            //Assert.IsFalse(lockTaken);
+            Assert.IsTrue(lockTaken);
         }
 
         [TestMethod]

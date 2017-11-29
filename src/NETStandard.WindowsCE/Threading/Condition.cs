@@ -128,6 +128,11 @@ namespace System.Threading
             bool success = false;
             try
             {
+                // Since that IsAcquired is not available ensure that
+                // the lock was freed
+                if (recursionCount == 0)
+                    throw new ArgumentException(SR.Arg_SynchronizationLockException);
+
                 success = waiter.ev.WaitOne(millisecondsTimeout);
             }
             finally
@@ -170,12 +175,25 @@ namespace System.Threading
             //if (!_lock.IsAcquired)
             //    throw new SynchronizationLockException();
 
-            Waiter waiter = _waitersHead;
-            if (waiter != null)
+            bool lockTaken = false;
+            try
             {
-                RemoveWaiter(waiter);
-                waiter.signalled = true;
-                waiter.ev.Set();
+                Monitor2.TryEnter(_lockObject, ref lockTaken);
+                if (!lockTaken)
+                    throw new ArgumentException(SR.Arg_SynchronizationLockException);
+
+                Waiter waiter = _waitersHead;
+                if (waiter != null)
+                {
+                    RemoveWaiter(waiter);
+                    waiter.signalled = true;
+                    waiter.ev.Set();
+                }
+            }
+            finally
+            {
+                if (lockTaken)
+                    Monitor.Exit(_lockObject);
             }
         }
     }

@@ -106,7 +106,7 @@ partial class SR
     //public const string Arg_RegKeyNotFound = "The specified registry key does not exist.";
     //public const string Arg_SecurityException = "Security error.";
     //public const string Arg_StackOverflowException = "Operation caused a stack overflow.";
-    //public const string Arg_SynchronizationLockException = "Object synchronization method was called from an unsynchronized block of code.";
+    public const string Arg_SynchronizationLockException = "Object synchronization method was called from an unsynchronized block of code.";
     //public const string Arg_SystemException = "System error.";
     //public const string Arg_TargetInvocationException = "Exception has been thrown by the target of an invocation.";
     //public const string Arg_TargetParameterCountException = "Number of parameters specified does not match the expected number.";
@@ -186,7 +186,7 @@ partial class SR
     //public const string Argument_InvalidResourceCultureName = "The given culture name '{0}' cannot be used to locate a resource file. Resource filenames must consist of only letters, numbers, hyphens or underscores.";
     //public const string Argument_InvalidSerializedString = "The specified serialized string '{0}' is not supported.";
     //public const string Argument_InvalidTimeSpanStyles = "An undefined TimeSpanStyles value is being used.";
-    //public const string Argument_MustBeFalse = "Argument must be initialized to false";
+    public const string Argument_MustBeFalse = "Argument must be initialized to false";
     //public const string Argument_NoEra = "No Era was supplied.";
     //public const string Argument_NoRegionInvariantCulture = "There is no region associated with the Invariant Culture (Culture ID: 0x7F).";
     //public const string Argument_NotIsomorphic = "Object contains non-primitive or non-blittable data.";
