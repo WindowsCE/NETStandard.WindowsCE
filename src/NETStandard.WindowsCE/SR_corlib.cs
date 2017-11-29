@@ -120,7 +120,7 @@ partial class SR
     //public const string Arg_VersionString = "Version string portion was too short or too long.";
     //public const string Arg_WrongType = "The value '{0}' is not of type '{1}' and cannot be used in this generic collection.";
     //public const string Argument_AbsolutePathRequired = "Absolute path information is required.";
-    //public const string Argument_AddingDuplicate = "An item with the same key has already been added. Key: {0}";
+    public const string Argument_AddingDuplicate = "An item with the same key has already been added. Key: {0}";
     //public const string Argument_AddingDuplicate__ = "Item has already been added. Key in dictionary: '{0}'  Key being added: '{1}'";
     //public const string Argument_AdjustmentRulesNoNulls = "The AdjustmentRule array cannot contain null elements.";
     //public const string Argument_AdjustmentRulesOutOfOrder = "The elements of the AdjustmentRule array must be in chronological order and must not overlap.";
@@ -273,7 +273,7 @@ partial class SR
     //public const string ArgumentOutOfRange_MustBeNonNegInt32 = "Value must be non-negative and less than or equal to Int32.MaxValue.";
     //public const string ArgumentOutOfRange_MustBeNonNegNum = "'{0}' must be non-negative.";
     //public const string ArgumentOutOfRange_MustBePositive = "'{0}' must be greater than zero.";
-    //public const string ArgumentOutOfRange_NeedNonNegOrNegative1 = "Number must be either non-negative and less than or equal to Int32.MaxValue or -1.";
+    public const string ArgumentOutOfRange_NeedNonNegOrNegative1 = "Number must be either non-negative and less than or equal to Int32.MaxValue or -1.";
     public const string ArgumentOutOfRange_NeedPosNum = "Positive number required.";
     //public const string ArgumentOutOfRange_NegativeCapacity = "Capacity must be positive.";
     //public const string ArgumentOutOfRange_NegativeCount = "Count cannot be less than zero.";
@@ -296,7 +296,7 @@ partial class SR
     //public const string Arithmetic_NaN = "Function does not accept floating point Not-a-Number values.";
     //public const string ArrayTypeMismatch_CantAssignType = "Source array type cannot be assigned to destination array type.";
     //public const string BadImageFormatException_CouldNotLoadFileOrAssembly = "Could not load file or assembly '{0}'. An attempt was made to load a program with an incorrect format.";
-    //public const string CollectionCorrupted = "A prior operation on this collection was interrupted by an exception. Collection's state is no longer trusted.";
+    public const string CollectionCorrupted = "A prior operation on this collection was interrupted by an exception. Collection's state is no longer trusted.";
     //public const string Exception_EndOfInnerExceptionStack = "--- End of inner exception stack trace ---";
     //public const string Exception_WasThrown = "Exception of type '{0}' was thrown.";
     //public const string Format_BadBase64Char = "The input is not a valid Base-64 string as it contains a non-base 64 character, more than two padding characters, or an illegal character among the padding characters.";

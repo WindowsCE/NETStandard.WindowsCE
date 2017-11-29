@@ -24,13 +24,7 @@ namespace System.Threading
 
         public static bool WaitOne(this WaitHandle handle, TimeSpan timeout)
         {
-            long totalMilliseconds = (long)timeout.TotalMilliseconds;
-            if (totalMilliseconds < -1 || totalMilliseconds > int.MaxValue)
-            {
-                throw new ArgumentOutOfRangeException(nameof(timeout));
-            }
-
-            return handle.WaitOne((int)totalMilliseconds, false);
+            return handle.WaitOne(ToTimeoutMilliseconds(timeout), false);
         }
 
         public static bool WaitOne(this WaitHandle handle, int millisecondsTimeout)
@@ -173,13 +167,7 @@ namespace System.Threading
         /// </exception>
         public static bool WaitAll(WaitHandle[] waitHandles, TimeSpan timeout)
         {
-            long totalMilliseconds = (long)timeout.TotalMilliseconds;
-            if (totalMilliseconds < -1 || totalMilliseconds > int.MaxValue)
-            {
-                throw new ArgumentOutOfRangeException("timeout");
-            }
-
-            return WaitAll(waitHandles, (int)totalMilliseconds);
+            return WaitAll(waitHandles, ToTimeoutMilliseconds(timeout));
         }
 
         #endregion
@@ -342,16 +330,21 @@ namespace System.Threading
         /// </exception>
         public static int WaitAny(WaitHandle[] waitHandles, TimeSpan timeout)
         {
-            long totalMilliseconds = (long)timeout.TotalMilliseconds;
-            if (totalMilliseconds < -1 || totalMilliseconds > int.MaxValue)
-            {
-                throw new ArgumentOutOfRangeException("timeout");
-            }
-
-            return WaitAny(waitHandles, (int)totalMilliseconds);
+            return WaitAny(waitHandles, ToTimeoutMilliseconds(timeout));
         }
 
         #endregion
+
+        internal static int ToTimeoutMilliseconds(TimeSpan timeout)
+        {
+            var timeoutMilliseconds = (long)timeout.TotalMilliseconds;
+            if (timeoutMilliseconds < -1 || timeoutMilliseconds > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException(nameof(timeout), SR.ArgumentOutOfRange_NeedNonNegOrNegative1);
+            }
+
+            return (int)timeoutMilliseconds;
+        }
 
         private static void ValidateHandles(WaitHandle[] waitHandles, bool checkDups)
         {

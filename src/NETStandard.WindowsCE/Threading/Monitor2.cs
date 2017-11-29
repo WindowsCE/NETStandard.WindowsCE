@@ -170,10 +170,10 @@ namespace Mock.System.Threading
         }
 
         public static bool TryEnter(object obj, TimeSpan timeout)
-            => TryEnter(obj, MillisecondsTimeoutFromTimeSpan(timeout));
+            => TryEnter(obj, WaitHandle2.ToTimeoutMilliseconds(timeout));
 
         public static void TryEnter(object obj, TimeSpan timeout, ref bool lockTaken)
-            => TryEnter(obj, MillisecondsTimeoutFromTimeSpan(timeout), ref lockTaken);
+            => TryEnter(obj, WaitHandle2.ToTimeoutMilliseconds(timeout), ref lockTaken);
 
         public static bool Wait(object obj)
             => Wait(obj, Timeout.Infinite);
@@ -248,21 +248,42 @@ namespace Mock.System.Threading
         }
 
         public static bool Wait(object obj, TimeSpan timeout)
-            => Wait(obj, MillisecondsTimeoutFromTimeSpan(timeout));
+            => Wait(obj, WaitHandle2.ToTimeoutMilliseconds(timeout));
 
+        internal static void Reacquire(object obj, uint recursionCount)
+        {
+            while (recursionCount > 0)
+            {
+                Monitor.Enter(obj);
+                recursionCount--;
+            }
+        }
+
+        internal static uint ReleaseAll(object obj)
+        {
+            if (obj == null)
+            {
+                throw new ArgumentNullException(nameof(obj));
+            }
+
+            uint recursionCount = 0;
+            while (true)
+            {
+                try
+                {
+                    Monitor.Exit(obj);
+                    recursionCount++;
+                }
+                catch (Exception)
+                {
+                    return recursionCount;
+                }
+            }
+        }
 
         private static void ThrowLockTakenException()
         {
             throw new ArgumentException("The lock is taken already", "lockTaken");
-        }
-
-        private static int MillisecondsTimeoutFromTimeSpan(TimeSpan timeout)
-        {
-            long tm = (long)timeout.TotalMilliseconds;
-            if (tm < -1 || tm > (long)int.MaxValue)
-                throw new ArgumentOutOfRangeException(nameof(timeout));
-
-            return (int)tm;
         }
     }
 }
