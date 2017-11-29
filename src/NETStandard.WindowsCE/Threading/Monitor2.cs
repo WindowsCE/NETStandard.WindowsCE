@@ -158,7 +158,13 @@ namespace Mock.System.Threading
 
         public static bool Wait(object obj, int millisecondsTimeout)
         {
-            return GetCondition(obj).Wait(millisecondsTimeout);
+            var condition = GetCondition(obj);
+            var result = condition.Wait(millisecondsTimeout);
+
+            if (condition.Count() == 0)
+                s_conditionTable.TryRemove(obj, out condition);
+
+            return result;
         }
 
         public static bool Wait(object obj, TimeSpan timeout)

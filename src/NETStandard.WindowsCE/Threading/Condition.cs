@@ -39,6 +39,17 @@ namespace System.Threading
         private Waiter _waitersHead;
         private Waiter _waitersTail;
 
+        internal int Count()
+        {
+            int counter = 0;
+            for (Waiter current = _waitersHead; current != null; current = current.next)
+            {
+                counter++;
+            }
+
+            return counter;
+        }
+
         private unsafe void AssertIsInList(Waiter waiter)
         {
             Debug.Assert(_waitersHead != null && _waitersTail != null);
