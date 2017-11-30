@@ -12,6 +12,8 @@ namespace System.Threading
 {
     internal sealed class Condition
     {
+        private const string SynchronizationObjectDisposed = "The synchronization object was collected by GC.";
+
         internal class Waiter
         {
             public Waiter next;
@@ -35,7 +37,7 @@ namespace System.Threading
             return waiter;
         }
 
-        private object _lockObject;
+        private WeakReference _lockWeakObject;
         private Waiter _waitersHead;
         private Waiter _waitersTail;
 
@@ -111,12 +113,12 @@ namespace System.Threading
             waiter.prev = null;
         }
 
-        public Condition(object lockObject)
+        public Condition(WeakReference lockObject)
         {
             if (lockObject == null)
                 throw new ArgumentNullException(nameof(lockObject));
 
-            _lockObject = lockObject;
+            _lockWeakObject = lockObject;
         }
 
         public bool Wait() => Wait(Timeout.Infinite);
@@ -135,7 +137,11 @@ namespace System.Threading
             AddWaiter(waiter);
 
             //uint recursionCount = _lock.ReleaseAll();
-            uint recursionCount = Monitor2.ReleaseAll(_lockObject);
+            var lockObject = _lockWeakObject.Target;
+            if (!_lockWeakObject.IsAlive)
+                throw new ArgumentException(SynchronizationObjectDisposed);
+
+            uint recursionCount = Monitor2.ReleaseAll(lockObject);
             bool success = false;
             try
             {
@@ -150,7 +156,7 @@ namespace System.Threading
             {
                 //_lock.Reacquire(recursionCount);
                 //Debug.Assert(_lock.IsAcquired);
-                Monitor2.Reacquire(_lockObject, recursionCount);
+                Monitor2.Reacquire(lockObject, recursionCount);
 
                 if (!waiter.signalled)
                 {
@@ -186,10 +192,14 @@ namespace System.Threading
             //if (!_lock.IsAcquired)
             //    throw new SynchronizationLockException();
 
+            var lockObject = _lockWeakObject.Target;
+            if (!_lockWeakObject.IsAlive)
+                throw new ArgumentException(SynchronizationObjectDisposed);
+
             bool lockTaken = false;
             try
             {
-                Monitor2.TryEnter(_lockObject, ref lockTaken);
+                Monitor2.TryEnter(lockObject, ref lockTaken);
                 if (!lockTaken)
                     throw new ArgumentException(SR.Arg_SynchronizationLockException);
 
@@ -204,7 +214,7 @@ namespace System.Threading
             finally
             {
                 if (lockTaken)
-                    Monitor.Exit(_lockObject);
+                    Monitor.Exit(lockObject);
             }
         }
     }

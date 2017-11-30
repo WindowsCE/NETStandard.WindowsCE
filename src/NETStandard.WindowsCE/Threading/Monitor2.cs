@@ -16,19 +16,17 @@ namespace Mock.System.Threading
 {
     public static class Monitor2
     {
-        private static readonly Dictionary<object, List<AutoResetEvent>> _waiters
-            = new Dictionary<object, List<AutoResetEvent>>();
-
-        private static ConcurrentDictionary<object, Condition> s_conditionTable = new ConcurrentDictionary<object, Condition>();
-        private static Func<object, Condition> s_createCondition = (o) => new Condition(o);
+        private static ConcurrentDictionary<WeakReference, Condition> s_conditionTable = new ConcurrentDictionary<WeakReference, Condition>(new WeakReferenceComparer());
+        private static Func<WeakReference, Condition> s_createCondition = (o) => new Condition(o);
 
         private static Condition GetCondition(object obj)
         {
             if (obj == null)
                 throw new ArgumentNullException(nameof(obj));
 
-            // TODO: Dictionary is leaking obj
-            return s_conditionTable.GetOrAdd(obj, s_createCondition);
+            var result = s_conditionTable.GetOrAdd(new WeakReference(obj), s_createCondition);
+            RemoveAllDeadKeys();
+            return result;
         }
 
         public static void Enter(object obj)
@@ -161,8 +159,7 @@ namespace Mock.System.Threading
             var condition = GetCondition(obj);
             var result = condition.Wait(millisecondsTimeout);
 
-            if (condition.Count() == 0)
-                s_conditionTable.TryRemove(obj, out condition);
+            RemoveAllDeadKeys();
 
             return result;
         }
@@ -202,6 +199,57 @@ namespace Mock.System.Threading
                 {
                     return recursionCount;
                 }
+            }
+        }
+
+        private static void RemoveAllDeadKeys()
+        {
+            Condition condition;
+            var matcher = WeakReferenceComparer.DeadMatcher;
+            while (s_conditionTable.TryRemove(matcher, out condition))
+            {
+                // Does nothing
+            }
+        }
+
+        private sealed class WeakReferenceComparer : IEqualityComparer<WeakReference>
+        {
+            private static readonly WeakReference DeadMatcherReference = new WeakReference(new object());
+
+            public static WeakReference DeadMatcher
+                => DeadMatcherReference;
+
+            public bool Equals(WeakReference x, WeakReference y)
+            {
+                if (x == DeadMatcherReference)
+                {
+                    return !y.IsAlive;
+                }
+
+                if (y == DeadMatcherReference)
+                {
+                    return !x.IsAlive;
+                }
+
+                var xValue = x.Target;
+                if (x.IsAlive)
+                {
+                    var yValue = y.Target;
+                    return y.IsAlive && ReferenceEquals(xValue, yValue);
+                }
+
+                return !y.IsAlive;
+            }
+
+            public int GetHashCode(WeakReference obj)
+            {
+                object target = obj.Target;
+                if (!obj.IsAlive)
+                {
+                    return 0;
+                }
+
+                return target.GetHashCode();
             }
         }
     }

@@ -28,7 +28,7 @@ namespace Mock.System
             SetTarget(target);
         }
 
-        internal WeakReference(SerializationInfo info, StreamingContext context)
+        private WeakReference(SerializationInfo info, StreamingContext context)
         {
             if (info == null)
             {
@@ -59,7 +59,7 @@ namespace Mock.System
             _handle = GetNewHandle(value, _trackResurrection);
             if (oldHandle.IsAllocated)
             {
-                oldHandle.Free();
+                //oldHandle.Free();
                 try
                 {
                     oldHandle.Free();
@@ -71,7 +71,7 @@ namespace Mock.System
                     GC.KeepAlive(exception);
                 }
             }
-            _handle = GetNewHandle(value, _trackResurrection);
+            //_handle = GetNewHandle(value, _trackResurrection);
         }
 
         //[SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
