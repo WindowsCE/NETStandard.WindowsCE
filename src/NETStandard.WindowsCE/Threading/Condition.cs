@@ -41,18 +41,8 @@ namespace System.Threading
         private Waiter _waitersHead;
         private Waiter _waitersTail;
 
-        internal int Count()
-        {
-            int counter = 0;
-            for (Waiter current = _waitersHead; current != null; current = current.next)
-            {
-                counter++;
-            }
-
-            return counter;
-        }
-
-        private unsafe void AssertIsInList(Waiter waiter)
+        [Conditional("DEBUG")]
+        private void AssertIsInList(Waiter waiter)
         {
             Debug.Assert(_waitersHead != null && _waitersTail != null);
             Debug.Assert((_waitersHead == waiter) == (waiter.prev == null));
@@ -67,7 +57,8 @@ namespace System.Threading
             Debug.Fail("Waiter is not in the waiter list");
         }
 
-        private unsafe void AssertIsNotInList(Waiter waiter)
+        [Conditional("DEBUG")]
+        private void AssertIsNotInList(Waiter waiter)
         {
             Debug.Assert(waiter.next == null && waiter.prev == null);
             Debug.Assert((_waitersHead == null) == (_waitersTail == null));
@@ -79,7 +70,7 @@ namespace System.Threading
             }
         }
 
-        private unsafe void AddWaiter(Waiter waiter)
+        private void AddWaiter(Waiter waiter)
         {
             //Debug.Assert(_lock.IsAcquired);
             AssertIsNotInList(waiter);
@@ -94,7 +85,7 @@ namespace System.Threading
                 _waitersHead = waiter;
         }
 
-        private unsafe void RemoveWaiter(Waiter waiter)
+        private void RemoveWaiter(Waiter waiter)
         {
             //Debug.Assert(_lock.IsAcquired);
             AssertIsInList(waiter);
@@ -125,7 +116,7 @@ namespace System.Threading
 
         public bool Wait(TimeSpan timeout) => Wait(WaitHandle2.ToTimeoutMilliseconds(timeout));
 
-        public unsafe bool Wait(int millisecondsTimeout)
+        public bool Wait(int millisecondsTimeout)
         {
             if (millisecondsTimeout < -1)
                 throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout), SR.ArgumentOutOfRange_NeedNonNegOrNegative1);
@@ -178,43 +169,73 @@ namespace System.Threading
             return waiter.signalled;
         }
 
-        public unsafe void SignalAll()
+        public void SignalAll()
         {
             //if (!_lock.IsAcquired)
             //    throw new SynchronizationLockException();
 
-            while (_waitersHead != null)
-                SignalOne();
-        }
-
-        public unsafe void SignalOne()
-        {
-            //if (!_lock.IsAcquired)
-            //    throw new SynchronizationLockException();
-
-            var lockObject = _lockWeakObject.Target;
-            if (!_lockWeakObject.IsAlive)
-                throw new ArgumentException(SynchronizationObjectDisposed);
-
-            bool lockTaken = false;
+            object lockObject = null;
             try
             {
-                Monitor2.TryEnter(lockObject, ref lockTaken);
-                if (!lockTaken)
-                    throw new ArgumentException(SR.Arg_SynchronizationLockException);
+                lockObject = EnsureLockAcquisition();
 
-                Waiter waiter = _waitersHead;
-                if (waiter != null)
+                while (_waitersHead != null)
                 {
-                    RemoveWaiter(waiter);
-                    waiter.signalled = true;
-                    waiter.ev.Set();
+                    UnsafeSignalOne();
                 }
             }
             finally
             {
-                if (lockTaken)
-                    Monitor.Exit(lockObject);
+                UnlockIfAvailable(lockObject);
+            }
+        }
+
+        public void SignalOne()
+        {
+            //if (!_lock.IsAcquired)
+            //    throw new SynchronizationLockException();
+
+            object lockObject = null;
+            try
+            {
+                lockObject = EnsureLockAcquisition();
+                UnsafeSignalOne();
+            }
+            finally
+            {
+                UnlockIfAvailable(lockObject);
+            }
+        }
+
+        private object EnsureLockAcquisition()
+        {
+            var lockObject = _lockWeakObject.Target;
+            if (!_lockWeakObject.IsAlive)
+                throw new ArgumentException(SynchronizationObjectDisposed);
+
+            bool lockTaken = Monitor.TryEnter(lockObject);
+            if (!lockTaken)
+                throw new ArgumentException(SR.Arg_SynchronizationLockException);
+
+            return lockObject;
+        }
+
+        private void UnlockIfAvailable(object lockObject)
+        {
+            if (lockObject == null)
+                return;
+
+            Monitor.Exit(lockObject);
+        }
+
+        private void UnsafeSignalOne()
+        {
+            Waiter waiter = _waitersHead;
+            if (waiter != null)
+            {
+                RemoveWaiter(waiter);
+                waiter.signalled = true;
+                waiter.ev.Set();
             }
         }
     }
