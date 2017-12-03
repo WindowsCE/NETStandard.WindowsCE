@@ -26,6 +26,8 @@
 //
 //
 
+using System.Diagnostics;
+
 #if NET35_CF
 using InternalOCE = System.OperationCanceledException;
 #else
@@ -198,6 +200,9 @@ namespace System.Threading
                     return true;
 
                 WaitHandle handle = WaitHandle;
+                if (handle == null)
+                    ThrowIfDisposed();
+                Debug.Assert(handle != null);
 
                 if (cancellationToken.CanBeCanceled)
                 {

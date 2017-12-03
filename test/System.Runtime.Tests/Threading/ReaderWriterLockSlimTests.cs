@@ -190,55 +190,54 @@ namespace Tests.Threading
         //[TestMethod]
         public void InvalidExits_Theory()
         {
-            // TODO: Implement Barrier
-            //InvalidExits(LockRecursionPolicy.NoRecursion);
-            //InvalidExits(LockRecursionPolicy.SupportsRecursion);
+            InvalidExits(LockRecursionPolicy.NoRecursion);
+            InvalidExits(LockRecursionPolicy.SupportsRecursion);
         }
 
         //[Theory]
         //[InlineData(LockRecursionPolicy.NoRecursion)]
         //[InlineData(LockRecursionPolicy.SupportsRecursion)]
-        //private static void InvalidExits(LockRecursionPolicy policy)
-        //{
-        //    using (ReaderWriterLockSlim rwls = new ReaderWriterLockSlim(policy))
-        //    {
-        //        AssertExtensions.Throws<SynchronizationLockException>(() => rwls.ExitReadLock());
-        //        AssertExtensions.Throws<SynchronizationLockException>(() => rwls.ExitUpgradeableReadLock());
-        //        AssertExtensions.Throws<SynchronizationLockException>(() => rwls.ExitWriteLock());
+        private static void InvalidExits(LockRecursionPolicy policy)
+        {
+            using (ReaderWriterLockSlim rwls = new ReaderWriterLockSlim(policy))
+            {
+                AssertExtensions.Throws<SynchronizationLockException>(() => rwls.ExitReadLock());
+                AssertExtensions.Throws<SynchronizationLockException>(() => rwls.ExitUpgradeableReadLock());
+                AssertExtensions.Throws<SynchronizationLockException>(() => rwls.ExitWriteLock());
 
-        //        rwls.EnterReadLock();
-        //        AssertExtensions.Throws<SynchronizationLockException>(() => rwls.ExitUpgradeableReadLock());
-        //        AssertExtensions.Throws<SynchronizationLockException>(() => rwls.ExitWriteLock());
-        //        rwls.ExitReadLock();
+                rwls.EnterReadLock();
+                AssertExtensions.Throws<SynchronizationLockException>(() => rwls.ExitUpgradeableReadLock());
+                AssertExtensions.Throws<SynchronizationLockException>(() => rwls.ExitWriteLock());
+                rwls.ExitReadLock();
 
-        //        rwls.EnterUpgradeableReadLock();
-        //        AssertExtensions.Throws<SynchronizationLockException>(() => rwls.ExitReadLock());
-        //        AssertExtensions.Throws<SynchronizationLockException>(() => rwls.ExitWriteLock());
-        //        rwls.ExitUpgradeableReadLock();
+                rwls.EnterUpgradeableReadLock();
+                AssertExtensions.Throws<SynchronizationLockException>(() => rwls.ExitReadLock());
+                AssertExtensions.Throws<SynchronizationLockException>(() => rwls.ExitWriteLock());
+                rwls.ExitUpgradeableReadLock();
 
-        //        rwls.EnterWriteLock();
-        //        AssertExtensions.Throws<SynchronizationLockException>(() => rwls.ExitReadLock());
-        //        AssertExtensions.Throws<SynchronizationLockException>(() => rwls.ExitUpgradeableReadLock());
-        //        rwls.ExitWriteLock();
+                rwls.EnterWriteLock();
+                AssertExtensions.Throws<SynchronizationLockException>(() => rwls.ExitReadLock());
+                AssertExtensions.Throws<SynchronizationLockException>(() => rwls.ExitUpgradeableReadLock());
+                rwls.ExitWriteLock();
 
-        //        using (Barrier barrier = new Barrier(2))
-        //        {
-        //            Task t = Task.Factory.StartNew(() =>
-        //            {
-        //                rwls.EnterWriteLock();
-        //                barrier.SignalAndWait();
-        //                barrier.SignalAndWait();
-        //                rwls.ExitWriteLock();
-        //            }, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+                using (Barrier barrier = new Barrier(2))
+                {
+                    Task t = Task.Factory.StartNew(() =>
+                    {
+                        rwls.EnterWriteLock();
+                        barrier.SignalAndWait();
+                        barrier.SignalAndWait();
+                        rwls.ExitWriteLock();
+                    }, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
 
-        //            barrier.SignalAndWait();
-        //            AssertExtensions.Throws<SynchronizationLockException>(() => rwls.ExitWriteLock());
-        //            barrier.SignalAndWait();
+                    barrier.SignalAndWait();
+                    AssertExtensions.Throws<SynchronizationLockException>(() => rwls.ExitWriteLock());
+                    barrier.SignalAndWait();
 
-        //            t.GetAwaiter().GetResult();
-        //        }
-        //    }
-        //}
+                    t.GetAwaiter().GetResult();
+                }
+            }
+        }
 
         [TestMethod]
         public void InvalidTimeouts()
@@ -255,89 +254,89 @@ namespace Tests.Threading
             }
         }
 
-        //[TestMethod]
-        //public void WritersAreMutuallyExclusiveFromReaders()
-        //{
-        //    using (Barrier barrier = new Barrier(2))
-        //    using (ReaderWriterLockSlim rwls = new ReaderWriterLockSlim())
-        //    {
-        //        Task.WaitAll(
-        //            Task.Run(() =>
-        //            {
-        //                rwls.EnterWriteLock();
-        //                barrier.SignalAndWait();
-        //                Assert.IsTrue(rwls.IsWriteLockHeld);
-        //                barrier.SignalAndWait();
-        //                rwls.ExitWriteLock();
-        //            }),
-        //            Task.Run(() =>
-        //            {
-        //                barrier.SignalAndWait();
-        //                Assert.IsFalse(rwls.TryEnterReadLock(0));
-        //                Assert.IsFalse(rwls.IsReadLockHeld);
-        //                barrier.SignalAndWait();
-        //            }));
-        //    }
-        //}
+        [TestMethod]
+        public void WritersAreMutuallyExclusiveFromReaders()
+        {
+            using (Barrier barrier = new Barrier(2))
+            using (ReaderWriterLockSlim rwls = new ReaderWriterLockSlim())
+            {
+                Task.WaitAll(
+                    Task.Run(() =>
+                    {
+                        rwls.EnterWriteLock();
+                        barrier.SignalAndWait();
+                        Assert.IsTrue(rwls.IsWriteLockHeld);
+                        barrier.SignalAndWait();
+                        rwls.ExitWriteLock();
+                    }),
+                    Task.Run(() =>
+                    {
+                        barrier.SignalAndWait();
+                        Assert.IsFalse(rwls.TryEnterReadLock(0));
+                        Assert.IsFalse(rwls.IsReadLockHeld);
+                        barrier.SignalAndWait();
+                    }));
+            }
+        }
 
-        //[TestMethod]
-        //public void WritersAreMutuallyExclusiveFromWriters()
-        //{
-        //    using (Barrier barrier = new Barrier(2))
-        //    using (ReaderWriterLockSlim rwls = new ReaderWriterLockSlim())
-        //    {
-        //        Task.WaitAll(
-        //            Task.Run(() =>
-        //            {
-        //                rwls.EnterWriteLock();
-        //                barrier.SignalAndWait();
-        //                Assert.IsTrue(rwls.IsWriteLockHeld);
-        //                barrier.SignalAndWait();
-        //                rwls.ExitWriteLock();
-        //            }),
-        //            Task.Run(() =>
-        //            {
-        //                barrier.SignalAndWait();
-        //                Assert.IsFalse(rwls.TryEnterWriteLock(0));
-        //                Assert.IsFalse(rwls.IsReadLockHeld);
-        //                barrier.SignalAndWait();
-        //            }));
-        //    }
-        //}
+        [TestMethod]
+        public void WritersAreMutuallyExclusiveFromWriters()
+        {
+            using (Barrier barrier = new Barrier(2))
+            using (ReaderWriterLockSlim rwls = new ReaderWriterLockSlim())
+            {
+                Task.WaitAll(
+                    Task.Run(() =>
+                    {
+                        rwls.EnterWriteLock();
+                        barrier.SignalAndWait();
+                        Assert.IsTrue(rwls.IsWriteLockHeld);
+                        barrier.SignalAndWait();
+                        rwls.ExitWriteLock();
+                    }),
+                    Task.Run(() =>
+                    {
+                        barrier.SignalAndWait();
+                        Assert.IsFalse(rwls.TryEnterWriteLock(0));
+                        Assert.IsFalse(rwls.IsReadLockHeld);
+                        barrier.SignalAndWait();
+                    }));
+            }
+        }
 
-        //[TestMethod]
-        //public void ReadersMayBeConcurrent()
-        //{
-        //    using (Barrier barrier = new Barrier(2))
-        //    using (ReaderWriterLockSlim rwls = new ReaderWriterLockSlim())
-        //    {
-        //        Assert.AreEqual(0, rwls.CurrentReadCount);
-        //        Task.WaitAll(
-        //            Task.Run(() =>
-        //            {
-        //                rwls.EnterReadLock();
-        //                barrier.SignalAndWait(); // 1
-        //                Assert.IsTrue(rwls.IsReadLockHeld);
-        //                barrier.SignalAndWait(); // 2
-        //                Assert.AreEqual(2, rwls.CurrentReadCount);
-        //                barrier.SignalAndWait(); // 3
-        //                barrier.SignalAndWait(); // 4
-        //                rwls.ExitReadLock();
-        //            }),
-        //            Task.Run(() =>
-        //            {
-        //                barrier.SignalAndWait(); // 1
-        //                rwls.EnterReadLock();
-        //                barrier.SignalAndWait(); // 2
-        //                Assert.IsTrue(rwls.IsReadLockHeld);
-        //                Assert.AreEqual(0, rwls.WaitingReadCount);
-        //                barrier.SignalAndWait(); // 3
-        //                rwls.ExitReadLock();
-        //                barrier.SignalAndWait(); // 4
-        //            }));
-        //        Assert.AreEqual(0, rwls.CurrentReadCount);
-        //    }
-        //}
+        [TestMethod]
+        public void ReadersMayBeConcurrent()
+        {
+            using (Barrier barrier = new Barrier(2))
+            using (ReaderWriterLockSlim rwls = new ReaderWriterLockSlim())
+            {
+                Assert.AreEqual(0, rwls.CurrentReadCount);
+                Task.WaitAll(
+                    Task.Run(() =>
+                    {
+                        rwls.EnterReadLock();
+                        barrier.SignalAndWait(); // 1
+                        Assert.IsTrue(rwls.IsReadLockHeld);
+                        barrier.SignalAndWait(); // 2
+                        Assert.AreEqual(2, rwls.CurrentReadCount);
+                        barrier.SignalAndWait(); // 3
+                        barrier.SignalAndWait(); // 4
+                        rwls.ExitReadLock();
+                    }),
+                    Task.Run(() =>
+                    {
+                        barrier.SignalAndWait(); // 1
+                        rwls.EnterReadLock();
+                        barrier.SignalAndWait(); // 2
+                        Assert.IsTrue(rwls.IsReadLockHeld);
+                        Assert.AreEqual(0, rwls.WaitingReadCount);
+                        barrier.SignalAndWait(); // 3
+                        rwls.ExitReadLock();
+                        barrier.SignalAndWait(); // 4
+                    }));
+                Assert.AreEqual(0, rwls.CurrentReadCount);
+            }
+        }
 
         [TestMethod]
         public void WriterToWriterChain()

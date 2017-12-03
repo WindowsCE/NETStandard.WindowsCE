@@ -78,6 +78,8 @@
     <Compile Include="Runtime\Serialization\SerializationInfoTests.cs" />
     <Compile Include="SingleTests.cs" />
     <Compile Include="StringTests.cs" />
+    <Compile Include="Threading\BarrierCancellationTests.cs" />
+    <Compile Include="Threading\BarrierTests.cs" />
     <Compile Include="Threading\LazyInitializerTests.cs" />
     <Compile Include="Threading\MonitorTests.cs" />
     <Compile Include="Threading\MonitorTestsMS.cs" />
