@@ -6,6 +6,7 @@ using System.Threading;
 
 #if !NET35_CF
 using Mock.System.Collections.Concurrent;
+using NativeSynchronizationLockException = System.Threading.SynchronizationLockException;
 #endif
 
 #if NET35_CF
@@ -194,7 +195,7 @@ namespace Mock.System.Threading
 #if NET35_CF
                 catch (ArgumentException)
 #else
-                catch (SynchronizationLockException)
+                catch (NativeSynchronizationLockException)
 #endif
                 {
                     return recursionCount;

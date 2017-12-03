@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 
@@ -9,7 +10,10 @@ namespace System
         private static int processorCountException = 0;
 
         public static int CurrentManagedThreadId
-            => Thread.CurrentThread.ManagedThreadId;
+        {
+            [MethodImpl((MethodImplOptions)MethodImplOptions2.AggressiveInlining)]
+            get { return Thread.CurrentThread.ManagedThreadId; }
+        }
 
         public static bool HasShutdownStarted
             => false;

@@ -22,6 +22,11 @@ namespace System.Threading
         private const uint WaitInfinite = 0xFFFFFFFF;
         private const uint WaitFailed = 0xFFFFFFFF;
 
+        public static void Dispose(this WaitHandle handle)
+        {
+            handle.Close();
+        }
+
         public static bool WaitOne(this WaitHandle handle, TimeSpan timeout)
         {
             return handle.WaitOne(ToTimeoutMilliseconds(timeout), false);

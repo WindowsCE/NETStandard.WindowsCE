@@ -130,7 +130,7 @@ namespace System.Threading
             //uint recursionCount = _lock.ReleaseAll();
             var lockObject = _lockWeakObject.Target;
             if (!_lockWeakObject.IsAlive)
-                throw new ArgumentException(SynchronizationObjectDisposed);
+                throw new SynchronizationLockException(SynchronizationObjectDisposed);
 
             uint recursionCount = Monitor2.ReleaseAll(lockObject);
             bool success = false;
@@ -139,7 +139,7 @@ namespace System.Threading
                 // Since that IsAcquired is not available ensure that
                 // the lock was freed
                 if (recursionCount == 0)
-                    throw new ArgumentException(SR.Arg_SynchronizationLockException);
+                    throw new SynchronizationLockException();
 
                 success = waiter.ev.WaitOne(millisecondsTimeout);
             }
@@ -211,11 +211,11 @@ namespace System.Threading
         {
             var lockObject = _lockWeakObject.Target;
             if (!_lockWeakObject.IsAlive)
-                throw new ArgumentException(SynchronizationObjectDisposed);
+                throw new SynchronizationLockException(SynchronizationObjectDisposed);
 
             bool lockTaken = Monitor.TryEnter(lockObject);
             if (!lockTaken)
-                throw new ArgumentException(SR.Arg_SynchronizationLockException);
+                throw new SynchronizationLockException();
 
             return lockObject;
         }
