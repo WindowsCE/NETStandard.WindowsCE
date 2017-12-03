@@ -15,6 +15,8 @@ namespace System.PInvoke
         internal const int FILE_ANY_ACCESS = 0;
         internal const int FILE_DEVICE_HAL = 0x00000101;
         internal const int IOCTL_HAL_REBOOT = 0x101003C;
+        internal const Int32 ERROR_ALREADY_EXISTS = 183;
+        internal const Int32 WAIT_TIMEOUT = 0x102;
 
         internal static int IOCTL_HAL_GET_DEVICEID = ((FILE_DEVICE_HAL) << 16) |
             ((FILE_ANY_ACCESS) << 14) | ((21) << 2) | (METHOD_BUFFERED);
@@ -309,6 +311,20 @@ namespace System.PInvoke
 
         [DllImport("citydb.dll", SetLastError = true)]
         internal extern static IntPtr ClockGetTimeZoneData(int nOffset);
+
+        [DllImport("coredll.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern IntPtr CreateSemaphore(IntPtr lpSemaphoreAttributes, Int32 lInitialCount, Int32 lMaximumCount, string lpName);
+
+        [DllImport("coredll.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool ReleaseSemaphore(IntPtr handle, Int32 lReleaseCount, out Int32 previousCount);
+
+        [DllImport("coredll.dll", SetLastError = true)]
+        public static extern Int32 WaitForSingleObject(IntPtr hHandle, Int32 dwMilliseconds);
+
+        [DllImport("coredll.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool CloseHandle(IntPtr hObject);
 
         /*
         HANDLE

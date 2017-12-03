@@ -417,7 +417,7 @@ partial class SR
     //public const string Threading_AbandonedMutexException = "The wait completed due to an abandoned mutex.";
     public const string Threading_SemaphoreFullException = "Adding the specified count to the semaphore would cause it to exceed its maximum count.";
     //public const string Threading_ThreadInterrupted = "Thread was interrupted from a waiting state.";
-    //public const string Threading_WaitHandleCannotBeOpenedException = "No handle of the given name exists.";
+    public const string Threading_WaitHandleCannotBeOpenedException = "No handle of the given name exists.";
     //public const string Threading_WaitHandleCannotBeOpenedException_InvalidHandle = "A WaitHandle with system-wide name '{0}' cannot be created. A WaitHandle of a different type might have the same name.";
     //public const string TimeZoneNotFound_MissingRegistryData = "The time zone ID '{0}' was not found on the local computer.";
     //public const string TypeInitialization_Default = "Type constructor threw an exception.";

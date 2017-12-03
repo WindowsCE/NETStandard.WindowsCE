@@ -110,7 +110,7 @@ namespace System
         //internal const int COR_E_UNAUTHORIZEDACCESS = unchecked((int)0x80070005);
         //internal const int COR_E_UNSUPPORTEDFORMAT = unchecked((int)0x80131523);
         //internal const int COR_E_VERIFICATION = unchecked((int)0x8013150D);
-        //internal const int COR_E_WAITHANDLECANNOTBEOPENED = unchecked((int)0x8013152C);
+        internal const int COR_E_WAITHANDLECANNOTBEOPENED = unchecked((int)0x8013152C);
         //internal const int DISP_E_OVERFLOW = unchecked((int)0x8002000A);
         //internal const int E_BOUNDS = unchecked((int)0x8000000B);
         //internal const int E_CHANGED_STATE = unchecked((int)0x8000000C);
