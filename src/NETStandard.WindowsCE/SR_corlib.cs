@@ -408,7 +408,7 @@ partial class SR
     public const string Overflow_UInt64 = "Value was either too large or too small for a UInt64.";
     //public const string Rank_MultiDimNotSupported = "Only single dimension arrays are supported here.";
     //public const string RuntimeWrappedException = "An object that does not derive from System.Exception has been wrapped in a RuntimeWrappedException.";
-    //public const string SpinWait_SpinUntil_ArgumentNull = "The condition argument is null.";
+    public const string SpinWait_SpinUntil_ArgumentNull = "The condition argument is null.";
     //public const string Serialization_CorruptField = "The value of the field '{0}' is invalid.  The serialized data is corrupt.";
     //public const string Serialization_InvalidData = "An error occurred while deserializing the object.  The serialized data is corrupt.";
     //public const string Serialization_InvalidEscapeSequence = "The serialized data contained an invalid escape sequence '\\\\{0}'.";
@@ -522,9 +522,9 @@ partial class SR
     //public const string SpinLock_Exit_SynchronizationLockException = "The calling thread does not hold the lock.";
     //public const string SpinLock_TryReliableEnter_ArgumentException = "The tookLock argument must be set to false before calling this method.";
     //public const string SpinLock_TryEnter_ArgumentOutOfRange = "The timeout must be a value between -1 and Int32.MaxValue, inclusive.";
-    //public const string ManualResetEventSlim_Disposed = "The event has been disposed.";
-    //public const string ManualResetEventSlim_ctor_SpinCountOutOfRange = "The spinCount argument must be in the range 0 to {0}, inclusive.";
-    //public const string ManualResetEventSlim_ctor_TooManyWaiters = "There are too many threads currently waiting on the event. A maximum of {0} waiting threads are supported.";
+    public const string ManualResetEventSlim_Disposed = "The event has been disposed.";
+    public const string ManualResetEventSlim_ctor_SpinCountOutOfRange = "The spinCount argument must be in the range 0 to {0}, inclusive.";
+    public const string ManualResetEventSlim_ctor_TooManyWaiters = "There are too many threads currently waiting on the event. A maximum of {0} waiting threads are supported.";
     //public const string InvalidOperation_SendNotSupportedOnWindowsRTSynchronizationContext = "Send is not supported in the Windows Runtime SynchronizationContext";
     //public const string InvalidOperation_SetData_OnlyOnce = "SetData can only be used to set the value of a given name once.";
     public const string SemaphoreSlim_Disposed = "The semaphore has been disposed.";

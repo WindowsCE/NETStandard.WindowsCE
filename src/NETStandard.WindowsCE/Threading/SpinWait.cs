@@ -1,4 +1,18 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+// =+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+//
+// Central spin logic used across the entire code-base.
+//
+// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+using System.Diagnostics;
+
+#if !NET35_CF
+using Mock.System;
+#endif
 
 namespace System.Threading
 {
@@ -34,7 +48,7 @@ namespace System.Threading
     /// <remarks>
     /// <para>
     /// <see cref="SpinWait"/> encapsulates common spinning logic. On single-processor machines, yields are
-    /// always used instead of busy waits, and on computers with Intel™ processors employing Hyper-Threading™
+    /// always used instead of busy waits, and on computers with Intel(R) processors employing Hyper-Threading
     /// technology, it helps to prevent hardware thread starvation. SpinWait encapsulates a good mixture of
     /// spinning and true yielding.
     /// </para>
@@ -43,7 +57,8 @@ namespace System.Threading
     /// fear of unnecessary allocation overheads. SpinWait is not generally useful for ordinary applications.
     /// In most cases, you should use the synchronization classes provided by the .NET Framework, such as
     /// <see cref="System.Threading.Monitor"/>. For most purposes where spin waiting is required, however,
-    /// the <see cref="SpinWait"/> type should be preferred over the <see cref="SpinWait"/> method.
+    /// the <see cref="SpinWait"/> type should be preferred over the <see
+    /// cref="T:System.Threading.Thread.SpinWait"/> method.
     /// </para>
     /// <para>
     /// While SpinWait is designed to be used in concurrent applications, it is not designed to be
@@ -57,50 +72,85 @@ namespace System.Threading
         // numbers may seem fairly arbitrary, but were derived with at least some
         // thought in the design document.  I fully expect they will need to change
         // over time as we gain more experience with performance.
-        internal const int YIELD_THRESHOLD = 10; // When to switch over to a true yield.
-        internal const int SLEEP_0_EVERY_HOW_MANY_TIMES = 5; // After how many yields should we Sleep(0)?
-        internal const int SLEEP_1_EVERY_HOW_MANY_TIMES = 20; // After how many yields should we Sleep(1)?
-
-        // The number of times we've spun already.
-        private int m_count;
-
-        #region Properties
+        internal const int YieldThreshold = 10; // When to switch over to a true yield.
+        private const int Sleep0EveryHowManyYields = 5; // After how many yields should we Sleep(0)?
+        internal const int DefaultSleep1Threshold = 20; // After how many yields should we Sleep(1) frequently?
 
         /// <summary>
-        /// Gets the number of times <see cref="SpinOnce"/> has been called on this instance.
+        /// A suggested number of spin iterations before doing a proper wait, such as waiting on an event that becomes signaled
+        /// when the resource becomes available.
+        /// </summary>
+        /// <remarks>
+        /// These numbers were arrived at by experimenting with different numbers in various cases that currently use it. It's
+        /// only a suggested value and typically works well when the proper wait is something like an event.
+        /// 
+        /// Spinning less can lead to early waiting and more context switching, spinning more can decrease latency but may use
+        /// up some CPU time unnecessarily. Depends on the situation too, for instance SemaphoreSlim uses more iterations
+        /// because the waiting there is currently a lot more expensive (involves more spinning, taking a lock, etc.). It also
+        /// depends on the likelihood of the spin being successful and how long the wait would be but those are not accounted
+        /// for here.
+        /// </remarks>
+        internal static readonly int SpinCountforSpinBeforeWait = PlatformHelper.IsSingleProcessor ? 1 : 35;
+        internal const int Sleep1ThresholdForSpinBeforeWait = 40; // should be greater than SpinCountforSpinBeforeWait
+
+        // The number of times we've spun already.
+        private int _count;
+
+        /// <summary>
+        /// Gets the number of times <see cref="SpinOnce()"/> has been called on this instance.
         /// </summary>
         public int Count
         {
-            get { return m_count; }
+            get => _count;
+            internal set
+            {
+                Debug.Assert(value >= 0);
+                _count = value;
+            }
         }
 
         /// <summary>
-        /// Gets whether the next call to <see cref="SpinOnce"/> will yield the processor, triggering a
+        /// Gets whether the next call to <see cref="SpinOnce()"/> will yield the processor, triggering a
         /// forced context switch.
         /// </summary>
-        /// <value>Whether the next call to <see cref="SpinOnce"/> will yield the processor, triggering a
+        /// <value>Whether the next call to <see cref="SpinOnce()"/> will yield the processor, triggering a
         /// forced context switch.</value>
         /// <remarks>
-        /// On a single-CPU machine, <see cref="SpinOnce"/> always yields the processor. On machines with
-        /// multiple CPUs, <see cref="SpinOnce"/> may yield after an unspecified number of calls.
+        /// On a single-CPU machine, <see cref="SpinOnce()"/> always yields the processor. On machines with
+        /// multiple CPUs, <see cref="SpinOnce()"/> may yield after an unspecified number of calls.
         /// </remarks>
-        public bool NextSpinWillYield
-        {
-            get { return m_count > YIELD_THRESHOLD || PlatformHelper.IsSingleProcessor; }
-        }
-
-        #endregion
+        public bool NextSpinWillYield => _count >= YieldThreshold || PlatformHelper.IsSingleProcessor;
 
         /// <summary>
         /// Performs a single spin.
         /// </summary>
         /// <remarks>
         /// This is typically called in a loop, and may change in behavior based on the number of times a
-        /// <see cref="SpinOnce"/> has been called thus far on this instance.
+        /// <see cref="SpinOnce()"/> has been called thus far on this instance.
         /// </remarks>
         public void SpinOnce()
         {
-            if (NextSpinWillYield)
+            SpinOnce(DefaultSleep1Threshold);
+        }
+
+        internal void SpinOnce(int sleep1Threshold)
+        {
+            Debug.Assert(sleep1Threshold >= YieldThreshold || PlatformHelper.IsSingleProcessor); // so that NextSpinWillYield behaves as requested
+
+            // (_count - YieldThreshold) % 2 == 0: The purpose of this check is to interleave Thread.Yield/Sleep(0) with
+            // Thread.SpinWait. Otherwise, the following issues occur:
+            //   - When there are no threads to switch to, Yield and Sleep(0) become no-op and it turns the spin loop into a
+            //     busy-spin that may quickly reach the max spin count and cause the thread to enter a wait state, or may
+            //     just busy-spin for longer than desired before a Sleep(1). Completing the spin loop too early can cause
+            //     excessive context switcing if a wait follows, and entering the Sleep(1) stage too early can cause
+            //     excessive delays.
+            //   - If there are multiple threads doing Yield and Sleep(0) (typically from the same spin loop due to
+            //     contention), they may switch between one another, delaying work that can make progress.
+            if ((
+                    _count >= YieldThreshold &&
+                    (_count >= sleep1Threshold || (_count - YieldThreshold) % 2 == 0)
+                ) ||
+                PlatformHelper.IsSingleProcessor)
             {
                 //
                 // We must yield.
@@ -108,7 +158,7 @@ namespace System.Threading
                 // We prefer to call Thread.Yield first, triggering a SwitchToThread. This
                 // unfortunately doesn't consider all runnable threads on all OS SKUs. In
                 // some cases, it may only consult the runnable threads whose ideal processor
-                // is the one currently executing code. Thus we oc----ionally issue a call to
+                // is the one currently executing code. Thus we occasionally issue a call to
                 // Sleep(0), which considers all runnable threads at equal priority. Even this
                 // is insufficient since we may be spin waiting for lower priority threads to
                 // execute; we therefore must call Sleep(1) once in a while too, which considers
@@ -117,22 +167,24 @@ namespace System.Threading
                 // configured to use the (default) coarse-grained system timer.
                 //
 
-                int yieldsSoFar = (m_count >= YIELD_THRESHOLD ? m_count - YIELD_THRESHOLD : m_count);
-
-                if ((yieldsSoFar % SLEEP_1_EVERY_HOW_MANY_TIMES) == (SLEEP_1_EVERY_HOW_MANY_TIMES - 1))
+                if (_count >= sleep1Threshold)
                 {
+                    //RuntimeThread.Sleep(1);
                     Thread.Sleep(1);
-                }
-                else if ((yieldsSoFar % SLEEP_0_EVERY_HOW_MANY_TIMES) == (SLEEP_0_EVERY_HOW_MANY_TIMES - 1))
-                {
-                    Thread.Sleep(0);
                 }
                 else
                 {
-                    // Should Yield
-                    // TODO: benchmark SpinWait on multi- and single-processor.
-                    Thread.Sleep(0);
-                    //Thread.SpinWait(4 << YIELD_THRESHOLD);
+                    int yieldsSoFar = _count >= YieldThreshold ? (_count - YieldThreshold) / 2 : _count;
+                    if ((yieldsSoFar % Sleep0EveryHowManyYields) == (Sleep0EveryHowManyYields - 1))
+                    {
+                        //RuntimeThread.Sleep(0);
+                        Thread.Sleep(0);
+                    }
+                    else
+                    {
+                        //RuntimeThread.Yield();
+                        Thread.Sleep(0);
+                    }
                 }
             }
             else
@@ -148,28 +200,41 @@ namespace System.Threading
                 // number of spins we are willing to tolerate to reduce delay to the caller,
                 // since we expect most callers will eventually block anyway.
                 //
+                // Also, cap the maximum spin count to a value such that many thousands of CPU cycles would not be wasted doing
+                // the equivalent of YieldProcessor(), as that that point SwitchToThread/Sleep(0) are more likely to be able to
+                // allow other useful work to run. Long YieldProcessor() loops can help to reduce contention, but Sleep(1) is
+                // usually better for that.
+                //
+                // RuntimeThread.OptimalMaxSpinWaitsPerSpinIteration:
+                //   - See Thread::InitializeYieldProcessorNormalized(), which describes and calculates this value.
+                //
+                //int n = RuntimeThread.OptimalMaxSpinWaitsPerSpinIteration;
+                //if (_count <= 30 && (1 << _count) < n)
+                //{
+                //    n = 1 << _count;
+                //}
+                //RuntimeThread.SpinWait(n);
                 Thread.Sleep(0);
-                //Thread.SpinWait(4 << m_count);
             }
 
             // Finally, increment our spin counter.
-            m_count = (m_count == int.MaxValue ? YIELD_THRESHOLD : m_count + 1);
+            _count = (_count == int.MaxValue ? YieldThreshold : _count + 1);
         }
 
         /// <summary>
         /// Resets the spin counter.
         /// </summary>
         /// <remarks>
-        /// This makes <see cref="SpinOnce"/> and <see cref="NextSpinWillYield"/> behave as though no calls
-        /// to <see cref="SpinOnce"/> had been issued on this instance. If a <see cref="SpinWait"/> instance
+        /// This makes <see cref="SpinOnce()"/> and <see cref="NextSpinWillYield"/> behave as though no calls
+        /// to <see cref="SpinOnce()"/> had been issued on this instance. If a <see cref="SpinWait"/> instance
         /// is reused many times, it may be useful to reset it to avoid yielding too soon.
         /// </remarks>
         public void Reset()
         {
-            m_count = 0;
+            _count = 0;
         }
 
-        #region Static Methods
+#region Static Methods
         /// <summary>
         /// Spins until the specified condition is satisfied.
         /// </summary>
@@ -177,7 +242,13 @@ namespace System.Threading
         /// <exception cref="ArgumentNullException">The <paramref name="condition"/> argument is null.</exception>
         public static void SpinUntil(Func<bool> condition)
         {
+#if DEBUG
+            bool result =
+#endif
             SpinUntil(condition, Timeout.Infinite);
+#if DEBUG
+            Debug.Assert(result);
+#endif
         }
 
         /// <summary>
@@ -189,21 +260,21 @@ namespace System.Threading
         /// or a TimeSpan that represents -1 milliseconds to wait indefinitely.</param>
         /// <returns>True if the condition is satisfied within the timeout; otherwise, false</returns>
         /// <exception cref="ArgumentNullException">The <paramref name="condition"/> argument is null.</exception>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is a negative number
+        /// <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="timeout"/> is a negative number
         /// other than -1 milliseconds, which represents an infinite time-out -or- timeout is greater than
-        /// <see cref="int.MaxValue"/>.</exception>
+        /// <see cref="System.Int32.MaxValue"/>.</exception>
         public static bool SpinUntil(Func<bool> condition, TimeSpan timeout)
         {
             // Validate the timeout
             long totalMilliseconds = (long)timeout.TotalMilliseconds;
             if (totalMilliseconds < -1 || totalMilliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException(
-                    "timeout", SR.SpinWait_SpinUntil_TimeoutWrong);
+                throw new ArgumentOutOfRangeException2(
+                    nameof(timeout), timeout, SR.SpinWait_SpinUntil_TimeoutWrong);
             }
 
             // Call wait with the timeout milliseconds
-            return SpinUntil(condition, (int)timeout.TotalMilliseconds);
+            return SpinUntil(condition, (int)totalMilliseconds);
         }
 
         /// <summary>
@@ -220,17 +291,18 @@ namespace System.Threading
         {
             if (millisecondsTimeout < Timeout.Infinite)
             {
-                throw new ArgumentOutOfRangeException(
-                   "millisecondsTimeout", SR.SpinWait_SpinUntil_TimeoutWrong);
+                throw new ArgumentOutOfRangeException2(
+                   nameof(millisecondsTimeout), millisecondsTimeout, SR.SpinWait_SpinUntil_TimeoutWrong);
             }
             if (condition == null)
             {
-                throw new ArgumentNullException("condition");
+                throw new ArgumentNullException(nameof(condition), SR.SpinWait_SpinUntil_ArgumentNull);
             }
             uint startTime = 0;
             if (millisecondsTimeout != 0 && millisecondsTimeout != Timeout.Infinite)
             {
-                startTime = TimeoutHelper.GetTime();
+                //startTime = TimeoutHelper.GetTime();
+                startTime = (uint)Environment.TickCount;
             }
             SpinWait spinner = new SpinWait();
             while (!condition())
@@ -244,19 +316,17 @@ namespace System.Threading
 
                 if (millisecondsTimeout != Timeout.Infinite && spinner.NextSpinWillYield)
                 {
-                    if (millisecondsTimeout <= (TimeoutHelper.GetTime() - startTime))
+                    //if (millisecondsTimeout <= (TimeoutHelper.GetTime() - startTime))
+                    if (millisecondsTimeout <= ((uint)Environment.TickCount - startTime))
                     {
                         return false;
                     }
                 }
             }
             return true;
-
         }
-        #endregion
-
+#endregion
     }
-
 
     /// <summary>
     /// A helper class to get the number of processors, it updates the numbers of processors every sampling interval.
@@ -270,7 +340,6 @@ namespace System.Threading
         /// <summary>
         /// Gets the number of available processors
         /// </summary>
-        [SuppressMessage("Microsoft.Concurrency", "CA8001", Justification = "Reviewed for thread safety")]
         internal static int ProcessorCount
         {
             get
@@ -283,6 +352,9 @@ namespace System.Threading
                     s_lastProcessorCountRefreshTicks = now;
                 }
 
+                Debug.Assert(procCount > 0,
+                    "Processor count should be greater than 0.");
+
                 return procCount;
             }
         }
@@ -290,53 +362,7 @@ namespace System.Threading
         /// <summary>
         /// Gets whether the current machine has only a single processor.
         /// </summary>
-        internal static bool IsSingleProcessor
-        {
-            get { return ProcessorCount == 1; }
-        }
+        /// <remarks>This typically does not change on a machine, so it's checked only once.</remarks>
+        internal static readonly bool IsSingleProcessor = ProcessorCount == 1;
     }
-
-    /// <summary>
-    /// A helper class to capture a start time using Environment.TickCout as a time in milliseconds, also updates a given timeout bu subtracting the current time from
-    /// the start time
-    /// </summary>
-    internal static class TimeoutHelper
-    {
-        /// <summary>
-        /// Returns the Environment.TickCount as a start time in milliseconds as a uint, TickCount tools over from postive to negative every ~ 25 days
-        /// then ~25 days to back to positive again, uint is sued to ignore the sign and double the range to 50 days
-        /// </summary>
-        /// <returns></returns>
-        public static uint GetTime()
-        {
-            return (uint)Environment.TickCount;
-        }
-
-        /// <summary>
-        /// Helper function to measure and update the elapsed time
-        /// </summary>
-        /// <param name="startTime"> The first time (in milliseconds) observed when the wait started</param>
-        /// <param name="originalWaitMillisecondsTimeout">The orginal wait timeoutout in milliseconds</param>
-        /// <returns>The new wait time in milliseconds, -1 if the time expired</returns>
-        public static int UpdateTimeOut(uint startTime, int originalWaitMillisecondsTimeout)
-        {
-            uint elapsedMilliseconds = (GetTime() - startTime);
-
-            // Check the elapsed milliseconds is greater than max int because this property is uint
-            if (elapsedMilliseconds > int.MaxValue)
-            {
-                return 0;
-            }
-
-            // Subtract the elapsed time from the current wait time
-            int currentWaitTimeout = originalWaitMillisecondsTimeout - (int)elapsedMilliseconds; ;
-            if (currentWaitTimeout <= 0)
-            {
-                return 0;
-            }
-
-            return currentWaitTimeout;
-        }
-    }
-
 }

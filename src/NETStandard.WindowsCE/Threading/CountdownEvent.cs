@@ -212,7 +212,7 @@ namespace System.Threading
 
         void CheckDisposed()
         {
-            if (evt.disposed.Value)
+            if (evt.IsDisposed)
                 throw new ObjectDisposedException("CountdownEvent");
         }
     }

@@ -6,6 +6,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading;
 
+#if !WindowsCE
+using Mock.System;
+#endif
+
 namespace Tests.Threading
 {
     [TestClass]
@@ -27,10 +31,10 @@ namespace Tests.Threading
             AssertExtensions.Throws<ArgumentNullException>(
                () => SpinWait.SpinUntil(null));
             // Failure Case:  SpinUntil didn't throw ANE when null condition  passed
-            AssertExtensions.Throws<ArgumentOutOfRangeException>(
+            AssertExtensions.Throws<ArgumentOutOfRangeException2>(
                () => SpinWait.SpinUntil(() => true, TimeSpan.MaxValue));
             // Failure Case:  SpinUntil didn't throw AORE when milliseconds > int.Max passed
-            AssertExtensions.Throws<ArgumentOutOfRangeException>(
+            AssertExtensions.Throws<ArgumentOutOfRangeException2>(
                () => SpinWait.SpinUntil(() => true, -2));
             // Failure Case:  SpinUntil didn't throw AORE when milliseconds < -1 passed
 
