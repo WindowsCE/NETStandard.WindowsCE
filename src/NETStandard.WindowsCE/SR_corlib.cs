@@ -517,11 +517,11 @@ partial class SR
     //public const string Argument_MinMaxValue = "'{0}' cannot be greater than {1}.";
     //public const string ExecutionContext_ExceptionInAsyncLocalNotification = "An exception was not handled in an AsyncLocal<T> notification callback.";
     //public const string InvalidOperation_WrongAsyncResultOrEndCalledMultiple = "Either the IAsyncResult object did not come from the corresponding async method on this type, or the End method was called multiple times with the same IAsyncResult.";
-    //public const string SpinLock_IsHeldByCurrentThread = "Thread tracking is disabled.";
-    //public const string SpinLock_TryEnter_LockRecursionException = "The calling thread already holds the lock.";
-    //public const string SpinLock_Exit_SynchronizationLockException = "The calling thread does not hold the lock.";
-    //public const string SpinLock_TryReliableEnter_ArgumentException = "The tookLock argument must be set to false before calling this method.";
-    //public const string SpinLock_TryEnter_ArgumentOutOfRange = "The timeout must be a value between -1 and Int32.MaxValue, inclusive.";
+    public const string SpinLock_IsHeldByCurrentThread = "Thread tracking is disabled.";
+    public const string SpinLock_TryEnter_LockRecursionException = "The calling thread already holds the lock.";
+    public const string SpinLock_Exit_SynchronizationLockException = "The calling thread does not hold the lock.";
+    public const string SpinLock_TryReliableEnter_ArgumentException = "The tookLock argument must be set to false before calling this method.";
+    public const string SpinLock_TryEnter_ArgumentOutOfRange = "The timeout must be a value between -1 and Int32.MaxValue, inclusive.";
     public const string ManualResetEventSlim_Disposed = "The event has been disposed.";
     public const string ManualResetEventSlim_ctor_SpinCountOutOfRange = "The spinCount argument must be in the range 0 to {0}, inclusive.";
     public const string ManualResetEventSlim_ctor_TooManyWaiters = "There are too many threads currently waiting on the event. A maximum of {0} waiting threads are supported.";
