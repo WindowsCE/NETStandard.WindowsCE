@@ -101,7 +101,10 @@ namespace System.Threading
         /// </summary>
         public int Count
         {
-            get => _count;
+            get
+            {
+                return _count;
+            }
             internal set
             {
                 Debug.Assert(value >= 0);
