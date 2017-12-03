@@ -8,12 +8,16 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
+#if !WindowsCE
+using Mock.System;
+#endif
+
 namespace Tests
 {
     /// <summary>
     /// SemaphoreSlim unit tests
     /// </summary>
-    //[TestClass]
+    [TestClass]
     public class SemaphoreSlimTests
     {
         /// <summary>
@@ -41,9 +45,9 @@ namespace Tests
         [TestMethod]
         public void RunSemaphoreSlimTest0_Ctor_Negative()
         {
-            RunSemaphoreSlimTest0_Ctor(10, 0, typeof(ArgumentOutOfRangeException));
-            RunSemaphoreSlimTest0_Ctor(10, -1, typeof(ArgumentOutOfRangeException));
-            RunSemaphoreSlimTest0_Ctor(-1, 10, typeof(ArgumentOutOfRangeException));
+            RunSemaphoreSlimTest0_Ctor(10, 0, typeof(ArgumentOutOfRangeException2));
+            RunSemaphoreSlimTest0_Ctor(10, -1, typeof(ArgumentOutOfRangeException2));
+            RunSemaphoreSlimTest0_Ctor(-1, 10, typeof(ArgumentOutOfRangeException2));
         }
 
         [TestMethod]
@@ -68,9 +72,9 @@ namespace Tests
         public void RunSemaphoreSlimTest1_Wait_NegativeCases()
         {
             // Invalid timeout
-            RunSemaphoreSlimTest1_Wait(10, 10, -10, true, typeof(ArgumentOutOfRangeException));
+            RunSemaphoreSlimTest1_Wait(10, 10, -10, true, typeof(ArgumentOutOfRangeException2));
             RunSemaphoreSlimTest1_Wait
-               (10, 10, new TimeSpan(0, 0, Int32.MaxValue), true, typeof(ArgumentOutOfRangeException));
+               (10, 10, new TimeSpan(0, 0, Int32.MaxValue), true, typeof(ArgumentOutOfRangeException2));
         }
 
         [TestMethod]
@@ -95,9 +99,9 @@ namespace Tests
         public void RunSemaphoreSlimTest1_WaitAsync_NegativeCases()
         {
             // Invalid timeout
-            RunSemaphoreSlimTest1_WaitAsync(10, 10, -10, true, typeof(ArgumentOutOfRangeException));
+            RunSemaphoreSlimTest1_WaitAsync(10, 10, -10, true, typeof(ArgumentOutOfRangeException2));
             RunSemaphoreSlimTest1_WaitAsync
-               (10, 10, new TimeSpan(0, 0, Int32.MaxValue), true, typeof(ArgumentOutOfRangeException));
+               (10, 10, new TimeSpan(0, 0, Int32.MaxValue), true, typeof(ArgumentOutOfRangeException2));
             RunSemaphoreSlimTest1_WaitAsync2();
         }
 
@@ -114,8 +118,8 @@ namespace Tests
         public void RunSemaphoreSlimTest2_Release_NegativeCases()
         {
             // Invalid release count
-            RunSemaphoreSlimTest2_Release(5, 10, 0, typeof(ArgumentOutOfRangeException));
-            RunSemaphoreSlimTest2_Release(5, 10, -1, typeof(ArgumentOutOfRangeException));
+            RunSemaphoreSlimTest2_Release(5, 10, 0, typeof(ArgumentOutOfRangeException2));
+            RunSemaphoreSlimTest2_Release(5, 10, -1, typeof(ArgumentOutOfRangeException2));
 
             // Semaphore Full
             RunSemaphoreSlimTest2_Release(10, 10, 1, typeof(SemaphoreFullException));
