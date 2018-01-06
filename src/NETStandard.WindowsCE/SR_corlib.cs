@@ -490,7 +490,7 @@ partial class SR
     //public const string Task_FromAsync_LongRunning = "It is invalid to specify TaskCreationOptions.LongRunning in calls to FromAsync.";
     //public const string AsyncMethodBuilder_InstanceNotInitialized = "The builder was not properly initialized.";
     //public const string TaskT_TransitionToFinal_AlreadyCompleted = "An attempt was made to transition a task to a final state when it had already completed.";
-    //public const string TaskT_DebuggerNoResult = "{Not yet computed}";
+    public const string TaskT_DebuggerNoResult = "{Not yet computed}";
     //public const string OperationCanceled = "The operation was canceled.";
     //public const string CancellationToken_CreateLinkedToken_TokensIsEmpty = "No tokens were supplied.";
     //public const string CancellationTokenSource_Disposed = "The CancellationTokenSource has been disposed.";

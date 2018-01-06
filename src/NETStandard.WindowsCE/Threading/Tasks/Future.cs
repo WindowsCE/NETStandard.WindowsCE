@@ -1,4 +1,6 @@
-﻿#if NET35_CF
+﻿using System.Diagnostics;
+
+#if NET35_CF
 using InternalOCE = System.OperationCanceledException;
 #else
 using InternalOCE = Mock.System.OperationCanceledException;
@@ -12,6 +14,7 @@ namespace System.Threading.Tasks
     /// <typeparam name="TResult">
     /// The type of the result produced by this <see cref="Task{TResult}"/>.
     /// </typeparam>
+    [DebuggerDisplay("Id = {Id}, Status = {Status}, Method = {DebuggerDisplayMethodDescription}, Result = {DebuggerDisplayResultDescription}")]
     public class Task<TResult> : Task
     {
         private TResult _result;
@@ -35,6 +38,14 @@ namespace System.Threading.Tasks
                 return _result;
             }
         }
+
+        // Debugger support
+        private string DebuggerDisplayResultDescription
+            => IsCompletedSuccessfully ? "" + _result : SR.TaskT_DebuggerNoResult;
+
+        // Debugger support
+        private string DebuggerDisplayMethodDescription
+            => m_contingentProperties?.m_action?.Method.ToString() ?? "{null}";
 
         #endregion
 

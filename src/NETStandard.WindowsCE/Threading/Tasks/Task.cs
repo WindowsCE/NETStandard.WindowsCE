@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 #if NET35_CF
@@ -14,6 +15,7 @@ namespace System.Threading.Tasks
     /// <summary>
     /// Represents an asynchronous operation.
     /// </summary>
+    [DebuggerDisplay("Id = {Id}, Status = {Status}, Method = {DebuggerDisplayMethodDescription}")]
     public class Task : IAsyncResult, IDisposable
     {
         private static Task _completedTask; // A task that's already been completed successfully.
@@ -232,6 +234,10 @@ namespace System.Threading.Tasks
                 return rval;
             }
         }
+
+        // Debugger support
+        private string DebuggerDisplayMethodDescription
+            => m_contingentProperties?.m_action?.Method.ToString() ?? "{null}";
 
         #endregion
 
