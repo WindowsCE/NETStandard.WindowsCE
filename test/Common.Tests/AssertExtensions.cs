@@ -31,10 +31,10 @@ namespace Tests
         public static void IsType(Type expectedType, object @object)
         {
             if (expectedType == null)
-                throw new ArgumentNullException(nameof(expectedType));
+                throw new ArgumentNullException("expectedType");
 
             if (@object == null)
-                throw new ArgumentNullException(nameof(@object));
+                throw new ArgumentNullException("object");
 
             Type actualType = @object.GetType();
             if (expectedType != actualType)
