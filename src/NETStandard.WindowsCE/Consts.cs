@@ -13,7 +13,7 @@
 #if NET35_CF
     public const string TargetFramework = ".NETFramework,Version=v3.5,Profile=CompactFramework";
 #else
-    public const string TargetFramework = ".NETFramework,Version=v3.5,Profile=Client";
+    public const string TargetFramework = ".NETFramework,Version=v3.5";
 #endif
 
 #if DEBUG
