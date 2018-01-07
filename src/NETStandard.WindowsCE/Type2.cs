@@ -73,22 +73,19 @@ namespace Mock.System
                 var mTypes = mInfos[i].MemberType;
                 if ((type & mTypes) != mTypes)
                 {
-                    if (fMInfos == null)
-                    {
-                        fMInfos = new List<MemberInfo>(mInfos.Length);
-                        fMInfos.AddRange(mInfos.Take(i));
-                    }
+                    if (fMInfos != null)
+                        continue;
+
+                    fMInfos = new List<MemberInfo>(mInfos.Length);
+                    fMInfos.AddRange(mInfos.Take(i));
                 }
-                else if (fMInfos != null)
+                else
                 {
-                    fMInfos.Add(mInfos[i]);
+                    fMInfos?.Add(mInfos[i]);
                 }
             }
 
-            if (fMInfos == null)
-                return mInfos;
-            else
-                return fMInfos.ToArray();
+            return fMInfos?.ToArray() ?? mInfos;
         }
 
         internal static bool IsIntegerNumber(Type type)

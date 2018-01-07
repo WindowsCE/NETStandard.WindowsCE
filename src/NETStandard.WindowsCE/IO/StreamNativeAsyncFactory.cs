@@ -24,19 +24,13 @@ namespace System.IO
 
         public StreamNativeAsyncFactory(Stream stream)
         {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            this.stream = stream;
+            this.stream = stream ?? throw new ArgumentNullException(nameof(stream));
             this.isApmSupported = IsApmSupported(stream);
         }
 
         public StreamNativeAsyncFactory(Stream stream, bool isApmSupported)
         {
-            if (stream == null)
-                throw new ArgumentNullException(nameof(stream));
-
-            this.stream = stream;
+            this.stream = stream ?? throw new ArgumentNullException(nameof(stream));
             this.isApmSupported = isApmSupported;
         }
 
@@ -151,10 +145,10 @@ namespace System.IO
 
         private sealed class AsyncOperationParameters
         {
-            public Stream Source;
-            public byte[] Buffer;
-            public int Offset;
-            public int Count;
+            public readonly Stream Source;
+            public readonly byte[] Buffer;
+            public readonly int Offset;
+            public readonly int Count;
             public CancellationToken CancellationToken;
 
             public AsyncOperationParameters(Stream source, byte[] buffer, int offset, int count, CancellationToken cancellationToken)

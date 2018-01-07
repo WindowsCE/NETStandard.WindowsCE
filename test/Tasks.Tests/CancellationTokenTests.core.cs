@@ -1012,65 +1012,64 @@ namespace Tests
             cts.Dispose();
         }
 
-        // TODO: Implement ManualResetEventSlim
-        //[TestMethod]
-        //public void CancellationToken_CancellationTokenSourceWithTimerSlim()
-        //{
-        //    TimeSpan bigTimeSpan = new TimeSpan(2000, 0, 0, 0, 0);
-        //    TimeSpan reasonableTimeSpan = new TimeSpan(0, 0, 1);
-        //    CancellationTokenSource cts = new CancellationTokenSource();
-        //    cts.Dispose();
+        [TestMethod]
+        public void CancellationToken_CancellationTokenSourceWithTimerSlim()
+        {
+            TimeSpan bigTimeSpan = new TimeSpan(2000, 0, 0, 0, 0);
+            TimeSpan reasonableTimeSpan = new TimeSpan(0, 0, 1);
+            CancellationTokenSource cts = new CancellationTokenSource();
+            cts.Dispose();
 
 
-        //    //
-        //    // Test out some int-based timeout logic
-        //    //
-        //    cts = new CancellationTokenSource(-1); // should be an infinite timeout
-        //    CancellationToken token = cts.Token;
-        //    ManualResetEventSlim mres = new ManualResetEventSlim(false);
-        //    CancellationTokenRegistration ctr = token.Register(() => mres.Set());
+            //
+            // Test out some int-based timeout logic
+            //
+            cts = new CancellationTokenSource(-1); // should be an infinite timeout
+            CancellationToken token = cts.Token;
+            ManualResetEventSlim mres = new ManualResetEventSlim(false);
+            CancellationTokenRegistration ctr = token.Register(() => mres.Set());
 
-        //    Assert.IsFalse(token.IsCancellationRequested,
-        //       "CancellationTokenSourceWithTimer:  Cancellation signaled on infinite timeout (int)!");
+            Assert.IsFalse(token.IsCancellationRequested,
+               "CancellationTokenSourceWithTimer:  Cancellation signaled on infinite timeout (int)!");
 
-        //    cts.CancelAfter(1000000);
+            cts.CancelAfter(1000000);
 
-        //    Assert.IsFalse(token.IsCancellationRequested,
-        //       "CancellationTokenSourceWithTimer:  Cancellation signaled on super-long timeout (int) !");
+            Assert.IsFalse(token.IsCancellationRequested,
+               "CancellationTokenSourceWithTimer:  Cancellation signaled on super-long timeout (int) !");
 
-        //    cts.CancelAfter(1);
+            cts.CancelAfter(1);
 
-        //    Debug.WriteLine("CancellationTokenSourceWithTimer: > About to wait on cancellation that should occur soon (int)... if we hang, something bad happened");
+            Debug.WriteLine("CancellationTokenSourceWithTimer: > About to wait on cancellation that should occur soon (int)... if we hang, something bad happened");
 
-        //    mres.Wait();
+            mres.Wait();
 
-        //    cts.Dispose();
+            cts.Dispose();
 
-        //    //
-        //    // Test out some TimeSpan-based timeout logic
-        //    //
-        //    TimeSpan prettyLong = new TimeSpan(1, 0, 0);
-        //    cts = new CancellationTokenSource(prettyLong);
-        //    token = cts.Token;
-        //    mres = new ManualResetEventSlim(false);
-        //    ctr = token.Register(() => mres.Set());
+            //
+            // Test out some TimeSpan-based timeout logic
+            //
+            TimeSpan prettyLong = new TimeSpan(1, 0, 0);
+            cts = new CancellationTokenSource(prettyLong);
+            token = cts.Token;
+            mres = new ManualResetEventSlim(false);
+            ctr = token.Register(() => mres.Set());
 
-        //    Assert.IsFalse(token.IsCancellationRequested,
-        //       "CancellationTokenSourceWithTimer:  Cancellation signaled on super-long timeout (TimeSpan,1)!");
+            Assert.IsFalse(token.IsCancellationRequested,
+               "CancellationTokenSourceWithTimer:  Cancellation signaled on super-long timeout (TimeSpan,1)!");
 
-        //    cts.CancelAfter(prettyLong);
+            cts.CancelAfter(prettyLong);
 
-        //    Assert.IsFalse(token.IsCancellationRequested,
-        //       "CancellationTokenSourceWithTimer:  Cancellation signaled on super-long timeout (TimeSpan,2) !");
+            Assert.IsFalse(token.IsCancellationRequested,
+               "CancellationTokenSourceWithTimer:  Cancellation signaled on super-long timeout (TimeSpan,2) !");
 
-        //    cts.CancelAfter(new TimeSpan(1000));
+            cts.CancelAfter(new TimeSpan(1000));
 
-        //    Debug.WriteLine("CancellationTokenSourceWithTimer: > About to wait on cancellation that should occur soon (TimeSpan)... if we hang, something bad happened");
+            Debug.WriteLine("CancellationTokenSourceWithTimer: > About to wait on cancellation that should occur soon (TimeSpan)... if we hang, something bad happened");
 
-        //    mres.Wait();
+            mres.Wait();
 
-        //    cts.Dispose();
-        //}
+            cts.Dispose();
+        }
 
         [TestMethod]
         public void CancellationToken_CancellationTokenSourceWithTimer_Negative()
