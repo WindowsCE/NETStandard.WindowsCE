@@ -10,9 +10,14 @@ namespace System.IO
     // Creates asynchronous methods for Stream class based upon native implementation
     internal sealed class StreamNativeAsyncFactory
     {
-        private static readonly Type HttpReadStreamType = Type.GetType("System.Net.HttpReadStream, " + Type2.MSCorLibQualifiedName, false, false);
-        private static readonly Type HttpWriteStreamType = Type.GetType("System.Net.HttpWriteStream, " + Type2.MSCorLibQualifiedName, false, false);
-        private static readonly Type SerialStreamType = Type.GetType("System.IO.Ports.SerialStream, " + Type2.MSCorLibQualifiedName, false, false);
+#if WindowsCE
+        private static readonly Type ChunkedReadStreamType = Type.GetType("System.Net.ChunkedReadStream, " + Type2.SystemQualifiedName, true, false);
+        private static readonly Type CloseReadStreamType = Type.GetType("System.Net.CloseReadStream, " + Type2.SystemQualifiedName, true, false);
+        private static readonly Type ContentLengthReadStreamType = Type.GetType("System.Net.ContentLengthReadStream, " + Type2.SystemQualifiedName, true, false);
+        private static readonly Type BufferConnectStreamType = Type.GetType("System.Net.HttpWebRequest+BufferConnectStream, " + Type2.SystemQualifiedName, true, false);
+        private static readonly Type WriteConnectStreamType = Type.GetType("System.Net.HttpWebRequest+WriteConnectStream, " + Type2.SystemQualifiedName, true, false);
+        private static readonly Type SerialStreamType = Type.GetType("System.IO.Ports.SerialStream, " + Type2.SystemQualifiedName, true, false);
+#endif
 
         private readonly Stream stream;
         private readonly bool isApmSupported;
@@ -42,18 +47,16 @@ namespace System.IO
 
         public StreamReadAsync CreateReadAsyncMethod()
         {
-            if (isApmSupported)
-                return ReadAsyncUsingApm;
-            else
-                return ReadAsyncUsingNewTask;
+            return isApmSupported
+                ? (StreamReadAsync)ReadAsyncUsingApm
+                : ReadAsyncUsingNewTask;
         }
 
         public StreamWriteAsync CreateWriteAsyncMethod()
         {
-            if (isApmSupported)
-                return WriteAsyncUsingApm;
-            else
-                return WriteAsyncUsingNewTask;
+            return isApmSupported
+                ? (StreamWriteAsync)WriteAsyncUsingApm
+                : WriteAsyncUsingNewTask;
         }
 
         private Task FlushAsync(CancellationToken cancellationToken)
@@ -69,7 +72,7 @@ namespace System.IO
 
         public static bool IsApmSupported(Stream stream)
         {
-            // Those are the types known to implement APM on Compact Framework
+            // Those are the public types known to implement APM on Compact Framework
             if (stream is Compression.DeflateStream)
                 return true;
             if (stream is Compression.GZipStream)
@@ -77,18 +80,18 @@ namespace System.IO
             if (stream is Net.Sockets.NetworkStream)
                 return true;
 
-            // TODO: Very expensive to call on loop
 #if WindowsCE
-            var streamType = stream.GetType();
-            if (HttpReadStreamType.IsAssignableFrom(streamType))
-                return true;
-            if (HttpWriteStreamType.IsAssignableFrom(streamType))
-                return true;
-            if (SerialStreamType.IsAssignableFrom(streamType))
-                return true;
-#endif
-
+            // TODO: Sort by usage
+            Type streamType = stream.GetType();
+            return streamType == ChunkedReadStreamType
+                || streamType == CloseReadStreamType
+                || streamType == ContentLengthReadStreamType
+                || streamType == BufferConnectStreamType
+                || streamType == WriteConnectStreamType
+                || streamType == SerialStreamType;
+#else
             return false;
+#endif
         }
 
         private Task<int> ReadAsyncUsingApm(byte[] buffer, int offset, int count, CancellationToken cancellationToken)

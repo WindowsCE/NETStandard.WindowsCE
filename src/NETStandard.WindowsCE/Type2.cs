@@ -11,7 +11,10 @@ namespace Mock.System
 {
     public static class Type2
     {
-        internal const string MSCorLibQualifiedName = "mscorlib, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac";
+        private const string CompactFrameworkLibSignature =
+            ", Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac";
+        internal const string MsCorLibQualifiedName = "mscorlib" + CompactFrameworkLibSignature;
+        internal const string SystemQualifiedName = "System" + CompactFrameworkLibSignature;
 
         public static readonly char Delimiter = Type.Delimiter;
         public static readonly Type[] EmptyTypes = new Type[0];
