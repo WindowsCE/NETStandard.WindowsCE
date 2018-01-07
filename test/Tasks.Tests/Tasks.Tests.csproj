@@ -41,9 +41,6 @@
     <AssemblyOriginatorKeyFile>$(SolutionDir)tools\keypair.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NETStandard.WindowsCE">
-      <HintPath>..\..\src\NETStandard.WindowsCE\bin\Debug\net35-client\NETStandard.WindowsCE.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -88,6 +85,10 @@
     <None Include="$(SolutionDir)tools\keypair.snk" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\NETStandard.WindowsCE\NETStandard.WindowsCE.csproj">
+      <Project>{24857e98-e634-4803-8cc6-172b8389d89d}</Project>
+      <Name>NETStandard.WindowsCE</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Common.Tests\Common.Tests.csproj">
       <Project>{11362ef6-8335-4739-9ab0-2fff56589661}</Project>
       <Name>Common.Tests</Name>
