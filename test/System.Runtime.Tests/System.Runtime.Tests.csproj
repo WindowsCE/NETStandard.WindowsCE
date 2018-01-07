@@ -68,6 +68,7 @@
     <Compile Include="LazyOfTMetadataTests.cs" />
     <Compile Include="LazyTests.cs" />
     <Compile Include="LazyTestsMS.cs" />
+    <Compile Include="Linq\Expressions\ExpressionTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runtime\CompilerServices\AsyncTaskMethodBuilderTests.cs" />
     <Compile Include="Runtime\CompilerServices\RuntimeHelpersTests.cs" />
