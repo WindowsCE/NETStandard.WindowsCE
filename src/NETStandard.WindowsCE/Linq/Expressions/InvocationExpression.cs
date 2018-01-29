@@ -1,5 +1,5 @@
 ﻿//
-// MemberExpression.cs
+// InvocationExpression.cs
 //
 // Author:
 //   Jb Evain (jbevain@novell.com)
@@ -26,21 +26,21 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.Reflection;
+using System.Collections.ObjectModel;
 
 namespace System.Linq.Expressions
 {
-    public sealed class MemberExpression : Expression
+    public sealed class InvocationExpression : Expression
     {
         public Expression Expression { get; }
 
-        public MemberInfo Member { get; }
+        public ReadOnlyCollection<Expression> Arguments { get; }
 
-        internal MemberExpression(Expression expression, MemberInfo member, Type type)
-            : base(ExpressionType.MemberAccess, type)
+        internal InvocationExpression(Expression expression, Type type, ReadOnlyCollection<Expression> arguments)
+            : base(ExpressionType.Invoke, type)
         {
             Expression = expression;
-            Member = member;
+            Arguments = arguments;
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿//
-// MemberExpression.cs
+//
+// ElementInit.cs
 //
 // Author:
 //   Jb Evain (jbevain@novell.com)
@@ -26,21 +26,26 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System.Collections.ObjectModel;
 using System.Reflection;
 
 namespace System.Linq.Expressions
 {
-    public sealed class MemberExpression : Expression
+    public sealed class ElementInit
     {
-        public Expression Expression { get; }
+        public MethodInfo AddMethod { get; }
 
-        public MemberInfo Member { get; }
+        public ReadOnlyCollection<Expression> Arguments { get; }
 
-        internal MemberExpression(Expression expression, MemberInfo member, Type type)
-            : base(ExpressionType.MemberAccess, type)
+        internal ElementInit(MethodInfo addMethod, ReadOnlyCollection<Expression> arguments)
         {
-            Expression = expression;
-            Member = member;
+            AddMethod = addMethod;
+            Arguments = arguments;
+        }
+
+        public override string ToString()
+        {
+            return ExpressionPrinter.ToString(this);
         }
     }
 }

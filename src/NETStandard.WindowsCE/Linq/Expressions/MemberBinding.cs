@@ -1,5 +1,5 @@
 ﻿//
-// MemberExpression.cs
+// MemberBinding.cs
 //
 // Author:
 //   Jb Evain (jbevain@novell.com)
@@ -30,17 +30,21 @@ using System.Reflection;
 
 namespace System.Linq.Expressions
 {
-    public sealed class MemberExpression : Expression
+    public abstract class MemberBinding
     {
-        public Expression Expression { get; }
+        public MemberBindingType BindingType { get; }
 
         public MemberInfo Member { get; }
 
-        internal MemberExpression(Expression expression, MemberInfo member, Type type)
-            : base(ExpressionType.MemberAccess, type)
+        internal MemberBinding(MemberBindingType bindingType, MemberInfo member)
         {
-            Expression = expression;
+            BindingType = bindingType;
             Member = member;
+        }
+
+        public override string ToString()
+        {
+            return ExpressionPrinter.ToString(this);
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿//
-// MemberExpression.cs
+// TypeBinaryExpression.cs
 //
 // Author:
 //   Jb Evain (jbevain@novell.com)
@@ -26,21 +26,19 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.Reflection;
-
 namespace System.Linq.Expressions
 {
-    public sealed class MemberExpression : Expression
+    public sealed class TypeBinaryExpression : Expression
     {
         public Expression Expression { get; }
 
-        public MemberInfo Member { get; }
+        public Type TypeOperand { get; }
 
-        internal MemberExpression(Expression expression, MemberInfo member, Type type)
-            : base(ExpressionType.MemberAccess, type)
+        internal TypeBinaryExpression(ExpressionType nodeType, Expression expression, Type typeOperand, Type type)
+            : base(nodeType, type)
         {
             Expression = expression;
-            Member = member;
+            TypeOperand = typeOperand;
         }
     }
 }

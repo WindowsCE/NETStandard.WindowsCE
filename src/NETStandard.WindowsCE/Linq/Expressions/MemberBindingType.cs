@@ -1,5 +1,5 @@
 ﻿//
-// MemberExpression.cs
+// MemberBindingType.cs
 //
 // Author:
 //   Jb Evain (jbevain@novell.com)
@@ -26,21 +26,12 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.Reflection;
-
 namespace System.Linq.Expressions
 {
-    public sealed class MemberExpression : Expression
+    public enum MemberBindingType
     {
-        public Expression Expression { get; }
-
-        public MemberInfo Member { get; }
-
-        internal MemberExpression(Expression expression, MemberInfo member, Type type)
-            : base(ExpressionType.MemberAccess, type)
-        {
-            Expression = expression;
-            Member = member;
-        }
+        Assignment,
+        MemberBinding,
+        ListBinding
     }
 }

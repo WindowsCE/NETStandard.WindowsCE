@@ -1,10 +1,10 @@
-﻿//
-// MemberExpression.cs
+//
+// Expression_T.cs
 //
 // Author:
-//   Jb Evain (jbevain@novell.com)
+//  Jb Evain (jbevain@novell.com)
 //
-// (C) 2008 Novell, Inc. (http://www.novell.com)
+// Copyright (C) 2008 Novell, Inc (http://www.novell.com)
 //
 // Permission is hereby granted, free of charge, to any person obtaining
 // a copy of this software and associated documentation files (the
@@ -26,21 +26,20 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.Reflection;
+using System.Collections.ObjectModel;
 
 namespace System.Linq.Expressions
 {
-    public sealed class MemberExpression : Expression
+    public sealed class Expression<TDelegate> : LambdaExpression
     {
-        public Expression Expression { get; }
-
-        public MemberInfo Member { get; }
-
-        internal MemberExpression(Expression expression, MemberInfo member, Type type)
-            : base(ExpressionType.MemberAccess, type)
+        internal Expression(Expression body, ReadOnlyCollection<ParameterExpression> parameters)
+            : base(typeof(TDelegate), body, parameters)
         {
-            Expression = expression;
-            Member = member;
+        }
+
+        public new TDelegate Compile()
+        {
+            return (TDelegate)(object)base.Compile();
         }
     }
 }

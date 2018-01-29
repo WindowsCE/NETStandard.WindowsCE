@@ -1,5 +1,5 @@
 ﻿//
-// MemberExpression.cs
+// MemberAssignement.cs
 //
 // Author:
 //   Jb Evain (jbevain@novell.com)
@@ -30,17 +30,14 @@ using System.Reflection;
 
 namespace System.Linq.Expressions
 {
-    public sealed class MemberExpression : Expression
+    public sealed class MemberAssignment : MemberBinding
     {
         public Expression Expression { get; }
 
-        public MemberInfo Member { get; }
-
-        internal MemberExpression(Expression expression, MemberInfo member, Type type)
-            : base(ExpressionType.MemberAccess, type)
+        internal MemberAssignment(MemberInfo member, Expression expression)
+            : base(MemberBindingType.Assignment, member)
         {
             Expression = expression;
-            Member = member;
         }
     }
 }

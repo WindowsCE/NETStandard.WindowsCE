@@ -1,5 +1,5 @@
 ﻿//
-// MemberExpression.cs
+// UnaryExpression.cs
 //
 // Author:
 //   Jb Evain (jbevain@novell.com)
@@ -30,17 +30,28 @@ using System.Reflection;
 
 namespace System.Linq.Expressions
 {
-    public sealed class MemberExpression : Expression
+    public sealed class UnaryExpression : Expression
     {
-        public Expression Expression { get; }
+        public Expression Operand { get; }
 
-        public MemberInfo Member { get; }
+        public MethodInfo Method { get; }
 
-        internal MemberExpression(Expression expression, MemberInfo member, Type type)
-            : base(ExpressionType.MemberAccess, type)
+        public bool IsLifted { get; }
+
+        public bool IsLiftedToNull => IsLifted && Type.IsNullable();
+
+        internal UnaryExpression(ExpressionType nodeType, Expression operand, Type type)
+            : base(nodeType, type)
         {
-            Expression = expression;
-            Member = member;
+            Operand = operand;
+        }
+
+        internal UnaryExpression(ExpressionType nodeType, Expression operand, Type type, MethodInfo method, bool isLifted)
+            : base(nodeType, type)
+        {
+            Operand = operand;
+            Method = method;
+            IsLifted = isLifted;
         }
     }
 }

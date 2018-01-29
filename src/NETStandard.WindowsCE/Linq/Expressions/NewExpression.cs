@@ -1,5 +1,5 @@
 ﻿//
-// MemberExpression.cs
+// NewExpression.cs
 //
 // Author:
 //   Jb Evain (jbevain@novell.com)
@@ -26,21 +26,31 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System.Collections.ObjectModel;
 using System.Reflection;
 
 namespace System.Linq.Expressions
 {
-    public sealed class MemberExpression : Expression
+    public sealed class NewExpression : Expression
     {
-        public Expression Expression { get; }
+        public ConstructorInfo Constructor { get; }
 
-        public MemberInfo Member { get; }
+        public ReadOnlyCollection<Expression> Arguments { get; }
 
-        internal MemberExpression(Expression expression, MemberInfo member, Type type)
-            : base(ExpressionType.MemberAccess, type)
+        public ReadOnlyCollection<MemberInfo> Members { get; }
+
+        internal NewExpression(Type type, ReadOnlyCollection<Expression> arguments)
+            : base(ExpressionType.New, type)
         {
-            Expression = expression;
-            Member = member;
+            Arguments = arguments;
+        }
+
+        internal NewExpression(ConstructorInfo constructor, ReadOnlyCollection<Expression> arguments, ReadOnlyCollection<MemberInfo> members)
+            : base(ExpressionType.New, constructor.DeclaringType)
+        {
+            Constructor = constructor;
+            Arguments = arguments;
+            Members = members;
         }
     }
 }

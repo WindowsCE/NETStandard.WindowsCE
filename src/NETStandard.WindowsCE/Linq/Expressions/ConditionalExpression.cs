@@ -1,5 +1,5 @@
 ﻿//
-// MemberExpression.cs
+// ConditionalExpression.cs
 //
 // Author:
 //   Jb Evain (jbevain@novell.com)
@@ -26,21 +26,22 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.Reflection;
-
 namespace System.Linq.Expressions
 {
-    public sealed class MemberExpression : Expression
+    public sealed class ConditionalExpression : Expression
     {
-        public Expression Expression { get; }
+        public Expression Test { get; }
 
-        public MemberInfo Member { get; }
+        public Expression IfTrue { get; }
 
-        internal MemberExpression(Expression expression, MemberInfo member, Type type)
-            : base(ExpressionType.MemberAccess, type)
+        public Expression IfFalse { get; }
+
+        internal ConditionalExpression(Expression test, Expression ifTrue, Expression ifFalse)
+            : base(ExpressionType.Conditional, ifTrue.Type)
         {
-            Expression = expression;
-            Member = member;
+            Test = test;
+            IfTrue = ifTrue;
+            IfFalse = ifFalse;
         }
     }
 }

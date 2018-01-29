@@ -1,5 +1,5 @@
 ﻿//
-// MemberExpression.cs
+// NewArrayExpression.cs
 //
 // Author:
 //   Jb Evain (jbevain@novell.com)
@@ -26,21 +26,18 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.Reflection;
+using System.Collections.ObjectModel;
 
 namespace System.Linq.Expressions
 {
-    public sealed class MemberExpression : Expression
+    public sealed class NewArrayExpression : Expression
     {
-        public Expression Expression { get; }
+        public ReadOnlyCollection<Expression> Expressions { get; }
 
-        public MemberInfo Member { get; }
-
-        internal MemberExpression(Expression expression, MemberInfo member, Type type)
-            : base(ExpressionType.MemberAccess, type)
+        internal NewArrayExpression(ExpressionType et, Type type, ReadOnlyCollection<Expression> expressions)
+            : base(et, type)
         {
-            Expression = expression;
-            Member = member;
+            Expressions = expressions;
         }
     }
 }

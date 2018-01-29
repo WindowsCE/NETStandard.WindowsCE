@@ -1,5 +1,5 @@
 ﻿//
-// MemberExpression.cs
+// ListInitExpression.cs
 //
 // Author:
 //   Jb Evain (jbevain@novell.com)
@@ -26,21 +26,21 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-using System.Reflection;
+using System.Collections.ObjectModel;
 
 namespace System.Linq.Expressions
 {
-    public sealed class MemberExpression : Expression
+    public sealed class ListInitExpression : Expression
     {
-        public Expression Expression { get; }
+        public NewExpression NewExpression { get; }
 
-        public MemberInfo Member { get; }
+        public ReadOnlyCollection<ElementInit> Initializers { get; }
 
-        internal MemberExpression(Expression expression, MemberInfo member, Type type)
-            : base(ExpressionType.MemberAccess, type)
+        internal ListInitExpression(NewExpression newExpression, ReadOnlyCollection<ElementInit> initializers)
+            : base(ExpressionType.ListInit, newExpression.Type)
         {
-            Expression = expression;
-            Member = member;
+            NewExpression = newExpression;
+            Initializers = initializers;
         }
     }
 }

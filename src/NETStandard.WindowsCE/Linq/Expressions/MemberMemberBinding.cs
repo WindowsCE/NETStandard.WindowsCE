@@ -1,5 +1,5 @@
 ﻿//
-// MemberExpression.cs
+// MemberMemberBinding.cs
 //
 // Author:
 //   Jb Evain (jbevain@novell.com)
@@ -26,21 +26,19 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System.Collections.ObjectModel;
 using System.Reflection;
 
 namespace System.Linq.Expressions
 {
-    public sealed class MemberExpression : Expression
+    public sealed class MemberMemberBinding : MemberBinding
     {
-        public Expression Expression { get; }
+        public ReadOnlyCollection<MemberBinding> Bindings { get; }
 
-        public MemberInfo Member { get; }
-
-        internal MemberExpression(Expression expression, MemberInfo member, Type type)
-            : base(ExpressionType.MemberAccess, type)
+        internal MemberMemberBinding(MemberInfo member, ReadOnlyCollection<MemberBinding> bindings)
+            : base(MemberBindingType.MemberBinding, member)
         {
-            Expression = expression;
-            Member = member;
+            Bindings = bindings;
         }
     }
 }
