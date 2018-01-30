@@ -26,7 +26,10 @@ namespace Tests.Linq.Expressions
 
         class SomeService
         {
-            public double DoSomeMaths(int a, int b) => a * b;
+            public double DoSomeMaths(int a, int b)
+            {
+                return a * b;
+            }
         }
 
         class SomeClass

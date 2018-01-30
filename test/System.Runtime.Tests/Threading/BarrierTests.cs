@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 #if WindowsCE
+using System.Runtime.CompilerServices;
 using InternalOCE = System.OperationCanceledException;
 #else
 using Mock.System;
@@ -161,6 +162,112 @@ namespace Tests.Threading
             AssertExtensions.Throws<ArgumentOutOfRangeException>(() => b.RemoveParticipants(2));
         }
 
+#if WindowsCE
+        private sealed class RemovingWaitingParticipantsStateMachine : IAsyncStateMachine
+        {
+            public int state;
+            public AsyncTaskMethodBuilder builder;
+            private Task t;
+            private TaskAwaiter u1;
+            private Barrier b;
+
+            public void MoveNext()
+            {
+                int num = state;
+                try
+                {
+                    TaskAwaiter awaiter;
+                    TaskAwaiter awaiter2;
+                    if (num != 0)
+                    {
+                        if (num != 1)
+                        {
+                            b = new Barrier(4);
+                            t = Task.Run(() => b.SignalAndWait());
+                            goto IL_B7;
+                        }
+
+                        awaiter = u1;
+                        u1 = default(TaskAwaiter);
+                        num = (state = -1);
+                        goto IL_1DA;
+                    }
+                    else
+                    {
+                        awaiter2 = u1;
+                        u1 = default(TaskAwaiter);
+                        num = (state = -1);
+                    }
+
+                IL_AE:
+                    awaiter2.GetResult();
+                IL_B7:
+                    if (b.ParticipantsRemaining <= 3)
+                    {
+                        b.RemoveParticipants(2);
+                        Assert.AreEqual(1, b.ParticipantsRemaining);
+
+                        AssertExtensions.Throws<ArgumentOutOfRangeException>(() => b.RemoveParticipants(20));
+                        Assert.AreEqual(1, b.ParticipantsRemaining);
+
+                        AssertExtensions.Throws<InvalidOperationException>(() => b.RemoveParticipants(2));
+                        Assert.AreEqual(1, b.ParticipantsRemaining);
+
+                        b.RemoveParticipant();
+                        awaiter = t.GetAwaiter();
+                        if (!awaiter.IsCompleted)
+                        {
+                            num = (state = 1);
+                            u1 = awaiter;
+                            var callback = this;
+                            builder.AwaitOnCompleted(ref awaiter, ref callback);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        awaiter2 = Task.Delay(100).GetAwaiter();
+                        if (!awaiter2.IsCompleted)
+                        {
+                            num = (state = 0);
+                            u1 = awaiter2;
+                            var callback = this;
+                            builder.AwaitOnCompleted(ref awaiter2, ref callback);
+                            return;
+                        }
+                        goto IL_AE;
+                    }
+                IL_1DA:
+                    awaiter.GetResult();
+                }
+                catch (Exception ex)
+                {
+                    state = -2;
+                    builder.SetException(ex);
+                    return;
+                }
+
+                state = -2;
+                builder.SetResult();
+            }
+
+
+            public void SetStateMachine(IAsyncStateMachine stateMachine)
+            {
+            }
+        }
+
+        [TestMethod]
+        public void RemovingWaitingParticipants()
+        {
+            var sm = new RemovingWaitingParticipantsStateMachine();
+            sm.builder = AsyncTaskMethodBuilder.Create();
+            sm.state = -1;
+            var builder = sm.builder;
+            builder.Start(ref sm);
+            builder.Task.Wait();
+        }
+#else
         [TestMethod]
         public async Task RemovingWaitingParticipants()
         {
@@ -190,6 +297,7 @@ namespace Tests.Threading
 
             await t; // t can now complete.
         }
+#endif
 
         /// <summary>
         /// Test AddParticipants

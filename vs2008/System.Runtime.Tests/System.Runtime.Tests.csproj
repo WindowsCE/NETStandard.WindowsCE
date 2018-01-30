@@ -54,7 +54,7 @@
     <Reference Include="mscorlib" />
     <Reference Include="NETStandard.WindowsCE, Version=1.0.0.0, Culture=neutral, PublicKeyToken=961e8a38a128a442, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NETStandard.WindowsCE\lib\net35-cf\NETStandard.WindowsCE.dll</HintPath>
+      <HintPath>..\NETStandard.WindowsCE.Debug\NETStandard.WindowsCE.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -107,6 +107,12 @@
     <Compile Include="..\..\test\System.Runtime.Tests\LazyTestsMS.cs">
       <Link>LazyTestsMS.cs</Link>
     </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\Linq\Expressions\ExpressionTests.cs">
+      <Link>Linq\Expressions\ExpressionTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\Runtime\CompilerServices\AsyncTaskMethodBuilderTests.cs">
+      <Link>Runtime\CompilerServices\AsyncTaskMethodBuilderTests.cs</Link>
+    </Compile>
     <Compile Include="..\..\test\System.Runtime.Tests\Runtime\CompilerServices\RuntimeHelpersTests.cs">
       <Link>Runtime\CompilerServices\RuntimeHelpersTests.cs</Link>
     </Compile>
@@ -122,6 +128,12 @@
     <Compile Include="..\..\test\System.Runtime.Tests\StringTests.cs">
       <Link>StringTests.cs</Link>
     </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\Threading\BarrierCancellationTests.cs">
+      <Link>Threading\BarrierCancellationTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\Threading\BarrierTests.cs">
+      <Link>Threading\BarrierTests.cs</Link>
+    </Compile>
     <Compile Include="..\..\test\System.Runtime.Tests\Threading\LazyInitializerTests.cs">
       <Link>Threading\LazyInitializerTests.cs</Link>
     </Compile>
@@ -131,8 +143,14 @@
     <Compile Include="..\..\test\System.Runtime.Tests\Threading\MonitorTestsMS.cs">
       <Link>Threading\MonitorTestsMS.cs</Link>
     </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\Threading\ReaderWriterLockSlimTests.cs">
+      <Link>Threading\ReaderWriterLockSlimTests.cs</Link>
+    </Compile>
     <Compile Include="..\..\test\System.Runtime.Tests\Threading\SpinWaitTests.cs">
       <Link>Threading\SpinWaitTests.cs</Link>
+    </Compile>
+    <Compile Include="..\..\test\System.Runtime.Tests\Threading\ThreadLocalTests.cs">
+      <Link>Threading\ThreadLocalTests.cs</Link>
     </Compile>
     <Compile Include="..\..\test\System.Runtime.Tests\Threading\VolatileTests.cs">
       <Link>Threading\VolatileTests.cs</Link>

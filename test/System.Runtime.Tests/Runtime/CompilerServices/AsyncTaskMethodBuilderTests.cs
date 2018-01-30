@@ -451,7 +451,8 @@ namespace Tests.Runtime.CompilerServices
                 try { throw new InvalidOperationException(); }
                 catch (Exception exc) { avmb.SetException(exc); }
                 //Assert.NotEmpty(tosc.PostExceptions);
-                Assert.IsTrue(tosc.PostExceptions?.Count > 0);
+                Assert.IsNotNull(tosc.PostExceptions);
+                Assert.IsTrue(tosc.PostExceptions.Count > 0);
                 ValidateException(tosc.PostExceptions[0]);
             }
             finally
