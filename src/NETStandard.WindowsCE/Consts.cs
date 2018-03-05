@@ -5,8 +5,8 @@
     public const string Product = "NETStandard.WindowsCE";
     public const string Description = "This library includes most of the APIs from the NETStandard specification built on top of Windows CE platform.";
     public const string AssemblyVersion = "1.0.0.0";
-    public const string FileVersion = "1.1.0.0";
-    public const string ProductVersion = "1.1.0";
+    public const string FileVersion = "1.2.0.0";
+    public const string ProductVersion = "1.2.0";
     public const string Copyright = "© Fabrício Godoy. All rights reserved.";
     public const string Company = "Fabrício Godoy";
 
@@ -19,7 +19,7 @@
 #if DEBUG
     public const string Configuration = "Debug";
 #else
-    public const string Configuration = "Retail";
+    public const string Configuration = "Release";
 #endif
 
     public const string SkarllotPublicKey =
