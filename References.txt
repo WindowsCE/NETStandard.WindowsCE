@@ -1,5 +1,6 @@
 - NET Standard 1.0: https://github.com/dotnet/standard/blob/master/docs/versions/netstandard1.0.md
 - Core implementation: https://github.com/dotnet/coreclr
+- Core implementation for AOT compilation: https://github.com/dotnet/corert
 - NET Backport: https://github.com/theraot/Theraot
 - MonoTouch sample of Facebook integration: https://github.com/conceptdev/Facebook/tree/master/iOS/Newtonsoft.Json
 - NET Legacy: https://github.com/SaladLab/NetLegacySupport
