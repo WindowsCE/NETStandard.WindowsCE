@@ -17,174 +17,11 @@
 ===========================================================*/
 #define DEBUG // The behavior of this contract library should be consistent regardless of build type.
 
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Diagnostics.Contracts;
+using System.Reflection;
 
 namespace System.Diagnostics.Contracts
 {
-    #region Attributes
-
-    /// <summary>
-    /// Methods and classes marked with this attribute can be used within calls to Contract methods. Such methods not make any visible state changes.
-    /// </summary>
-    [Conditional("CONTRACTS_FULL")]
-    [AttributeUsage(AttributeTargets.Constructor | AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Event | AttributeTargets.Delegate | AttributeTargets.Class | AttributeTargets.Parameter, AllowMultiple = false, Inherited = true)]
-    public sealed class PureAttribute : Attribute
-    {
-    }
-
-    /// <summary>
-    /// Types marked with this attribute specify that a separate type contains the contracts for this type.
-    /// </summary>
-    [Conditional("CONTRACTS_FULL")]
-    [Conditional("DEBUG")]
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Delegate, AllowMultiple = false, Inherited = false)]
-    public sealed class ContractClassAttribute : Attribute
-    {
-        public ContractClassAttribute(Type typeContainingContracts)
-        {
-            TypeContainingContracts = typeContainingContracts;
-        }
-
-        public Type TypeContainingContracts { get; }
-    }
-
-    /// <summary>
-    /// Types marked with this attribute specify that they are a contract for the type that is the argument of the constructor.
-    /// </summary>
-    [Conditional("CONTRACTS_FULL")]
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-    public sealed class ContractClassForAttribute : Attribute
-    {
-        public ContractClassForAttribute(Type typeContractsAreFor)
-        {
-            TypeContractsAreFor = typeContractsAreFor;
-        }
-
-        public Type TypeContractsAreFor { get; }
-    }
-
-    /// <summary>
-    /// This attribute is used to mark a method as being the invariant
-    /// method for a class. The method can have any name, but it must
-    /// return "void" and take no parameters. The body of the method
-    /// must consist solely of one or more calls to the method
-    /// Contract.Invariant. A suggested name for the method is 
-    /// "ObjectInvariant".
-    /// </summary>
-    [Conditional("CONTRACTS_FULL")]
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
-    public sealed class ContractInvariantMethodAttribute : Attribute
-    {
-    }
-
-    /// <summary>
-    /// Attribute that specifies that an assembly is a reference assembly with contracts.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Assembly)]
-    public sealed class ContractReferenceAssemblyAttribute : Attribute
-    {
-    }
-
-    /// <summary>
-    /// Methods (and properties) marked with this attribute can be used within calls to Contract methods, but have no runtime behavior associated with them.
-    /// </summary>
-    [Conditional("CONTRACTS_FULL")]
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-    public sealed class ContractRuntimeIgnoredAttribute : Attribute
-    {
-    }
-
-    /// <summary>
-    /// Instructs downstream tools whether to assume the correctness of this assembly, type or member without performing any verification or not.
-    /// Can use [ContractVerification(false)] to explicitly mark assembly, type or member as one to *not* have verification performed on it.
-    /// Most specific element found (member, type, then assembly) takes precedence.
-    /// (That is useful if downstream tools allow a user to decide which polarity is the default, unmarked case.)
-    /// </summary>
-    /// <remarks>
-    /// Apply this attribute to a type to apply to all members of the type, including nested types.
-    /// Apply this attribute to an assembly to apply to all types and members of the assembly.
-    /// Apply this attribute to a property to apply to both the getter and setter.
-    /// </remarks>
-    [Conditional("CONTRACTS_FULL")]
-    [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Method | AttributeTargets.Constructor | AttributeTargets.Property)]
-    public sealed class ContractVerificationAttribute : Attribute
-    {
-        public ContractVerificationAttribute(bool value) { Value = value; }
-
-        public bool Value { get; }
-    }
-
-    /// <summary>
-    /// Allows a field f to be used in the method contracts for a method m when f has less visibility than m.
-    /// For instance, if the method is public, but the field is private.
-    /// </summary>
-    [Conditional("CONTRACTS_FULL")]
-    [AttributeUsage(AttributeTargets.Field)]
-    public sealed class ContractPublicPropertyNameAttribute : Attribute
-    {
-        public ContractPublicPropertyNameAttribute(string name)
-        {
-            Name = name;
-        }
-
-        public string Name { get; }
-    }
-
-    /// <summary>
-    /// Enables factoring legacy if-then-throw into separate methods for reuse and full control over
-    /// thrown exception and arguments
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    [Conditional("CONTRACTS_FULL")]
-    public sealed class ContractArgumentValidatorAttribute : Attribute
-    {
-    }
-
-    /// <summary>
-    /// Enables writing abbreviations for contracts that get copied to other methods
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    [Conditional("CONTRACTS_FULL")]
-    public sealed class ContractAbbreviatorAttribute : Attribute
-    {
-    }
-
-    /// <summary>
-    /// Allows setting contract and tool options at assembly, type, or method granularity.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.All, AllowMultiple = true, Inherited = false)]
-    [Conditional("CONTRACTS_FULL")]
-    public sealed class ContractOptionAttribute : Attribute
-    {
-        public ContractOptionAttribute(string category, string setting, bool enabled)
-        {
-            Category = category;
-            Setting = setting;
-            Enabled = enabled;
-        }
-
-        public ContractOptionAttribute(string category, string setting, string value)
-        {
-            Category = category;
-            Setting = setting;
-            Value = value;
-        }
-
-        public string Category { get; }
-
-        public string Setting { get; }
-
-        public bool Enabled { get; }
-
-        public string Value { get; }
-    }
-
-    #endregion Attributes
-
     /// <summary>
     /// Contains static methods for representing program contracts such as preconditions, postconditions, and invariants.
     /// </summary>
@@ -197,8 +34,6 @@ namespace System.Diagnostics.Contracts
     /// </remarks>
     public static partial class Contract
     {
-        #region User Methods
-
         #region Assume
 
         /// <summary>
@@ -617,17 +452,83 @@ namespace System.Diagnostics.Contracts
 
         #endregion
 
-        #endregion User Methods
-    }
+        #region Private Methods
 
-    //[System.Runtime.CompilerServices.TypeForwardedFrom("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")]
-    public enum ContractFailureKind
-    {
-        Precondition,
-        Postcondition,
-        PostconditionOnException,
-        Invariant,
-        Assert,
-        Assume,
+        /// <summary>
+        /// This method is used internally to trigger a failure indicating to the "programmer" that he is using the interface incorrectly.
+        /// It is NEVER used to indicate failure of actual contracts at runtime.
+        /// </summary>
+        private static void AssertMustUseRewriter(ContractFailureKind kind, string contractKind)
+        {
+            // For better diagnostics, report which assembly is at fault.  Walk up stack and
+            // find the first non-mscorlib assembly.
+            Assembly thisAssembly = typeof(Contract).Assembly;  // In case we refactor mscorlib, use Contract class instead of Object.
+
+            // TODO: Should implement StackTrace?
+            //StackTrace stack = new StackTrace();
+            //Assembly probablyNotRewritten = null;
+            //for (int i = 0; i < stack.FrameCount; i++)
+            //{
+            //    Assembly caller = stack.GetFrame(i).GetMethod().DeclaringType.Assembly;
+            //    if (caller != thisAssembly)
+            //    {
+            //        probablyNotRewritten = caller;
+            //        break;
+            //    }
+            //}
+
+            //if (probablyNotRewritten == null)
+            //    probablyNotRewritten = thisAssembly;
+            //string simpleName = probablyNotRewritten.GetName().Name;
+
+            string simpleName = thisAssembly.GetName().Name;
+            System.Runtime.CompilerServices.ContractHelper.TriggerFailure(kind, SR.Format(SR.MustUseCCRewrite, contractKind, simpleName), null, null, null);
+        }
+
+        #endregion Private Methods
+
+        #region Failure Behavior
+
+        /// <summary>
+        /// Without contract rewriting, failing Assert/Assumes end up calling this method.
+        /// Code going through the contract rewriter never calls this method. Instead, the rewriter produced failures call
+        /// System.Runtime.CompilerServices.ContractHelper.RaiseContractFailedEvent, followed by 
+        /// System.Runtime.CompilerServices.ContractHelper.TriggerFailure.
+        /// </summary>
+        [DebuggerNonUserCode]
+        private static void ReportFailure(ContractFailureKind failureKind, string userMessage, string conditionText, Exception innerException)
+        {
+            if (failureKind < ContractFailureKind.Precondition || failureKind > ContractFailureKind.Assume)
+                throw new ArgumentException(SR.Format(SR.Arg_EnumIllegalVal, failureKind), nameof(failureKind));
+
+            // displayMessage == null means: yes we handled it. Otherwise it is the localized failure message
+            string displayMessage = System.Runtime.CompilerServices.ContractHelper.RaiseContractFailedEvent(failureKind, userMessage, conditionText, innerException);
+
+            if (displayMessage == null) return;
+
+            System.Runtime.CompilerServices.ContractHelper.TriggerFailure(failureKind, displayMessage, userMessage, conditionText, innerException);
+        }
+
+        /// <summary>
+        /// Allows a managed application environment such as an interactive interpreter (IronPython)
+        /// to be notified of contract failures and 
+        /// potentially "handle" them, either by throwing a particular exception type, etc.  If any of the
+        /// event handlers sets the Cancel flag in the ContractFailedEventArgs, then the Contract class will
+        /// not pop up an assert dialog box or trigger escalation policy.  Hooking this event requires 
+        /// full trust, because it will inform you of bugs in the appdomain and because the event handler
+        /// could allow you to continue execution.
+        /// </summary>
+        public static event EventHandler<ContractFailedEventArgs> ContractFailed
+        {
+            add
+            {
+                System.Runtime.CompilerServices.ContractHelper.InternalContractFailed += value;
+            }
+            remove
+            {
+                System.Runtime.CompilerServices.ContractHelper.InternalContractFailed -= value;
+            }
+        }
+        #endregion FailureBehavior
     }
-}  // namespace System.Runtime.CompilerServices
+}

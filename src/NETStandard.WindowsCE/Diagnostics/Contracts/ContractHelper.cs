@@ -2,205 +2,17 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-/*============================================================
-**
-** 
-**
-** Implementation details of CLR Contracts.
-**
-===========================================================*/
-#define DEBUG // The behavior of this contract library should be consistent regardless of build type.
-
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Contracts;
-using System.Reflection;
-
-#if !NET35_CF
-using Mock.System;
-#endif
-
-namespace System.Diagnostics.Contracts
-{
-    public static partial class Contract
-    {
-        #region Private Methods
-
-        /// <summary>
-        /// This method is used internally to trigger a failure indicating to the "programmer" that he is using the interface incorrectly.
-        /// It is NEVER used to indicate failure of actual contracts at runtime.
-        /// </summary>
-        private static void AssertMustUseRewriter(ContractFailureKind kind, string contractKind)
-        {
-            // For better diagnostics, report which assembly is at fault.  Walk up stack and
-            // find the first non-mscorlib assembly.
-            Assembly thisAssembly = typeof(Contract).Assembly;  // In case we refactor mscorlib, use Contract class instead of Object.
-
-            // TODO: Should implement StackTrace?
-            //StackTrace stack = new StackTrace();
-            //Assembly probablyNotRewritten = null;
-            //for (int i = 0; i < stack.FrameCount; i++)
-            //{
-            //    Assembly caller = stack.GetFrame(i).GetMethod().DeclaringType.Assembly;
-            //    if (caller != thisAssembly)
-            //    {
-            //        probablyNotRewritten = caller;
-            //        break;
-            //    }
-            //}
-
-            //if (probablyNotRewritten == null)
-            //    probablyNotRewritten = thisAssembly;
-            //string simpleName = probablyNotRewritten.GetName().Name;
-
-            string simpleName = thisAssembly.GetName().Name;
-            System.Runtime.CompilerServices.ContractHelper.TriggerFailure(kind, SR.Format(SR.MustUseCCRewrite, contractKind, simpleName), null, null, null);
-        }
-
-        #endregion Private Methods
-
-        #region Failure Behavior
-
-        /// <summary>
-        /// Without contract rewriting, failing Assert/Assumes end up calling this method.
-        /// Code going through the contract rewriter never calls this method. Instead, the rewriter produced failures call
-        /// System.Runtime.CompilerServices.ContractHelper.RaiseContractFailedEvent, followed by 
-        /// System.Runtime.CompilerServices.ContractHelper.TriggerFailure.
-        /// </summary>
-        [DebuggerNonUserCode]
-        private static void ReportFailure(ContractFailureKind failureKind, string userMessage, string conditionText, Exception innerException)
-        {
-            if (failureKind < ContractFailureKind.Precondition || failureKind > ContractFailureKind.Assume)
-                throw new ArgumentException(SR.Format(SR.Arg_EnumIllegalVal, failureKind), nameof(failureKind));
-
-            // displayMessage == null means: yes we handled it. Otherwise it is the localized failure message
-            string displayMessage = System.Runtime.CompilerServices.ContractHelper.RaiseContractFailedEvent(failureKind, userMessage, conditionText, innerException);
-
-            if (displayMessage == null) return;
-
-            System.Runtime.CompilerServices.ContractHelper.TriggerFailure(failureKind, displayMessage, userMessage, conditionText, innerException);
-        }
-
-        /// <summary>
-        /// Allows a managed application environment such as an interactive interpreter (IronPython)
-        /// to be notified of contract failures and 
-        /// potentially "handle" them, either by throwing a particular exception type, etc.  If any of the
-        /// event handlers sets the Cancel flag in the ContractFailedEventArgs, then the Contract class will
-        /// not pop up an assert dialog box or trigger escalation policy.  Hooking this event requires 
-        /// full trust, because it will inform you of bugs in the appdomain and because the event handler
-        /// could allow you to continue execution.
-        /// </summary>
-        public static event EventHandler<ContractFailedEventArgs> ContractFailed
-        {
-            add
-            {
-                System.Runtime.CompilerServices.ContractHelper.InternalContractFailed += value;
-            }
-            remove
-            {
-                System.Runtime.CompilerServices.ContractHelper.InternalContractFailed -= value;
-            }
-        }
-        #endregion FailureBehavior
-    }
-
-    public sealed class ContractFailedEventArgs : EventArgs
-    {
-        internal Exception thrownDuringHandler;
-
-        public ContractFailedEventArgs(ContractFailureKind failureKind, string message, string condition, Exception originalException)
-        {
-            Debug.Assert(originalException == null || failureKind == ContractFailureKind.PostconditionOnException);
-            FailureKind = failureKind;
-            Message = message;
-            Condition = condition;
-            OriginalException = originalException;
-        }
-
-        public string Message { get; }
-        public string Condition { get; }
-        public ContractFailureKind FailureKind { get; }
-        public Exception OriginalException { get; }
-
-        // Whether the event handler "handles" this contract failure, or to fail via escalation policy.
-        public bool Handled { get; private set; }
-
-        public void SetHandled()
-        {
-            Handled = true;
-        }
-
-        public bool Unwind { get; private set; }
-
-        public void SetUnwind()
-        {
-            Unwind = true;
-        }
-    }
-
-    [Serializable]
-    //[System.Runtime.CompilerServices.TypeForwardedFrom("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089")]
-#if CORERT
-    public // On CoreRT this must be public to support binary serialization with type forwarding.
-#else
-    internal
-#endif
-    sealed class ContractException : Exception2
-    {
-        public ContractFailureKind Kind { get; }
-        public string Failure => this.Message;
-        public string UserMessage { get; }
-        public string Condition { get; }
-
-        // Called by COM Interop, if we see COR_E_CODECONTRACTFAILED as an HRESULT.
-        private ContractException()
-        {
-            HResult = System.Runtime.CompilerServices.ContractHelper.COR_E_CODECONTRACTFAILED;
-        }
-
-        public ContractException(ContractFailureKind kind, string failure, string userMessage, string condition, Exception innerException)
-            : base(failure, innerException)
-        {
-            HResult = System.Runtime.CompilerServices.ContractHelper.COR_E_CODECONTRACTFAILED;
-            Kind = kind;
-            UserMessage = userMessage;
-            Condition = condition;
-        }
-
-        private ContractException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
-            : base(info, context)
-        {
-            Kind = (ContractFailureKind)info.GetInt32("Kind");
-            UserMessage = info.GetString("UserMessage");
-            Condition = info.GetString("Condition");
-        }
-
-
-        public override void GetObjectData(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-            info.AddValue("Kind", Kind);
-            info.AddValue("UserMessage", UserMessage);
-            info.AddValue("Condition", Condition);
-        }
-    }
-}
-
 
 namespace System.Runtime.CompilerServices
 {
     public static partial class ContractHelper
     {
-        #region Private fields
-
         private static volatile EventHandler<ContractFailedEventArgs> contractFailedEvent;
         private static readonly object lockObject = new object();
 
         internal const int COR_E_CODECONTRACTFAILED = unchecked((int)0x80131542);
-
-        #endregion
 
         /// <summary>
         /// Allows a managed application environment such as an interactive interpreter (IronPython) or a
@@ -376,4 +188,4 @@ namespace System.Runtime.CompilerServices
                 : failureMessage;
         }
     }
-}  // namespace System.Runtime.CompilerServices
+}
