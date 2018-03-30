@@ -334,14 +334,12 @@ namespace Mock.System.Collections.Concurrent
 
 
         /// <summary>
-        /// Attempts to add the specified key and value to the <see cref="ConcurrentDictionary{TKey,
-        /// TValue}"/>.
+        /// Attempts to add the specified key and value to the <see cref="ConcurrentDictionary{TKey,TValue}"/>.
         /// </summary>
         /// <param name="key">The key of the element to add.</param>
         /// <param name="value">The value of the element to add. The value can be a null reference (Nothing
         /// in Visual Basic) for reference types.</param>
-        /// <returns>true if the key/value pair was added to the <see cref="ConcurrentDictionary{TKey,
-        /// TValue}"/>
+        /// <returns>true if the key/value pair was added to the <see cref="ConcurrentDictionary{TKey,TValue}"/>
         /// successfully; otherwise, false.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="key"/> is null reference
         /// (Nothing in Visual Basic).</exception>
@@ -358,8 +356,7 @@ namespace Mock.System.Collections.Concurrent
         /// Determines whether the <see cref="ConcurrentDictionary{TKey, TValue}"/> contains the specified
         /// key.
         /// </summary>
-        /// <param name="key">The key to locate in the <see cref="ConcurrentDictionary{TKey,
-        /// TValue}"/>.</param>
+        /// <param name="key">The key to locate in the <see cref="ConcurrentDictionary{TKey,TValue}"/>.</param>
         /// <returns>true if the <see cref="ConcurrentDictionary{TKey, TValue}"/> contains an element with
         /// the specified key; otherwise, false.</returns>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="key"/> is a null reference
