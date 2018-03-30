@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace System.Runtime.CompilerServices
 {
     /// <summary>Provides an awaiter for a <see cref="ValueTask{TResult}"/>.</summary>
-    public struct ValueTaskAwaiter<TResult> : /*ICriticalNotifyCompletion,*/ IValueTaskAwaiter
+    public struct ValueTaskAwaiter<TResult> : INotifyCompletion, IValueTaskAwaiter
     {
         /// <summary>The value being awaited.</summary>
         private ValueTask<TResult> _value; // Methods are called on this; avoid making it readonly so as to avoid unnecessary copies
