@@ -62,8 +62,9 @@ namespace System.Threading.Tasks
         /// Internal constructor to create an empty task.
         /// </summary>
         /// <param name="state">An object representing data to be used by the action.</param>
-        internal Task(object state)
-            : base(state)
+        /// <param name="cancellationToken">The <see cref="CancellationToken" /> that will be assigned to the new task.</param>
+        internal Task(object state, CancellationToken cancellationToken = default)
+            : base(state, cancellationToken)
         { }
 
         /// <summary>
