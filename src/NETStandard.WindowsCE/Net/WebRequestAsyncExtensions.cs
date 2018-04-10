@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace System.Net
@@ -16,12 +17,12 @@ namespace System.Net
         /// <returns>The task object representing the asynchronous operation.</returns>
         public static Task<Stream> GetRequestStreamAsync(this WebRequest source)
         {
+            var function = source.Timeout > 0
+                ? (Func<object, Task<Stream>>)ExecuteGetRequestStreamAsyncWithTimeout
+                : (Func<object, Task<Stream>>)ExecuteGetRequestStreamAsync;
+            
             // Offload to a different thread to avoid blocking the caller during request submission.
-            return Task.Run(() =>
-                Task.Factory.FromAsync(
-                    (callback, state) => ((WebRequest)state).BeginGetRequestStream(callback, state),
-                    iar => ((WebRequest)iar.AsyncState).EndGetRequestStream(iar),
-                    source));
+            return Task.Factory.StartNew(function, source).Unwrap();
         }
 
         /// <summary>
@@ -31,12 +32,56 @@ namespace System.Net
         /// <returns>The task object representing the asynchronous operation.</returns>
         public static Task<WebResponse> GetResponseAsync(this WebRequest source)
         {
+            var function = source.Timeout > 0
+                ? (Func<object, Task<WebResponse>>)ExecuteGetResponseAsyncWithTimeout
+                : (Func<object, Task<WebResponse>>)ExecuteGetResponseAsync;
+            
             // See comment in GetRequestStreamAsync().  Same logic applies here.
-            return Task.Run(() =>
-                Task.Factory.FromAsync(
-                    (callback, state) => ((WebRequest)state).BeginGetResponse(callback, state),
-                    iar => ((WebRequest)iar.AsyncState).EndGetResponse(iar),
-                    source));
+            return Task.Factory.StartNew(function, source).Unwrap();
+        }
+
+        private static Task<Stream> ExecuteGetRequestStreamAsync(object state)
+        {
+            return Task.Factory.FromAsync(
+                (callback, state2) => ((WebRequest)state2).BeginGetRequestStream(callback, state2),
+                iar => ((WebRequest)iar.AsyncState).EndGetRequestStream(iar),
+                state);
+        }
+
+        private static Task<Stream> ExecuteGetRequestStreamAsyncWithTimeout(object state)
+        {
+            var source = (WebRequest)state;
+            var timer = new Timer(s => ((WebRequest)s).Abort(), source, source.Timeout, Timeout.Infinite);
+            var task = Task.Factory.FromAsync(
+                (callback, state2) => ((WebRequest)state2).BeginGetRequestStream(callback, state2),
+                iar => ((WebRequest)iar.AsyncState).EndGetRequestStream(iar),
+                state);
+            task.ContinueWith(
+                (t, s) => ((Timer)s).Dispose(),
+                timer);
+            return task;
+        }
+
+        private static Task<WebResponse> ExecuteGetResponseAsync(object state)
+        {
+            return Task.Factory.FromAsync(
+                (callback, state2) => ((WebRequest)state2).BeginGetResponse(callback, state2),
+                iar => ((WebRequest)iar.AsyncState).EndGetResponse(iar),
+                state);
+        }
+
+        private static Task<WebResponse> ExecuteGetResponseAsyncWithTimeout(object state)
+        {
+            var source = (WebRequest)state;
+            var timer = new Timer(s => ((WebRequest)s).Abort(), source, source.Timeout, Timeout.Infinite);
+            var task = Task.Factory.FromAsync(
+                (callback, state2) => ((WebRequest)state2).BeginGetResponse(callback, state2),
+                iar => ((WebRequest)iar.AsyncState).EndGetResponse(iar),
+                state);
+            task.ContinueWith(
+                (t, s) => ((Timer)s).Dispose(),
+                timer);
+            return task;
         }
     }
 }
