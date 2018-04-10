@@ -23,7 +23,7 @@ namespace System.Threading.Tasks
         /// <returns>The started task.</returns>
         /// <exception cref="ArgumentNullException">The <paramref name="action"/> argument is null.</exception>
         public Task StartNew(Action action)
-            => StartNew(action, default(CancellationToken), TaskCreationOptions.None, TaskScheduler.Default);
+            => StartNew(action, default, TaskCreationOptions.None, TaskScheduler.Default);
 
         /// <summary>
         /// Creates and starts a <see cref="T:System.Threading.Tasks.Task">Task</see>.
@@ -54,7 +54,7 @@ namespace System.Threading.Tasks
         /// <paramref name="creationOptions"/> argument specifies an invalid TaskCreationOptions
         /// value.</exception>
         public Task StartNew(Action action, TaskCreationOptions creationOptions)
-            => StartNew(action, default(CancellationToken), creationOptions, TaskScheduler.Default);
+            => StartNew(action, default, creationOptions, TaskScheduler.Default);
 
         /// <summary>
         /// Creates and starts a <see cref="T:System.Threading.Tasks.Task">Task</see>.
@@ -81,7 +81,11 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
-        public Task StartNew(Action action, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
+        public Task StartNew(
+            Action action,
+            CancellationToken cancellationToken,
+            TaskCreationOptions creationOptions,
+            TaskScheduler scheduler)
         {
             if (action == null)
                 throw new ArgumentNullException(nameof(action));
@@ -99,7 +103,7 @@ namespace System.Threading.Tasks
         /// <returns>The started <see cref="Task"/>.</returns>
         /// <exception cref="ArgumentNullException">The <paramref name="action"/> argument is null.</exception>
         public Task StartNew(Action<object> action, object state)
-            => StartNew(action, state, default(CancellationToken), TaskCreationOptions.None, TaskScheduler.Default);
+            => StartNew(action, state, default, TaskCreationOptions.None, TaskScheduler.Default);
 
         /// <summary>
         /// Creates and starts a <see cref="T:System.Threading.Tasks.Task">Task</see>.
@@ -135,7 +139,7 @@ namespace System.Threading.Tasks
         /// <paramref name="creationOptions"/> argument specifies an invalid TaskCreationOptions
         /// value.</exception>
         public Task StartNew(Action<Object> action, Object state, TaskCreationOptions creationOptions)
-            => StartNew(action, state, default(CancellationToken), creationOptions, TaskScheduler.Default);
+            => StartNew(action, state, default, creationOptions, TaskScheduler.Default);
 
         /// <summary>
         /// Creates and starts a <see cref="T:System.Threading.Tasks.Task">Task</see>.
@@ -164,7 +168,12 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
-        public Task StartNew(Action<Object> action, Object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
+        public Task StartNew(
+            Action<Object> action,
+            Object state,
+            CancellationToken cancellationToken,
+            TaskCreationOptions creationOptions,
+            TaskScheduler scheduler)
         {
             if (action == null)
                 throw new ArgumentNullException(nameof(action));
@@ -189,7 +198,7 @@ namespace System.Threading.Tasks
         /// <returns>The started <see cref="Task{TResult}"/>.</returns>
         /// <exception cref="ArgumentNullException">The exception that is thrown when the <paramref name="function"/> argument is null.</exception>
         public Task<TResult> StartNew<TResult>(Func<TResult> function)
-            => StartNew(function, default(CancellationToken), TaskCreationOptions.None, TaskScheduler.Default);
+            => StartNew(function, default, TaskCreationOptions.None, TaskScheduler.Default);
 
         /// <summary>
         /// Creates and starts a <see cref="T:System.Threading.Tasks.Task{TResult}"/>.
@@ -229,7 +238,7 @@ namespace System.Threading.Tasks
         /// <paramref name="creationOptions"/> argument specifies an invalid TaskCreationOptions
         /// value.</exception>
         public Task<TResult> StartNew<TResult>(Func<TResult> function, TaskCreationOptions creationOptions)
-            => StartNew(function, default(CancellationToken), creationOptions, TaskScheduler.Default);
+            => StartNew(function, default, creationOptions, TaskScheduler.Default);
 
         /// <summary>
         /// Creates and starts a <see cref="T:System.Threading.Tasks.Task{TResult}"/>.
@@ -260,7 +269,11 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
-        public Task<TResult> StartNew<TResult>(Func<TResult> function, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
+        public Task<TResult> StartNew<TResult>(
+            Func<TResult> function,
+            CancellationToken cancellationToken,
+            TaskCreationOptions creationOptions,
+            TaskScheduler scheduler)
         {
             if (function == null)
                 throw new ArgumentNullException(nameof(function));
@@ -286,7 +299,7 @@ namespace System.Threading.Tasks
         /// <returns>The started <see cref="Task{TResult}"/>.</returns>
         /// <exception cref="ArgumentNullException">The exception that is thrown when the <paramref name="function"/> argument is null.</exception>
         public Task<TResult> StartNew<TResult>(Func<object, TResult> function, object state)
-            => StartNew(function, state, default(CancellationToken), TaskCreationOptions.None, TaskScheduler.Default);
+            => StartNew(function, state, default, TaskCreationOptions.None, TaskScheduler.Default);
 
         /// <summary>
         /// Creates and starts a <see cref="T:System.Threading.Tasks.Task{TResult}"/>.
@@ -330,7 +343,7 @@ namespace System.Threading.Tasks
         /// <paramref name="creationOptions"/> argument specifies an invalid TaskCreationOptions
         /// value.</exception>
         public Task<TResult> StartNew<TResult>(Func<Object, TResult> function, Object state, TaskCreationOptions creationOptions)
-            => StartNew(function, state, default(CancellationToken), creationOptions, TaskScheduler.Default);
+            => StartNew(function, state, default, creationOptions, TaskScheduler.Default);
 
         /// <summary>
         /// Creates and starts a <see cref="T:System.Threading.Tasks.Task{TResult}"/>.
@@ -363,7 +376,12 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
-        public Task<TResult> StartNew<TResult>(Func<Object, TResult> function, Object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, TaskScheduler scheduler)
+        public Task<TResult> StartNew<TResult>(
+            Func<Object, TResult> function,
+            Object state,
+            CancellationToken cancellationToken,
+            TaskCreationOptions creationOptions,
+            TaskScheduler scheduler)
         {
             if (function == null)
                 throw new ArgumentNullException(nameof(function));
@@ -380,8 +398,7 @@ namespace System.Threading.Tasks
         public Task FromAsync(
             Func<AsyncCallback, object, IAsyncResult> beginMethod,
             Action<IAsyncResult> endMethod,
-            object state
-            )
+            object state)
         {
             if (beginMethod == null)
                 throw new ArgumentNullException(nameof(beginMethod));
@@ -396,8 +413,7 @@ namespace System.Threading.Tasks
 
         public Task FromAsync(
             IAsyncResult asyncResult,
-            Action<IAsyncResult> endMethod
-            )
+            Action<IAsyncResult> endMethod)
         {
             if (asyncResult == null)
                 throw new ArgumentNullException(nameof(asyncResult));
@@ -417,8 +433,7 @@ namespace System.Threading.Tasks
             Func<TArg1, AsyncCallback, object, IAsyncResult> beginMethod,
             Action<IAsyncResult> endMethod,
             TArg1 arg1,
-            object state
-            )
+            object state)
         {
             if (beginMethod == null)
                 throw new ArgumentNullException(nameof(beginMethod));
@@ -436,8 +451,7 @@ namespace System.Threading.Tasks
             Action<IAsyncResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
-            object state
-            )
+            object state)
         {
             if (beginMethod == null)
                 throw new ArgumentNullException(nameof(beginMethod));
@@ -456,8 +470,7 @@ namespace System.Threading.Tasks
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
-            object state
-            )
+            object state)
         {
             if (beginMethod == null)
                 throw new ArgumentNullException(nameof(beginMethod));
@@ -501,8 +514,7 @@ namespace System.Threading.Tasks
         public Task<TResult> FromAsync<TResult>(
             Func<AsyncCallback, object, IAsyncResult> beginMethod,
             Func<IAsyncResult, TResult> endMethod,
-            object state
-            )
+            object state)
         {
             if (beginMethod == null)
                 throw new ArgumentNullException(nameof(beginMethod));
@@ -517,8 +529,7 @@ namespace System.Threading.Tasks
 
         public Task<TResult> FromAsync<TResult>(
             IAsyncResult asyncResult,
-            Func<IAsyncResult, TResult> endMethod
-            )
+            Func<IAsyncResult, TResult> endMethod)
         {
             if (asyncResult == null)
                 throw new ArgumentNullException(nameof(asyncResult));
@@ -538,8 +549,7 @@ namespace System.Threading.Tasks
             Func<TArg1, AsyncCallback, object, IAsyncResult> beginMethod,
             Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
-            object state
-            )
+            object state)
         {
             if (beginMethod == null)
                 throw new ArgumentNullException(nameof(beginMethod));
@@ -557,8 +567,7 @@ namespace System.Threading.Tasks
             Func<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
-            object state
-            )
+            object state)
         {
             if (beginMethod == null)
                 throw new ArgumentNullException(nameof(beginMethod));
@@ -577,8 +586,7 @@ namespace System.Threading.Tasks
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
-            object state
-            )
+            object state)
         {
             if (beginMethod == null)
                 throw new ArgumentNullException(nameof(beginMethod));
