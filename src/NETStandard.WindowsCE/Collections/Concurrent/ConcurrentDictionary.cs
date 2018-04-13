@@ -1597,7 +1597,7 @@ namespace Mock.System.Collections.Concurrent
                     return;
                 }
 
-                throw new ArgumentException(string.Format("The array is multidimensional, or the type parameter for the set cannot be cast automatically to the type of the destination array."), "array");
+                throw new ArgumentException(string.Format("The array is multidimensional, or the type parameter for the set cannot be cast automatically to the type of the destination array."), nameof(array));
             }
             finally
             {

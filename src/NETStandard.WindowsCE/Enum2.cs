@@ -35,9 +35,9 @@ namespace Mock.System
         /// <returns>A string representation of value.</returns>
         public static string Format(Type enumType, object value, string format)
         {
-            if (enumType == null) throw new ArgumentNullException("enumType");
-            if (value == null) throw new ArgumentNullException("value");
-            if (format == null) throw new ArgumentNullException("format");
+            if (enumType == null) throw new ArgumentNullException(nameof(enumType));
+            if (value == null) throw new ArgumentNullException(nameof(value));
+            if (format == null) throw new ArgumentNullException(nameof(format));
             if (!enumType.IsEnum) throw new ArgumentException("The argument enumType must be an System.Enum.", nameof(enumType));
 
             var valueType = value.GetType();

@@ -175,7 +175,7 @@ namespace Mock.System.Threading
         {
             if (name == null)
             {
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
             }
             if (name.Length < 1)
             {

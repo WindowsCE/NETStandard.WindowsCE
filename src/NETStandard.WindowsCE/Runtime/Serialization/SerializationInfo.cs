@@ -72,10 +72,10 @@ namespace Mock.System.Runtime.Serialization
         public SerializationInfo(Type type, IFormatterConverter converter, bool requireSameTokenInPartialTrust)
         {
             if (type == null)
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
 
             if (converter == null)
-                throw new ArgumentNullException("converter");
+                throw new ArgumentNullException(nameof(converter));
 
             if (requireSameTokenInPartialTrust)
                 throw new NotSupportedException("Cannot require token trust");
@@ -107,7 +107,7 @@ namespace Mock.System.Runtime.Serialization
             set
             {
                 if (null == value)
-                    throw new ArgumentNullException("value");
+                    throw new ArgumentNullException(nameof(value));
 
                 m_fullTypeName = value;
                 isFullTypeNameSetExplicit = true;
@@ -167,7 +167,7 @@ namespace Mock.System.Runtime.Serialization
         public void SetType(Type type)
         {
             if (type == null)
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
 
             if (!object.ReferenceEquals(objectType, type))
             {
@@ -255,10 +255,10 @@ namespace Mock.System.Runtime.Serialization
         public void AddValue(String name, Object value, Type type)
         {
             if (null == name)
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
 
             if ((object)type == null)
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
 
             AddValueInternal(name, value, type);
         }
@@ -401,7 +401,7 @@ namespace Mock.System.Runtime.Serialization
         private int FindElement(string name)
         {
             if (null == name)
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
 
             int index;
             if (m_nameToIndex.TryGetValue(name, out index))
@@ -451,7 +451,7 @@ namespace Mock.System.Runtime.Serialization
         public object GetValue(string name, Type type)
         {
             if (type == null)
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
 
             Type foundType;
             object value;

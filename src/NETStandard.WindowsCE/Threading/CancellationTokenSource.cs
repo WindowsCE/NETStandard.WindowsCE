@@ -42,7 +42,7 @@ namespace System.Threading
         {
             if (millisecondsDelay < -1)
             {
-                throw new ArgumentOutOfRangeException("millisecondsDelay");
+                throw new ArgumentOutOfRangeException(nameof(millisecondsDelay));
             }
             if (millisecondsDelay != Timeout.Infinite)
             {
@@ -264,7 +264,7 @@ namespace System.Threading
             }
             catch (OverflowException)
             {
-                throw new ArgumentOutOfRangeException("delay");
+                throw new ArgumentOutOfRangeException(nameof(delay));
             }
         }
 

@@ -75,11 +75,11 @@ namespace Mock.System
                 if (dateTime.Kind == DateTimeKind.Local)
                 {
                     if (offset != TimeZone.CurrentTimeZone.GetUtcOffset(dateTime))
-                        throw new ArgumentException("The UTC Offset of the local dateTime parameter does not match the offset argument.", "offset");
+                        throw new ArgumentException("The UTC Offset of the local dateTime parameter does not match the offset argument.", nameof(offset));
                 }
                 else if ((dateTime.Kind == DateTimeKind.Utc) && (offset != TimeSpan.Zero))
                 {
-                    throw new ArgumentException("The UTC Offset for Utc DateTime instances must be 0.", "offset");
+                    throw new ArgumentException("The UTC Offset for Utc DateTime instances must be 0.", nameof(offset));
                 }
             }
 
@@ -500,7 +500,7 @@ namespace Mock.System
             long ticks = dateTime.Ticks - offset.Ticks;
             if ((ticks < 0L) || (ticks > 0x2bca2875f4373fffL))
             {
-                throw new ArgumentOutOfRangeException("offset", "The UTC time represented when the offset is applied must be between year 0 and 10,000.");
+                throw new ArgumentOutOfRangeException(nameof(offset), "The UTC time represented when the offset is applied must be between year 0 and 10,000.");
             }
             return new DateTime(ticks, DateTimeKind.Unspecified);
         }
@@ -510,11 +510,11 @@ namespace Mock.System
             long ticks = offset.Ticks;
             if ((ticks % 0x23c34600L) != 0L)
             {
-                throw new ArgumentException("Offset must be specified in whole minutes.", "offset");
+                throw new ArgumentException("Offset must be specified in whole minutes.", nameof(offset));
             }
             if ((ticks < -504000000000L) || (ticks > 0x7558bdb000L))
             {
-                throw new ArgumentOutOfRangeException("offset", "Offset must be within plus or minus 14 hours.");
+                throw new ArgumentOutOfRangeException(nameof(offset), "Offset must be within plus or minus 14 hours.");
             }
             return (short)(offset.Ticks / 0x23c34600L);
         }

@@ -838,7 +838,7 @@ namespace System.Threading.Tasks
             long totalMilliseconds = (long)timeout.TotalMilliseconds;
             if (totalMilliseconds < -1 || totalMilliseconds > int.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
 
             return Wait((int)totalMilliseconds, default(CancellationToken));
@@ -1057,7 +1057,7 @@ namespace System.Threading.Tasks
         {
             // Throw on continuation with null action
             if (continuationAction == null)
-                throw new ArgumentNullException("continuationAction");
+                throw new ArgumentNullException(nameof(continuationAction));
 
             return new Task(continuationAction, state, cancellationToken, TaskCreationOptions.None, this);
         }
@@ -1111,7 +1111,7 @@ namespace System.Threading.Tasks
         {
             // Throw on continuation with null action
             if (continuationFunction == null)
-                throw new ArgumentNullException("continuationFunction");
+                throw new ArgumentNullException(nameof(continuationFunction));
 
             return new Task<TResult>(continuationFunction, state, cancellationToken, TaskCreationOptions.None, this);
         }
@@ -1226,7 +1226,7 @@ namespace System.Threading.Tasks
             long totalMilliseconds = (long)timeout.TotalMilliseconds;
             if (totalMilliseconds < -1 || totalMilliseconds > Int32.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
 
             return WaitAll(tasks, (int)totalMilliseconds);
@@ -1261,10 +1261,10 @@ namespace System.Threading.Tasks
         public static bool WaitAll(Task[] tasks, int millisecondsTimeout)
         {
             if (tasks == null)
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
 
             if (millisecondsTimeout < -1)
-                throw new ArgumentOutOfRangeException("millisecondsTimeout");
+                throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
 
             List<Exception> exceptions = new List<System.Exception>();
             ManualResetEvent waitDone = new ManualResetEvent(false);
@@ -1345,7 +1345,7 @@ namespace System.Threading.Tasks
             long totalMilliseconds = (long)timeout.TotalMilliseconds;
             if (totalMilliseconds < -1 || totalMilliseconds > Int32.MaxValue)
             {
-                throw new ArgumentOutOfRangeException("timeout");
+                throw new ArgumentOutOfRangeException(nameof(timeout));
             }
 
             return WaitAny(tasks, (int)totalMilliseconds);
@@ -1378,10 +1378,10 @@ namespace System.Threading.Tasks
         public static int WaitAny(Task[] tasks, int millisecondsTimeout)
         {
             if (tasks == null)
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
 
             if (millisecondsTimeout < -1)
-                throw new ArgumentOutOfRangeException("millisecondsTimeout");
+                throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
 
             List<Exception> exceptions = new List<System.Exception>();
             ManualResetEvent waitDone = new ManualResetEvent(false);
@@ -1444,7 +1444,7 @@ namespace System.Threading.Tasks
         public static Task FromException(Exception exception)
         {
             if (exception == null)
-                throw new ArgumentNullException("exception");
+                throw new ArgumentNullException(nameof(exception));
 
             return new Task(exception);
         }
@@ -1456,7 +1456,7 @@ namespace System.Threading.Tasks
         public static Task<TResult> FromException<TResult>(Exception exception)
         {
             if (exception == null)
-                throw new ArgumentNullException("exception");
+                throw new ArgumentNullException(nameof(exception));
 
             return new Task<TResult>(default(TResult), exception);
         }
@@ -1675,7 +1675,7 @@ namespace System.Threading.Tasks
         public static Task WhenAll(IEnumerable<Task> tasks)
         {
             if (tasks == null)
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
 
             // Take a more efficient path if tasks is actually an array
             Task[] taskArray = tasks as Task[];
@@ -1729,7 +1729,7 @@ namespace System.Threading.Tasks
         public static Task<TResult[]> WhenAll<TResult>(IEnumerable<Task<TResult>> tasks)
         {
             if (tasks == null)
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
 
             // Take a more efficient path if tasks is actually an array
             Task<TResult>[] taskArray = tasks as Task<TResult>[];
@@ -1750,7 +1750,7 @@ namespace System.Threading.Tasks
         public static Task<TResult[]> WhenAll<TResult>(params Task<TResult>[] tasks)
         {
             if (tasks == null)
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
 
             int length = tasks.Length;
             if (length == 0)
@@ -1787,7 +1787,7 @@ namespace System.Threading.Tasks
         public static Task<Task> WhenAny(IEnumerable<Task> tasks)
         {
             if (tasks == null)
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
 
             // Take a more efficient path if tasks is actually an array
             Task[] taskArray = tasks as Task[];
@@ -1808,7 +1808,7 @@ namespace System.Threading.Tasks
         public static Task<Task> WhenAny(params Task[] tasks)
         {
             if (tasks == null)
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
 
             int length = tasks.Length;
             if (length == 0)
@@ -1841,7 +1841,7 @@ namespace System.Threading.Tasks
         public static Task<Task<TResult>> WhenAny<TResult>(IEnumerable<Task<TResult>> tasks)
         {
             if (tasks == null)
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
 
             // Take a more efficient path if tasks is actually an array
             Task<TResult>[] taskArray = tasks as Task<TResult>[];
@@ -1862,7 +1862,7 @@ namespace System.Threading.Tasks
         public static Task<Task<TResult>> WhenAny<TResult>(params Task<TResult>[] tasks)
         {
             if (tasks == null)
-                throw new ArgumentNullException("tasks");
+                throw new ArgumentNullException(nameof(tasks));
 
             int length = tasks.Length;
             if (length == 0)

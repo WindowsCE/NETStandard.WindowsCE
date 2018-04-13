@@ -97,13 +97,13 @@ namespace System.Threading
         public static bool WaitAll(WaitHandle[] waitHandles, int millisecondsTimeout)
         {
             if (waitHandles == null)
-                throw new ArgumentNullException("waitHandles");
+                throw new ArgumentNullException(nameof(waitHandles));
             if (waitHandles.Length == 0)
                 throw new ArgumentException("The waitHandles is empty");
             if (waitHandles.Length >= WaitTimeout)
                 throw new NotSupportedException("The waitHandles length is too big");
             if (millisecondsTimeout < Timeout.Infinite)
-                throw new ArgumentOutOfRangeException("millisecondsTimeout");
+                throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
 
             Stopwatch timeTrack = new Stopwatch();
             timeTrack.Start();
@@ -242,13 +242,13 @@ namespace System.Threading
         public static int WaitAny(WaitHandle[] waitHandles, int millisecondsTimeout)
         {
             if (waitHandles == null)
-                throw new ArgumentNullException("waitHandles");
+                throw new ArgumentNullException(nameof(waitHandles));
             if (waitHandles.Length == 0)
                 throw new ArgumentException("The waitHandles is empty");
             if (waitHandles.Length >= WaitTimeout)
                 throw new NotSupportedException("The waitHandles length is too big");
             if (millisecondsTimeout < Timeout.Infinite)
-                throw new ArgumentOutOfRangeException("millisecondsTimeout");
+                throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
 
             Stopwatch timeTrack = new Stopwatch();
             timeTrack.Start();

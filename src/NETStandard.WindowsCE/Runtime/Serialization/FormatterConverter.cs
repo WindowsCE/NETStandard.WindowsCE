@@ -44,7 +44,7 @@ namespace Mock.System.Runtime.Serialization
         public object Convert(object value, Type type)
         {
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
 
             return SConvert.ChangeType(value, type, CultureInfo.InvariantCulture);
         }
@@ -58,7 +58,7 @@ namespace Mock.System.Runtime.Serialization
         public object Convert(object value, TypeCode typeCode)
         {
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
 
             return SConvert.ChangeType(value, typeCode, CultureInfo.InvariantCulture);
         }
@@ -71,7 +71,7 @@ namespace Mock.System.Runtime.Serialization
         public bool ToBoolean(object value)
         {
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
 
             return SConvert.ToBoolean(value, CultureInfo.InvariantCulture);
         }
@@ -84,7 +84,7 @@ namespace Mock.System.Runtime.Serialization
         public char ToChar(object value)
         {
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
 
             return SConvert.ToChar(value, CultureInfo.InvariantCulture);
         }
@@ -98,7 +98,7 @@ namespace Mock.System.Runtime.Serialization
         public sbyte ToSByte(object value)
         {
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
 
             return SConvert.ToSByte(value, CultureInfo.InvariantCulture);
         }
@@ -111,7 +111,7 @@ namespace Mock.System.Runtime.Serialization
         public byte ToByte(object value)
         {
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
 
             return SConvert.ToByte(value, CultureInfo.InvariantCulture);
         }
@@ -124,7 +124,7 @@ namespace Mock.System.Runtime.Serialization
         public short ToInt16(object value)
         {
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
 
             return SConvert.ToInt16(value, CultureInfo.InvariantCulture);
         }
@@ -138,7 +138,7 @@ namespace Mock.System.Runtime.Serialization
         public ushort ToUInt16(object value)
         {
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
 
             return SConvert.ToUInt16(value, CultureInfo.InvariantCulture);
         }
@@ -151,7 +151,7 @@ namespace Mock.System.Runtime.Serialization
         public int ToInt32(object value)
         {
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
 
             return SConvert.ToInt32(value, CultureInfo.InvariantCulture);
         }
@@ -165,7 +165,7 @@ namespace Mock.System.Runtime.Serialization
         public uint ToUInt32(object value)
         {
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
 
             return SConvert.ToUInt32(value, CultureInfo.InvariantCulture);
         }
@@ -178,7 +178,7 @@ namespace Mock.System.Runtime.Serialization
         public long ToInt64(object value)
         {
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
 
             return SConvert.ToInt64(value, CultureInfo.InvariantCulture);
         }
@@ -192,7 +192,7 @@ namespace Mock.System.Runtime.Serialization
         public ulong ToUInt64(object value)
         {
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
 
             return SConvert.ToUInt64(value, CultureInfo.InvariantCulture);
         }
@@ -205,7 +205,7 @@ namespace Mock.System.Runtime.Serialization
         public float ToSingle(object value)
         {
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
 
             return SConvert.ToSingle(value, CultureInfo.InvariantCulture);
         }
@@ -218,7 +218,7 @@ namespace Mock.System.Runtime.Serialization
         public double ToDouble(object value)
         {
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
 
             return SConvert.ToDouble(value, CultureInfo.InvariantCulture);
         }
@@ -231,7 +231,7 @@ namespace Mock.System.Runtime.Serialization
         public decimal ToDecimal(object value)
         {
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
 
             return SConvert.ToDecimal(value, CultureInfo.InvariantCulture);
         }
@@ -244,7 +244,7 @@ namespace Mock.System.Runtime.Serialization
         public DateTime ToDateTime(object value)
         {
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
 
             return SConvert.ToDateTime(value, CultureInfo.InvariantCulture);
         }
@@ -257,7 +257,7 @@ namespace Mock.System.Runtime.Serialization
         public string ToString(object value)
         {
             if (value == null)
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
 
             return SConvert.ToString(value, CultureInfo.InvariantCulture);
         }

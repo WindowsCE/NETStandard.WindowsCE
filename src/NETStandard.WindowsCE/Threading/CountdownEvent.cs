@@ -38,7 +38,7 @@ namespace System.Threading
         public CountdownEvent(int initialCount)
         {
             if (initialCount < 0)
-                throw new ArgumentOutOfRangeException("initialCount");
+                throw new ArgumentOutOfRangeException(nameof(initialCount));
 
             evt = new ManualResetEventSlim(initialCount == 0);
             this.initial = this.initialCount = initialCount;
@@ -84,7 +84,7 @@ namespace System.Threading
         public bool Signal(int signalCount)
         {
             if (signalCount <= 0)
-                throw new ArgumentOutOfRangeException("signalCount");
+                throw new ArgumentOutOfRangeException(nameof(signalCount));
 
             CheckDisposed();
 
@@ -120,7 +120,7 @@ namespace System.Threading
         public bool TryAddCount(int signalCount)
         {
             if (signalCount <= 0)
-                throw new ArgumentOutOfRangeException("signalCount");
+                throw new ArgumentOutOfRangeException(nameof(signalCount));
 
             CheckDisposed();
 
@@ -188,7 +188,7 @@ namespace System.Threading
         public void Reset(int count)
         {
             if (count < 0)
-                throw new ArgumentOutOfRangeException("count");
+                throw new ArgumentOutOfRangeException(nameof(count));
 
             CheckDisposed();
 
