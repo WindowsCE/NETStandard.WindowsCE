@@ -1490,19 +1490,6 @@ namespace System.Threading.Tasks
         }
 
         /// <summary>
-        /// Queues the specified work to run on the ThreadPool and returns a Task(TResult) handle for that work.
-        /// </summary>
-        /// <param name="function">The work to execute asynchronously</param>
-        /// <returns>A Task(TResult) that represents the work queued to execute in the ThreadPool.</returns>
-        /// <exception cref="T:System.ArgumentNullException">
-        /// The <paramref name="function"/> parameter was null.
-        /// </exception>
-        public static Task<TResult> Run<TResult>(Func<TResult> function)
-        {
-            return Factory.StartNew<TResult>(function);
-        }
-
-        /// <summary>
         /// Queues the specified work to run on the ThreadPool and returns a proxy for the
         /// Task returned by <paramref name="function"/>.
         /// </summary>
@@ -1514,6 +1501,29 @@ namespace System.Threading.Tasks
         public static Task Run(Func<Task> function)
         {
             return Factory.StartNew(function).Unwrap();
+        }
+
+        public static Task Run(Action action, CancellationToken cancellationToken)
+        {
+            return Factory.StartNew(action, cancellationToken);
+        }
+
+        public static Task Run(Func<Task> function, CancellationToken cancellationToken)
+        {
+            return Factory.StartNew(function, cancellationToken).Unwrap();
+        }
+
+        /// <summary>
+        /// Queues the specified work to run on the ThreadPool and returns a Task(TResult) handle for that work.
+        /// </summary>
+        /// <param name="function">The work to execute asynchronously</param>
+        /// <returns>A Task(TResult) that represents the work queued to execute in the ThreadPool.</returns>
+        /// <exception cref="T:System.ArgumentNullException">
+        /// The <paramref name="function"/> parameter was null.
+        /// </exception>
+        public static Task<TResult> Run<TResult>(Func<TResult> function)
+        {
+            return Factory.StartNew(function);
         }
 
         /// <summary>
@@ -1529,6 +1539,16 @@ namespace System.Threading.Tasks
         public static Task<TResult> Run<TResult>(Func<Task<TResult>> function)
         {
             return Factory.StartNew(function).Unwrap();
+        }
+
+        public static Task<TResult> Run<TResult>(Func<Task<TResult>> function, CancellationToken cancellationToken)
+        {
+            return Factory.StartNew(function, cancellationToken).Unwrap();
+        }
+
+        public static Task<TResult> Run<TResult>(Func<TResult> function, CancellationToken cancellationToken)
+        {
+            return Factory.StartNew(function, cancellationToken);
         }
 
         #endregion
