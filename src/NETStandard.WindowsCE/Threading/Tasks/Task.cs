@@ -979,8 +979,20 @@ namespace System.Threading.Tasks
         /// <summary>
         /// Disposes the <see cref="Task"/>, releasing all of its unmanaged resources.
         /// </summary>
-        public virtual void Dispose()
+        public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposing)
+            {
+                AtomicStateUpdate(TASK_STATE_DISPOSED, 0);
+                return;
+            }
+
             if ((_stateFlags & TASK_STATE_COMPLETED_MASK) == 0)
             {
                 throw new InvalidOperationException(
