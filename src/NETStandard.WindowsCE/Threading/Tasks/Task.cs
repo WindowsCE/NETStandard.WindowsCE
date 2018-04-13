@@ -37,7 +37,7 @@ namespace System.Threading.Tasks
         // this task's unique ID. initialized only if it is ever requested
         private int _taskId;
         // Unified flags for Task
-        private volatile int _stateFlags;
+        private protected volatile int _stateFlags;
 
         private Action<object> _completedCallback;
         private readonly object _lockObj = new object();
@@ -672,27 +672,17 @@ namespace System.Threading.Tasks
             }
         }
 
-        private bool EnqueueContinuation(Action<object> callback)
+        internal bool EnqueueContinuation(Action<object> callback)
         {
-            bool isTaskCompleted = false;
             lock (_lockObj)
             {
-                isTaskCompleted = IsCompletedMethod(_stateFlags);
-                if (!isTaskCompleted)
-                {
-                    // Enqueue to execute when Task is finalizing
-                    _completedCallback += callback;
-                    return true;
-                }
+                if (IsCompletedMethod(_stateFlags))
+                    return false;
+
+                // Enqueue to execute when Task is finalizing
+                _completedCallback += callback;
+                return true;
             }
-
-            return false;
-
-            //if (isTaskCompleted)
-            //{
-            //    // Invoke callback synchronously
-            //    callback();
-            //}
         }
 
         #endregion
@@ -1189,7 +1179,12 @@ namespace System.Threading.Tasks
         /// </exception>
         public static void WaitAll(params Task[] tasks)
         {
-            WaitAll(tasks, Timeout.Infinite);
+            WaitAll(tasks, Timeout.Infinite, default(CancellationToken));
+        }
+
+        public static void WaitAll(Task[] tasks, CancellationToken cancellationToken)
+        {
+            WaitAll(tasks, Timeout.Infinite, default(CancellationToken));
         }
 
         /// <summary>
@@ -1229,7 +1224,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentOutOfRangeException(nameof(timeout));
             }
 
-            return WaitAll(tasks, (int)totalMilliseconds);
+            return WaitAll(tasks, (int)totalMilliseconds, default(CancellationToken));
         }
 
         /// <summary>
@@ -1260,41 +1255,43 @@ namespace System.Threading.Tasks
         /// </exception>
         public static bool WaitAll(Task[] tasks, int millisecondsTimeout)
         {
+            return WaitAll(tasks, millisecondsTimeout, default(CancellationToken));
+        }
+
+        public static bool WaitAll(Task[] tasks, int millisecondsTimeout, CancellationToken cancellationToken)
+        {
             if (tasks == null)
                 throw new ArgumentNullException(nameof(tasks));
 
             if (millisecondsTimeout < -1)
                 throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
 
-            List<Exception> exceptions = new List<System.Exception>();
-            ManualResetEvent waitDone = new ManualResetEvent(false);
-            int completedCounter = 0;
-            int totalSum = tasks.Length;
+            cancellationToken.ThrowIfCancellationRequested();
 
-            foreach (var task in tasks)
+            using (var countdown = new CountdownEvent(tasks.Length))
             {
-                task.ContinueWith(t =>
+                for (int i = 0; i < tasks.Length; i++)
                 {
-                    if (t.Status == TaskStatus.Faulted)
-                    {
-                        Monitor.Enter(exceptions);
-                        exceptions.AddRange(t.m_exceptions);
-                        Monitor.Exit(exceptions);
-                    }
+                    if (!tasks[i].EnqueueContinuation(s => countdown.Signal()))
+                        countdown.Signal();
+                }
 
-                    var val = Interlocked.Increment(ref completedCounter);
-                    if (val >= totalSum)
-                        waitDone.Set();
-                });
+                if (!countdown.Wait(millisecondsTimeout, cancellationToken))
+                    return false;
             }
 
-            var done = waitDone.WaitOne(millisecondsTimeout, false);
-            waitDone.Close();
+            var exceptions = new List<System.Exception>();
+            for (int i = 0; i < tasks.Length; i++)
+            {
+                Task task = tasks[i];
+                if (task.Status == TaskStatus.Faulted)
+                    exceptions.AddRange(task.m_exceptions);
+            }
 
             if (exceptions.Count > 0)
                 throw new AggregateException(exceptions).Flatten();
 
-            return done;
+            return true;
         }
 
         /// <summary>
@@ -1312,7 +1309,12 @@ namespace System.Threading.Tasks
         /// </exception>
         public static int WaitAny(params Task[] tasks)
         {
-            return WaitAny(tasks, Timeout.Infinite);
+            return WaitAny(tasks, Timeout.Infinite, default(CancellationToken));
+        }
+
+        public static int WaitAny(Task[] tasks, CancellationToken cancellationToken)
+        {
+            return WaitAny(tasks, Timeout.Infinite, cancellationToken);
         }
 
         /// <summary>
@@ -1348,7 +1350,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentOutOfRangeException(nameof(timeout));
             }
 
-            return WaitAny(tasks, (int)totalMilliseconds);
+            return WaitAny(tasks, (int)totalMilliseconds, default(CancellationToken));
         }
 
         /// <summary>
@@ -1377,49 +1379,51 @@ namespace System.Threading.Tasks
         /// </exception>
         public static int WaitAny(Task[] tasks, int millisecondsTimeout)
         {
+            return WaitAny(tasks, millisecondsTimeout, default(CancellationToken));
+        }
+
+        public static int WaitAny(Task[] tasks, int millisecondsTimeout, CancellationToken cancellationToken)
+        {
             if (tasks == null)
                 throw new ArgumentNullException(nameof(tasks));
 
             if (millisecondsTimeout < -1)
                 throw new ArgumentOutOfRangeException(nameof(millisecondsTimeout));
 
-            List<Exception> exceptions = new List<System.Exception>();
-            ManualResetEvent waitDone = new ManualResetEvent(false);
-            int totalSum = tasks.Length;
-            int completedIndex = -1;
+            cancellationToken.ThrowIfCancellationRequested();
 
-            for (int i = 0; i < tasks.Length; i++)
+            int completedIndex;
+            using (var waitDone = new ManualResetEventSlim(false))
             {
-                tasks[i].ContinueWith(t =>
-                {
-                    int originalValue = Interlocked.CompareExchange(ref completedIndex, i, -1);
-                    if (originalValue != -1)
-                        return;
+                completedIndex = -1;
 
-                    if (t.Status == TaskStatus.Faulted)
+                for (int i = 0; i < tasks.Length; i++)
+                {
+                    int currentIndex = i;
+                    void TaskSetCompleted(object s)
                     {
-                        Monitor.Enter(exceptions);
-                        exceptions.AddRange(t.m_exceptions);
-                        Monitor.Exit(exceptions);
+                        int originalValue = Interlocked.CompareExchange(ref completedIndex, currentIndex, -1);
+                        if (originalValue != -1)
+                            return;
+
+                        waitDone.Set();
                     }
 
-                    waitDone.Set();
-                });
+                    if (!tasks[i].EnqueueContinuation(TaskSetCompleted))
+                        waitDone.Set();
 
-                if (waitDone.WaitOne(0, false))
-                    break;
+                    if (waitDone.IsSet)
+                        break;
+                }
+
+                if (!waitDone.Wait(millisecondsTimeout, cancellationToken))
+                    return -1;
             }
 
-            var done = waitDone.WaitOne(millisecondsTimeout, false);
-            waitDone.Close();
-
-            if (exceptions.Count > 0)
-                throw new AggregateException(exceptions).Flatten();
-
-            if (done)
-                return completedIndex;
-            else
-                return -1;
+            Task completedTask = tasks[completedIndex];
+            return completedTask.Status != TaskStatus.Faulted
+                ? completedIndex
+                : throw completedTask.Exception;
         }
 
         #endregion
@@ -1644,15 +1648,7 @@ namespace System.Threading.Tasks
                 return CompletedTask;
 
             var promise = new DelayPromise(cancellationToken);
-            if (cancellationToken.CanBeCanceled)
-            {
-                promise.Registration = cancellationToken.Register(state => ((DelayPromise)state).Complete(), promise, false);
-            }
-
-            if (millisecondsDelay != Timeout.Infinite)
-            {
-                promise.Timer = new Timer(state => ((DelayPromise)state).Complete(), promise, millisecondsDelay, Timeout.Infinite);
-            }
+            promise.Start(millisecondsDelay);
 
             return promise;
         }
@@ -1678,8 +1674,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(tasks));
 
             // Take a more efficient path if tasks is actually an array
-            Task[] taskArray = tasks as Task[];
-            return WhenAll(taskArray ?? tasks.ToArray());
+            return WhenAll(tasks as Task[] ?? tasks.ToArray());
         }
 
         /// <summary>
@@ -1702,14 +1697,10 @@ namespace System.Threading.Tasks
             if (length == 0)
                 return new Task((Exception)null);
 
-            Task[] tasksCopy = new Task[length];
+            var tasksCopy = new Task[length];
             for (int i = 0; i < length; i++)
             {
-                Task t = tasks[i];
-                if (t == null)
-                    throw new ArgumentException("One task from provided task array is null");
-
-                tasksCopy[i] = t;
+                tasksCopy[i] = tasks[i] ?? throw new ArgumentException(SR.Task_MultiTaskContinuation_NullTask, nameof(tasks));
             }
 
             return new WhenAllPromise(tasksCopy);
@@ -1732,8 +1723,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(tasks));
 
             // Take a more efficient path if tasks is actually an array
-            Task<TResult>[] taskArray = tasks as Task<TResult>[];
-            return WhenAll(taskArray ?? tasks.ToArray());
+            return WhenAll(tasks as Task<TResult>[] ?? tasks.ToArray());
         }
 
         /// <summary>
@@ -1759,11 +1749,7 @@ namespace System.Threading.Tasks
             Task<TResult>[] tasksCopy = new Task<TResult>[length];
             for (int i = 0; i < length; i++)
             {
-                var t = tasks[i];
-                if (t == null)
-                    throw new ArgumentException("One task from provided task array is null");
-
-                tasksCopy[i] = t;
+                tasksCopy[i] = tasks[i] ?? throw new ArgumentException(SR.Task_MultiTaskContinuation_NullTask, nameof(tasks));
             }
 
             return new WhenAllPromise<TResult>(tasksCopy);
@@ -1790,8 +1776,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(tasks));
 
             // Take a more efficient path if tasks is actually an array
-            Task[] taskArray = tasks as Task[];
-            return WhenAny(taskArray ?? tasks.ToArray());
+            return WhenAny(tasks as Task[] ?? tasks.ToArray());
         }
 
         /// <summary>
@@ -1810,21 +1795,12 @@ namespace System.Threading.Tasks
             if (tasks == null)
                 throw new ArgumentNullException(nameof(tasks));
 
-            int length = tasks.Length;
-            if (length == 0)
-                throw new ArgumentException("At least one task is required to wait for completion");
+            if (tasks.Length == 0)
+                throw new ArgumentException(SR.Task_MultiTaskContinuation_EmptyTaskList, nameof(tasks));
 
-            Task[] tasksCopy = new Task[length];
-            for (int i = 0; i < length; i++)
-            {
-                var t = tasks[i];
-                if (t == null)
-                    throw new ArgumentException("One task from provided task array is null");
-
-                tasksCopy[i] = t;
-            }
-
-            return new WhenAnyPromise(tasksCopy);
+            var promise = new WhenAnyPromise();
+            promise.Start(tasks);
+            return promise;
         }
 
         /// <summary>
@@ -1844,8 +1820,7 @@ namespace System.Threading.Tasks
                 throw new ArgumentNullException(nameof(tasks));
 
             // Take a more efficient path if tasks is actually an array
-            Task<TResult>[] taskArray = tasks as Task<TResult>[];
-            return WhenAny(taskArray ?? tasks.ToArray());
+            return WhenAny(tasks as Task<TResult>[] ?? tasks.ToArray());
         }
 
         /// <summary>
@@ -1864,21 +1839,12 @@ namespace System.Threading.Tasks
             if (tasks == null)
                 throw new ArgumentNullException(nameof(tasks));
 
-            int length = tasks.Length;
-            if (length == 0)
-                throw new ArgumentException("At least one task is required to wait for completion");
+            if (tasks.Length == 0)
+                throw new ArgumentException(SR.Task_MultiTaskContinuation_EmptyTaskList, nameof(tasks));
 
-            Task<TResult>[] tasksCopy = new Task<TResult>[length];
-            for (int i = 0; i < length; i++)
-            {
-                var t = tasks[i];
-                if (t == null)
-                    throw new ArgumentException("One task from provided task array is null");
-
-                tasksCopy[i] = t;
-            }
-
-            return new WhenAnyPromise<TResult>(tasksCopy);
+            var promise = new WhenAnyPromise<TResult>();
+            promise.Start(tasks);
+            return promise;
         }
 
         #endregion
@@ -1925,227 +1891,6 @@ namespace System.Threading.Tasks
             {
                 var mres = m_taskCompletedEvent;
                 if (mres != null) mres.Set();
-            }
-        }
-
-        #endregion
-
-        #region Promises
-
-        private sealed class DelayPromise : Task
-        {
-            public CancellationTokenRegistration Registration;
-            public Timer Timer;
-
-            public DelayPromise(CancellationToken cancellationToken)
-            {
-                _stateFlags = TASK_STATE_WAITINGFORACTIVATION;
-                m_cancellationToken = cancellationToken;
-            }
-
-            public void Complete()
-            {
-                bool flag;
-                if (m_cancellationToken.IsCancellationRequested)
-                {
-                    flag = TrySetCanceled(m_cancellationToken);
-                }
-                else
-                {
-                    flag = TrySetCompleted();
-                }
-
-                if (!flag)
-                    return;
-
-                Timer?.Dispose();
-                Registration.Dispose();
-            }
-        }
-
-        private sealed class WhenAllPromise : Task
-        {
-            private readonly Task[] tasks;
-            private int count;
-
-            public WhenAllPromise(Task[] tasks)
-                : base()
-            {
-                _stateFlags = TASK_STATE_WAITINGFORACTIVATION;
-                this.tasks = tasks;
-                count = tasks.Length;
-
-                foreach (var task in tasks)
-                {
-                    if (task.IsCompleted)
-                        Invoke(task);
-                    else
-                        task.ContinueWith(Invoke);
-                }
-            }
-
-            private void Invoke(Task completedTask)
-            {
-                if (Interlocked.Decrement(ref count) != 0)
-                    return;
-
-                List<Exception> exceptionList = null;
-                Task canceledTask = null;
-                for (int i = 0; i < tasks.Length; ++i)
-                {
-                    Task task = tasks[i];
-                    if (task.IsFaulted)
-                    {
-                        if (exceptionList == null)
-                            exceptionList = new List<System.Exception>();
-                        exceptionList.AddRange(task.m_exceptions);
-                    }
-                    else if (task.IsCanceled && canceledTask == null)
-                    {
-                        canceledTask = task;
-                    }
-
-                    tasks[i] = null;
-                }
-
-                if (exceptionList != null)
-                    TrySetException(new AggregateException(exceptionList));
-                else if (canceledTask != null)
-                    TrySetCanceled(canceledTask.m_cancellationToken);
-                else
-                    TrySetCompleted();
-            }
-        }
-
-        private sealed class WhenAllPromise<T> : Task<T[]>
-        {
-            private readonly Task<T>[] tasks;
-            private int count;
-
-            public WhenAllPromise(Task<T>[] tasks)
-                : base()
-            {
-                _stateFlags = TASK_STATE_WAITINGFORACTIVATION;
-                this.tasks = tasks;
-                count = tasks.Length;
-
-                foreach (var task in tasks)
-                {
-                    if (task.IsCompleted)
-                        Invoke(task);
-                    else
-                        task.ContinueWith(Invoke);
-                }
-            }
-
-            private void Invoke(Task ignored)
-            {
-                if (Interlocked.Decrement(ref count) != 0)
-                    return;
-
-                T[] result = new T[tasks.Length];
-                List<Exception> exceptionList = null;
-                Task canceledTask = null;
-                for (int i = 0; i < tasks.Length; ++i)
-                {
-                    Task<T> task = tasks[i];
-                    if (task.IsFaulted)
-                    {
-                        if (exceptionList == null)
-                            exceptionList = new List<System.Exception>();
-                        exceptionList.AddRange(task.m_exceptions);
-                    }
-                    else if (task.IsCanceled)
-                    {
-                        if (canceledTask == null)
-                            canceledTask = task;
-                    }
-                    else
-                    {
-                        result[i] = task.Result;
-                    }
-
-                    tasks[i] = null;
-                }
-
-                if (exceptionList != null)
-                    TrySetException(new AggregateException(exceptionList));
-                else if (canceledTask != null)
-                    TrySetCanceled(canceledTask.m_cancellationToken);
-                else
-                    TrySetResult(result);
-            }
-        }
-
-        private sealed class WhenAnyPromise : Task<Task>
-        {
-            private readonly Task[] tasks;
-            private int count;
-
-            public WhenAnyPromise(Task[] tasks)
-            {
-                _stateFlags = TASK_STATE_WAITINGFORACTIVATION;
-                this.tasks = tasks;
-                count = 0;
-
-                for (int i = 0; i < tasks.Length; i++)
-                {
-                    var t = tasks[i];
-                    if (t == null)
-                        return;
-
-                    if (t.IsCompleted)
-                        Invoke(t);
-                    else
-                        t.ContinueWith(Invoke);
-                }
-            }
-
-            private void Invoke(Task completedTask)
-            {
-                if (Interlocked.Increment(ref count) != 1)
-                    return;
-
-                for (int i = 0; i < tasks.Length; i++)
-                    tasks[i] = null;
-
-                TrySetResult(completedTask);
-            }
-        }
-
-        private sealed class WhenAnyPromise<T> : Task<Task<T>>
-        {
-            private readonly Task<T>[] tasks;
-            private int count;
-
-            public WhenAnyPromise(Task<T>[] tasks)
-            {
-                _stateFlags = TASK_STATE_WAITINGFORACTIVATION;
-                this.tasks = tasks;
-                count = 0;
-
-                for (int i = 0; i < tasks.Length; i++)
-                {
-                    var t = tasks[i];
-                    if (t == null)
-                        return;
-
-                    if (t.IsCompleted)
-                        Invoke(t);
-                    else
-                        t.ContinueWith(Invoke);
-                }
-            }
-
-            private void Invoke(Task completedTask)
-            {
-                if (Interlocked.Increment(ref count) != 1)
-                    return;
-
-                for (int i = 0; i < tasks.Length; i++)
-                    tasks[i] = null;
-
-                TrySetResult((Task<T>)completedTask);
             }
         }
 

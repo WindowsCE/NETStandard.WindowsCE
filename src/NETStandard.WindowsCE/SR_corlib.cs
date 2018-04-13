@@ -484,8 +484,8 @@ partial class SR
     //public const string TaskSchedulerException_ctor_DefaultMessage = "An exception was thrown by a TaskScheduler.";
     //public const string Task_MultiTaskContinuation_FireOptions = "It is invalid to exclude specific continuation kinds for continuations off of multiple tasks.";
     //public const string Task_ContinueWith_ESandLR = "The specified TaskContinuationOptions combined LongRunning and ExecuteSynchronously.  Synchronous continuations should not be long running.";
-    //public const string Task_MultiTaskContinuation_EmptyTaskList = "The tasks argument contains no tasks.";
-    //public const string Task_MultiTaskContinuation_NullTask = "The tasks argument included a null value.";
+    public const string Task_MultiTaskContinuation_EmptyTaskList = "The tasks argument contains no tasks.";
+    public const string Task_MultiTaskContinuation_NullTask = "The tasks argument included a null value.";
     //public const string Task_FromAsync_PreferFairness = "It is invalid to specify TaskCreationOptions.PreferFairness in calls to FromAsync.";
     //public const string Task_FromAsync_LongRunning = "It is invalid to specify TaskCreationOptions.LongRunning in calls to FromAsync.";
     //public const string AsyncMethodBuilder_InstanceNotInitialized = "The builder was not properly initialized.";
