@@ -239,7 +239,7 @@ partial class SR
     //public const string ArgumentOutOfRange_Bounds_Lower_Upper = "Argument must be between {0} and {1}.";
     //public const string ArgumentOutOfRange_CalendarRange = "Specified time is not supported in this calendar. It should be between {0} (Gregorian date) and {1} (Gregorian date), inclusive.";
     //public const string ArgumentOutOfRange_Capacity = "Capacity exceeds maximum capacity.";
-    //public const string ArgumentOutOfRange_Count = "Count must be positive and count must refer to a location within the string/array/collection.";
+    public const string ArgumentOutOfRange_Count = "Count must be positive and count must refer to a location within the string/array/collection.";
     //public const string ArgumentOutOfRange_DateArithmetic = "The added or subtracted value results in an un-representable DateTime.";
     //public const string ArgumentOutOfRange_DateTimeBadMonths = "Months value must be between +/-120000.";
     //public const string ArgumentOutOfRange_DateTimeBadTicks = "Ticks must be between DateTime.MinValue.Ticks and DateTime.MaxValue.Ticks.";
@@ -406,7 +406,7 @@ partial class SR
     public const string Overflow_UInt16 = "Value was either too large or too small for a UInt16.";
     public const string Overflow_UInt32 = "Value was either too large or too small for a UInt32.";
     public const string Overflow_UInt64 = "Value was either too large or too small for a UInt64.";
-    //public const string Rank_MultiDimNotSupported = "Only single dimension arrays are supported here.";
+    public const string Rank_MultiDimNotSupported = "Only single dimension arrays are supported here.";
     //public const string RuntimeWrappedException = "An object that does not derive from System.Exception has been wrapped in a RuntimeWrappedException.";
     public const string SpinWait_SpinUntil_ArgumentNull = "The condition argument is null.";
     //public const string Serialization_CorruptField = "The value of the field '{0}' is invalid.  The serialized data is corrupt.";
