@@ -4,13 +4,9 @@ namespace System.Threading.Tasks
 {
     public class TaskCompletionSource<TResult>
     {
-        private const string AlreadyCompletedMessage
-            = "An attempt was made to transition a task to a final state when it had already completed";
-
         private readonly Task<TResult> _task;
 
-        public Task<TResult> Task
-            => _task;
+        public Task<TResult> Task => _task;
 
         public TaskCompletionSource()
         {
@@ -30,7 +26,7 @@ namespace System.Threading.Tasks
             if (_task.TrySetException(exception))
                 return;
 
-            throw new InvalidOperationException(AlreadyCompletedMessage);
+            throw new InvalidOperationException(SR.TaskT_TransitionToFinal_AlreadyCompleted);
         }
 
         public void SetException(IEnumerable<Exception> exceptions)
@@ -42,7 +38,7 @@ namespace System.Threading.Tasks
             if (_task.TrySetException(agg))
                 return;
 
-            throw new InvalidOperationException(AlreadyCompletedMessage);
+            throw new InvalidOperationException(SR.TaskT_TransitionToFinal_AlreadyCompleted);
         }
 
         public void SetResult(TResult result)
@@ -50,7 +46,7 @@ namespace System.Threading.Tasks
             if (_task.TrySetResult(result))
                 return;
 
-            throw new InvalidOperationException(AlreadyCompletedMessage);
+            throw new InvalidOperationException(SR.TaskT_TransitionToFinal_AlreadyCompleted);
         }
 
         public void SetCanceled()
@@ -58,7 +54,7 @@ namespace System.Threading.Tasks
             if (_task.TrySetCanceled(default(CancellationToken)))
                 return;
 
-            throw new InvalidOperationException(AlreadyCompletedMessage);
+            throw new InvalidOperationException(SR.TaskT_TransitionToFinal_AlreadyCompleted);
         }
 
         public bool TrySetException(Exception exception)
@@ -74,17 +70,23 @@ namespace System.Threading.Tasks
             if (exceptions == null)
                 throw new ArgumentNullException(nameof(exceptions));
 
-            AggregateException agg = new AggregateException(exceptions);
+            var agg = new AggregateException(exceptions);
             return _task.TrySetException(agg);
         }
 
         public bool TrySetResult(TResult result)
-            => _task.TrySetResult(result);
+        {
+            return _task.TrySetResult(result);
+        }
 
         public bool TrySetCanceled()
-            => TrySetCanceled(default(CancellationToken));
+        {
+            return TrySetCanceled(default(CancellationToken));
+        }
 
         public bool TrySetCanceled(CancellationToken cancellationToken)
-            => _task.TrySetCanceled(cancellationToken);
+        {
+            return _task.TrySetCanceled(cancellationToken);
+        }
     }
 }
