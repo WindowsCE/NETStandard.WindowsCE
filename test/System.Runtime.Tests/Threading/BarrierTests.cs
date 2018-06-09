@@ -165,89 +165,106 @@ namespace Tests.Threading
 #if WindowsCE
         private sealed class RemovingWaitingParticipantsStateMachine : IAsyncStateMachine
         {
-            public int state;
-            public AsyncTaskMethodBuilder builder;
+            private State state;
+            private AsyncTaskMethodBuilder builder;
             private Task t;
             private TaskAwaiter u1;
             private Barrier b;
 
+            public RemovingWaitingParticipantsStateMachine(AsyncTaskMethodBuilder builder)
+            {
+                this.builder = builder;
+                state = State.Created;
+            }
+
+            private enum State
+            {
+                Finished = -2,
+                Created = -1,
+                DelayCallback = 0,
+                TCallback = 1,
+                TestParticipants = 100,
+                Delayed = 101,
+                ParticipantSignaled = 102,
+                TCompleted = 103
+            }
+
             public void MoveNext()
             {
-                int num = state;
+                State num = (State)state;
                 try
                 {
                     TaskAwaiter awaiter;
                     TaskAwaiter awaiter2;
-                    if (num != 0)
+                    switch (num)
                     {
-                        if (num != 1)
-                        {
+                        case State.Created:
                             b = new Barrier(4);
                             t = Task.Run(() => b.SignalAndWait());
-                            goto IL_B7;
-                        }
+                            goto case State.TestParticipants;
+                        case State.TestParticipants:
+                            if (b.ParticipantsRemaining > 3)
+                            {
+                                awaiter2 = Task.Delay(100).GetAwaiter();
+                                if (awaiter2.IsCompleted)
+                                    goto case State.Delayed;
 
-                        awaiter = u1;
-                        u1 = default(TaskAwaiter);
-                        num = (state = -1);
-                        goto IL_1DA;
-                    }
-                    else
-                    {
-                        awaiter2 = u1;
-                        u1 = default(TaskAwaiter);
-                        num = (state = -1);
-                    }
+                                num = (state = State.DelayCallback);
+                                u1 = awaiter2;
+                                var callback2 = this;
+                                builder.AwaitOnCompleted(ref awaiter2, ref callback2);
+                                return;
+                            }
 
-                IL_AE:
-                    awaiter2.GetResult();
-                IL_B7:
-                    if (b.ParticipantsRemaining <= 3)
-                    {
-                        b.RemoveParticipants(2);
-                        Assert.AreEqual(1, b.ParticipantsRemaining);
+                            goto case State.ParticipantSignaled;
+                        case State.DelayCallback:
+                            awaiter2 = u1;
+                            u1 = default(TaskAwaiter);
+                            num = (state = State.Created);
+                            goto case State.Delayed;
+                        case State.Delayed:
+                            awaiter2.GetResult();
+                            goto case State.TestParticipants;
+                        case State.ParticipantSignaled:
+                            b.RemoveParticipants(2);
+                            Assert.AreEqual(1, b.ParticipantsRemaining);
 
-                        AssertExtensions.Throws<ArgumentOutOfRangeException>(() => b.RemoveParticipants(20));
-                        Assert.AreEqual(1, b.ParticipantsRemaining);
+                            AssertExtensions.Throws<ArgumentOutOfRangeException>(() => b.RemoveParticipants(20));
+                            Assert.AreEqual(1, b.ParticipantsRemaining);
 
-                        AssertExtensions.Throws<InvalidOperationException>(() => b.RemoveParticipants(2));
-                        Assert.AreEqual(1, b.ParticipantsRemaining);
+                            AssertExtensions.Throws<InvalidOperationException>(() => b.RemoveParticipants(2));
+                            Assert.AreEqual(1, b.ParticipantsRemaining);
 
-                        b.RemoveParticipant();
-                        awaiter = t.GetAwaiter();
-                        if (!awaiter.IsCompleted)
-                        {
-                            num = (state = 1);
+                            b.RemoveParticipant();
+                            awaiter = t.GetAwaiter();
+                            if (awaiter.IsCompleted)
+                                goto case State.TCompleted;
+
+                            num = (state = State.TCallback);
                             u1 = awaiter;
                             var callback = this;
                             builder.AwaitOnCompleted(ref awaiter, ref callback);
                             return;
-                        }
+                        case State.TCallback:
+                            awaiter = u1;
+                            u1 = default(TaskAwaiter);
+                            num = (state = State.Created);
+                            goto case State.TCompleted;
+                        case State.TCompleted:
+                            awaiter.GetResult();
+                            break;
+                        default:
+                            break;
                     }
-                    else
-                    {
-                        awaiter2 = Task.Delay(100).GetAwaiter();
-                        if (!awaiter2.IsCompleted)
-                        {
-                            num = (state = 0);
-                            u1 = awaiter2;
-                            var callback = this;
-                            builder.AwaitOnCompleted(ref awaiter2, ref callback);
-                            return;
-                        }
-                        goto IL_AE;
-                    }
-                IL_1DA:
-                    awaiter.GetResult();
                 }
                 catch (Exception ex)
                 {
-                    state = -2;
+                    state = State.Finished;
                     builder.SetException(ex);
                     return;
                 }
 
-                state = -2;
+                state = State.Finished;
                 builder.SetResult();
             }
 
@@ -260,10 +277,8 @@ namespace Tests.Threading
         [TestMethod]
         public void RemovingWaitingParticipants()
         {
-            var sm = new RemovingWaitingParticipantsStateMachine();
-            sm.builder = AsyncTaskMethodBuilder.Create();
-            sm.state = -1;
-            var builder = sm.builder;
+            var builder = AsyncTaskMethodBuilder.Create();
+            var sm = new RemovingWaitingParticipantsStateMachine(builder);
             builder.Start(ref sm);
             builder.Task.Wait();
         }

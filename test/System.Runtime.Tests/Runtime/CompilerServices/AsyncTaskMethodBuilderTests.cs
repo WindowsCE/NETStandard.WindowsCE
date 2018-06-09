@@ -496,41 +496,41 @@ namespace Tests.Runtime.CompilerServices
 
         // TODO: Implement Barrier class
         // Test that OCEs don't result in the unobserved event firing
-        //[TestMethod]
-        //public void CancellationDoesntResultInEventFiring()
-        //{
-        //    var cts = new CancellationTokenSource();
-        //    var oce = new OperationCanceledException(cts.Token);
+        [TestMethod]
+        public void CancellationDoesntResultInEventFiring()
+        {
+            var cts = new CancellationTokenSource();
+            var oce = new OperationCanceledException(cts.Token);
 
-        //    // A Task that throws an exception to cancel
-        //    var b = new Barrier(2);
-        //    Task t1 = Task.Factory.StartNew(() =>
-        //    {
-        //        b.SignalAndWait();
-        //        b.SignalAndWait();
-        //        throw oce;
-        //    }, cts.Token);
-        //    b.SignalAndWait(); // make sure task is started before we cancel
-        //    cts.Cancel();
-        //    b.SignalAndWait(); // release task to complete
+            // A Task that throws an exception to cancel
+            var b = new Barrier(2);
+            Task t1 = Task.Factory.StartNew(() =>
+            {
+                b.SignalAndWait();
+                b.SignalAndWait();
+                throw oce;
+            }, cts.Token);
+            b.SignalAndWait(); // make sure task is started before we cancel
+            cts.Cancel();
+            b.SignalAndWait(); // release task to complete
 
-        //    // This test may be run concurrently with other tests in the suite, 
-        //    // which can be problematic as TaskScheduler.UnobservedTaskException
-        //    // is global state.  The handler is carefully written to be non-problematic
-        //    // if it happens to be set during the execution of another test that has 
-        //    // an unobserved exception.
-        //    EventHandler<UnobservedTaskExceptionEventArgs> handler =
-        //        (s, e) => Assert.DoesNotContain(oce, e.Exception.InnerExceptions);
-        //    TaskScheduler.UnobservedTaskException += handler;
-        //    ((IAsyncResult)t1).AsyncWaitHandle.WaitOne();
-        //    t1 = null;
-        //    for (int i = 0; i < 10; i++)
-        //    {
-        //        GC.Collect();
-        //        GC.WaitForPendingFinalizers();
-        //    }
-        //    TaskScheduler.UnobservedTaskException -= handler;
-        //}
+            // This test may be run concurrently with other tests in the suite, 
+            // which can be problematic as TaskScheduler.UnobservedTaskException
+            // is global state.  The handler is carefully written to be non-problematic
+            // if it happens to be set during the execution of another test that has 
+            // an unobserved exception.
+            //EventHandler<UnobservedTaskExceptionEventArgs> handler =
+            //    (s, e) => Assert.DoesNotContain(oce, e.Exception.InnerExceptions);
+            //TaskScheduler.UnobservedTaskException += handler;
+            ((IAsyncResult)t1).AsyncWaitHandle.WaitOne();
+            t1 = null;
+            for (int i = 0; i < 10; i++)
+            {
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+            }
+            //TaskScheduler.UnobservedTaskException -= handler;
+        }
 
         #region Helper Methods / Classes
 
