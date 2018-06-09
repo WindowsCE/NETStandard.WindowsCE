@@ -118,7 +118,7 @@ partial class SR
     //public const string Arg_TypeLoadException = "Failure has occurred while loading a type.";
     //public const string Arg_UnauthorizedAccessException = "Attempted to perform an unauthorized operation.";
     //public const string Arg_VersionString = "Version string portion was too short or too long.";
-    //public const string Arg_WrongType = "The value '{0}' is not of type '{1}' and cannot be used in this generic collection.";
+    public const string Arg_WrongType = "The value '{0}' is not of type '{1}' and cannot be used in this generic collection.";
     //public const string Argument_AbsolutePathRequired = "Absolute path information is required.";
     public const string Argument_AddingDuplicate = "An item with the same key has already been added. Key: {0}";
     //public const string Argument_AddingDuplicate__ = "Item has already been added. Key in dictionary: '{0}'  Key being added: '{1}'";
@@ -657,8 +657,8 @@ partial class SR
     //public const string Arg_MissingManifestResourceException = "Unable to find manifest resource.";
     public const string Serialization_MissingKeys = "The keys for this dictionary are missing.";
     //public const string Serialization_NullKey = "One of the serialized keys is null.";
-    //public const string NotSupported_KeyCollectionSet = "Mutating a key collection derived from a dictionary is not allowed.";
-    //public const string NotSupported_ValueCollectionSet = "Mutating a value collection derived from a dictionary is not allowed.";
+    public const string NotSupported_KeyCollectionSet = "Mutating a key collection derived from a dictionary is not allowed.";
+    public const string NotSupported_ValueCollectionSet = "Mutating a value collection derived from a dictionary is not allowed.";
     //public const string IO_IO_StreamTooLong = "Stream was too long.";
     //public const string UnauthorizedAccess_MemStreamBuffer = "MemoryStream's internal buffer cannot be accessed.";
     //public const string NotSupported_MemStreamNotExpandable = "Memory stream is not expandable.";

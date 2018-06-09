@@ -74,11 +74,11 @@ partial class SR
     //public const string LinkedListEmpty = "The LinkedList is empty.";
     //public const string LinkedListNodeIsAttached = "The LinkedList node already belongs to a LinkedList.";
     //public const string NotSupported_SortedListNestedWrite = "This operation is not supported on SortedList nested types because they require modifying the original SortedList.";
-    //public const string SortedSet_LowerValueGreaterThanUpperValue = "Must be less than or equal to upperValue.";
-    //public const string Serialization_InvalidOnDeser = "OnDeserialization method was called while the object was not being deserialized.";
-    //public const string Serialization_MismatchedCount = "The serialized Count information doesn't match the number of items.";
+    public const string SortedSet_LowerValueGreaterThanUpperValue = "Must be less than or equal to upperValue.";
+    public const string Serialization_InvalidOnDeser = "OnDeserialization method was called while the object was not being deserialized.";
+    public const string Serialization_MismatchedCount = "The serialized Count information doesn't match the number of items.";
     //public const string Serialization_MissingKeys = "The keys for this dictionary are missing.";
-    //public const string Serialization_MissingValues = "The values for this dictionary are missing.";
+    public const string Serialization_MissingValues = "The values for this dictionary are missing.";
     //public const string ArgumentException_BufferNotFromPool = "The buffer is not associated with this pool and may not be returned to it.";
     //public const string ArgumentOutOfRange_IndexCountBuffer = "Index and count must refer to a location within the buffer.";
     //public const string Argument_InvalidCharSequenceNoIndex = "String contains invalid Unicode code points.";
