@@ -331,14 +331,14 @@ partial class SR
     //public const string InvalidCast_StoreArrayElement = "Object cannot be stored in an array of this type.";
     //public const string InvalidOperation_Calling = "WinRT Interop has already been initialized and cannot be initialized again.";
     //public const string InvalidOperation_DateTimeParsing = "Internal Error in DateTime and Calendar operations.";
-    //public const string InvalidOperation_EnumEnded = "Enumeration already finished.";
+    public const string InvalidOperation_EnumEnded = "Enumeration already finished.";
     public const string InvalidOperation_EnumFailedVersion = "Collection was modified; enumeration operation may not execute.";
-    //public const string InvalidOperation_EnumNotStarted = "Enumeration has not started. Call MoveNext.";
+    public const string InvalidOperation_EnumNotStarted = "Enumeration has not started. Call MoveNext.";
     public const string InvalidOperation_EnumOpCantHappen = "Enumeration has either not started or has already finished.";
     //public const string InvalidOperation_HandleIsNotInitialized = "Handle is not initialized.";
     //public const string InvalidOperation_IComparerFailed = "Failed to compare two elements in the array.";
     //public const string InvalidOperation_NoValue = "Nullable object must have a value.";
-    //public const string InvalidOperation_NullArray = "The underlying array is null.";
+    public const string InvalidOperation_NullArray = "The underlying array is null.";
     //public const string InvalidOperation_Overlapped_Pack = "Cannot pack a packed Overlapped again.";
     //public const string InvalidOperation_ReadOnly = "Instance is read-only.";
     //public const string InvalidOperation_ThreadWrongThreadStart = "The thread was created with a ThreadStart delegate that does not accept a parameter.";

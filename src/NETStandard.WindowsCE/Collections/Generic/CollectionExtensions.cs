@@ -4,7 +4,7 @@
 
 namespace System.Collections.Generic
 {
-    public static class CollectionExtensions
+    public static partial class CollectionExtensions
     {
         public static TValue GetValueOrDefault<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> dictionary, TKey key)
         {

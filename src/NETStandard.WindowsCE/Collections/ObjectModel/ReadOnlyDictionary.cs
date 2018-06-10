@@ -12,7 +12,7 @@ using Mock.System.Collections.Generic;
 namespace System.Collections.ObjectModel
 {
     [Serializable]
-    //[DebuggerTypeProxy(typeof(DictionaryDebugView<,>))]
+    [DebuggerTypeProxy(typeof(IDictionaryDebugView<,>))]
     [DebuggerDisplay("Count = {Count}")]
     public class ReadOnlyDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IDictionary, IReadOnlyDictionary<TKey, TValue>
     {
@@ -415,7 +415,21 @@ namespace System.Collections.ObjectModel
 
         #endregion IReadOnlyDictionary members
 
-        //[DebuggerTypeProxy(typeof(CollectionDebugView<>))]
+        #region IReadOnlyDictionary implicit implementors
+
+        public static implicit operator ReadOnlyDictionary<TKey, TValue>(SortedList<TKey, TValue> sortedList)
+        {
+            return new ReadOnlyDictionary<TKey, TValue>(sortedList);
+        }
+
+        public static implicit operator ReadOnlyDictionary<TKey, TValue>(Dictionary<TKey, TValue> sortedList)
+        {
+            return new ReadOnlyDictionary<TKey, TValue>(sortedList);
+        }
+
+        #endregion
+
+        [DebuggerTypeProxy(typeof(ICollectionDebugView<>))]
         [DebuggerDisplay("Count = {Count}")]
         public sealed class KeyCollection : ICollection<TKey>, ICollection, IReadOnlyCollection<TKey>
         {
@@ -523,7 +537,7 @@ namespace System.Collections.ObjectModel
             #endregion
         }
 
-        //[DebuggerTypeProxy(typeof(CollectionDebugView<>))]
+        [DebuggerTypeProxy(typeof(ICollectionDebugView<>))]
         [DebuggerDisplay("Count = {Count}")]
         public sealed class ValueCollection : ICollection<TValue>, ICollection, IReadOnlyCollection<TValue>
         {

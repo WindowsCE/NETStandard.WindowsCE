@@ -8,6 +8,10 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 
+#if !NET35_CF
+using Mock.System.Collections.Generic;
+#endif
+
 namespace System.Collections.ObjectModel
 {
     /// <summary>
@@ -18,7 +22,7 @@ namespace System.Collections.ObjectModel
     [Serializable]
     //[DebuggerTypeProxy(typeof(CollectionDebugView<>))]
     [DebuggerDisplay("Count = {Count}")]
-    public class ObservableCollection<T> : Collection<T>, INotifyCollectionChanged, INotifyPropertyChanged
+    public class ObservableCollection<T> : Collection<T>, INotifyCollectionChanged, INotifyPropertyChanged, IReadOnlyList<T>
     {
         //------------------------------------------------------
         //

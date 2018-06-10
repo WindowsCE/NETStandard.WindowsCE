@@ -5,6 +5,11 @@
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.ComponentModel;
+using System.Collections.Generic;
+
+#if !NET35_CF
+using Mock.System.Collections.Generic;
+#endif
 
 namespace System.Collections.ObjectModel
 {
@@ -12,9 +17,9 @@ namespace System.Collections.ObjectModel
     /// Read-only wrapper around an ObservableCollection.
     /// </summary>
     [Serializable]
-    //[DebuggerTypeProxy(typeof(CollectionDebugView<>))]
+    [DebuggerTypeProxy(typeof(ICollectionDebugView<>))]
     [DebuggerDisplay("Count = {Count}")]
-    public class ReadOnlyObservableCollection<T> : ReadOnlyCollection<T>, INotifyCollectionChanged, INotifyPropertyChanged
+    public class ReadOnlyObservableCollection<T> : ReadOnlyCollection<T>, INotifyCollectionChanged, INotifyPropertyChanged, IReadOnlyList<T>
     {
         #region Constructors
 
