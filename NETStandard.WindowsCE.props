@@ -1,0 +1,24 @@
+<Project ToolsVersion="15.0">
+  <PropertyGroup>
+    <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>CompactFramework</TargetFrameworkProfile>
+    <DefineConstants>$(DefineConstants);NET35_CF;WindowsCE</DefineConstants>
+    <DisableImplicitFrameworkReferences>True</DisableImplicitFrameworkReferences>
+    <NoStdLib>True</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <FileAlignment>512</FileAlignment>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <PlatformID>E2BECB1F-8C8C-41ba-B736-9BE7D946A398</PlatformID>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="mscorlib, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac" />
+    <Reference Include="System, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac" />
+    <Reference Include="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac" />
+    <Reference Include="System.Data, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac" />
+    <Reference Include="System.Runtime.Serialization, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac" />
+    <Reference Include="System.Xml, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac" />
+    <Reference Include="System.Xml.Linq, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac" />
+  </ItemGroup>
+</Project>

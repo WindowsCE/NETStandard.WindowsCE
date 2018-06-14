@@ -11,6 +11,16 @@ CALL %SolutionDir%tools\nuget_source.bat %SolutionDir% %PackageName% %SourceCode
 
 echo Preparing files for packaging...
 CALL %SolutionDir%tools\nuget_prepare.bat %SolutionDir% net35-cf %PackageName% %AssemblyName% || EXIT /B 1
+CALL %SolutionDir%tools\nuget_prepare_empty.bat %SolutionDir% net35-client %PackageName% %AssemblyName% || EXIT /B 1
+CALL %SolutionDir%tools\nuget_prepare_empty.bat %SolutionDir% net35 %PackageName% %AssemblyName% || EXIT /B 1
+CALL %SolutionDir%tools\nuget_prepare_empty.bat %SolutionDir% net40 %PackageName% %AssemblyName% || EXIT /B 1
+CALL %SolutionDir%tools\nuget_prepare_empty.bat %SolutionDir% net45 %PackageName% %AssemblyName% || EXIT /B 1
+CALL %SolutionDir%tools\nuget_prepare_empty.bat %SolutionDir% net461 %PackageName% %AssemblyName% || EXIT /B 1
+CALL %SolutionDir%tools\nuget_prepare_empty.bat %SolutionDir% netstandard1.0 %PackageName% %AssemblyName% || EXIT /B 1
+CALL %SolutionDir%tools\nuget_prepare_empty.bat %SolutionDir% netstandard2.0 %PackageName% %AssemblyName% || EXIT /B 1
+
+echo Preparing build files for packaging...
+CALL %SolutionDir%tools\nuget_prepare_build.bat %SolutionDir% net35-cf %PackageName% %AssemblyName% || EXIT /B 1
 
 echo Copy complete. Starting NuGet packaging...
 CALL %SolutionDir%tools\nuget_pack.bat %SolutionDir% %PackageName% %AssemblyName% %PackageVersion% || EXIT /B 1

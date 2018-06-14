@@ -18,11 +18,19 @@
     <tags>net35-cf,windowsce,wince,netstandard,netstandard1.0,backport</tags>
     <dependencies>
       <group targetFramework="net35-cf" />
+      <group targetFramework="net35-client">
+        <dependency id="TaskParallelLibrary" version="1.0.2856" />
+      </group>
+      <group targetFramework="net35">
+        <dependency id="TaskParallelLibrary" version="1.0.2856" />
+      </group>
+      <group targetFramework="net40">
+        <dependency id="Microsoft.Bcl.Async" version="1.0.168" />
+      </group>
+      <group targetFramework="net45" />
+      <group targetFramework="net461" />
+      <group targetFramework="netstandard1.0" />
+      <group targetFramework="netstandard2.0" />
     </dependencies>
-    <frameworkAssemblies>
-      <frameworkAssembly assemblyName="mscorlib" targetFramework=".NETFramework3.5-CompactFramework" />
-      <frameworkAssembly assemblyName="System" targetFramework=".NETFramework3.5-CompactFramework" />
-      <frameworkAssembly assemblyName="System.Core" targetFramework=".NETFramework3.5-CompactFramework" />
-    </frameworkAssemblies>
   </metadata>
 </package>
