@@ -1,5 +1,9 @@
 ﻿using System.Collections.Generic;
 
+#if !NET35_CF
+using Mock.System.Collections.Generic;
+#endif
+
 namespace System.Collections.Specialized
 {
     internal sealed class InternalReadOnlyCollection<T> : ICollection<T>, IReadOnlyCollection<T>

@@ -2,6 +2,10 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+#if !NET35_CF
+using Mock.System.Collections.Generic;
+#endif
+
 namespace System.Collections.Generic
 {
     public static partial class CollectionExtensions
