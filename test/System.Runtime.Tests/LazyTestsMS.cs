@@ -139,7 +139,7 @@ namespace Tests
         public void Lazy_Value_Invalid()
         {
             Lazy<int> x = null;
-            Func<int> f = () => x.Value;
+            Func2<int> f = () => x.Value;
 
             Value_Invalid_Impl(ref x, new Lazy<int>(f));
             Value_Invalid_Impl(ref x, new Lazy<int>(f, true));
@@ -230,8 +230,8 @@ namespace Tests
         {
             int counter = 0; // set in test function
 
-            var fint = new Func<int>(() => { if (++counter < 5) throw new Exception(); else return counter; });
-            var fobj = new Func<string>(() => { if (++counter < 5) throw new Exception(); else return counter.ToString(); });
+            var fint = new Func2<int>(() => { if (++counter < 5) throw new Exception(); else return counter; });
+            var fobj = new Func2<string>(() => { if (++counter < 5) throw new Exception(); else return counter.ToString(); });
 
             Value_ExceptionRecovery_IntImpl(new Lazy<int>(fint), ref counter, 0);
             Value_ExceptionRecovery_IntImpl(new Lazy<int>(fint, true), ref counter, 0);

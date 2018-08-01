@@ -247,7 +247,7 @@ namespace Tests
             int value = 1;
             Action action = () => Interlocked.CompareExchange(ref value, 2, 1);
             Task target = new Task(action);
-            Action<Task> continueAction = t =>
+            Action2<Task> continueAction = t =>
             {
                 Assert.IsNotNull(t);
                 Assert.IsFalse(t.IsFaulted);
@@ -304,7 +304,7 @@ namespace Tests
             var task = new Task(action);
             task.Start();
 
-            Action<Task> continueAction = t => Interlocked.Increment(ref counter);
+            Action2<Task> continueAction = t => Interlocked.Increment(ref counter);
             for (int i = 0; i < NestingCount; i++)
             {
                 task = task.ContinueWith(continueAction);
@@ -324,7 +324,7 @@ namespace Tests
             var firstTask = new Task(action);
             var task = firstTask;
 
-            Action<Task> continueAction = t => Interlocked.Increment(ref counter);
+            Action2<Task> continueAction = t => Interlocked.Increment(ref counter);
             for (int i = 0; i < NestingCount; i++)
             {
                 task = task.ContinueWith(continueAction);
@@ -347,7 +347,7 @@ namespace Tests
             var firstTask = new Task(action);
             var task = firstTask;
 
-            Action<Task> continueAction = t => Interlocked.Increment(ref counter);
+            Action2<Task> continueAction = t => Interlocked.Increment(ref counter);
             for (int i = 0; i < NestingCount; i++)
             {
                 task = firstTask.ContinueWith(continueAction);

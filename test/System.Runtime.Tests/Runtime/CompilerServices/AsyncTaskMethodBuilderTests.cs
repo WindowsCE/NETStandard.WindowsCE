@@ -472,15 +472,15 @@ namespace Tests.Runtime.CompilerServices
                 Task.Run(() => { throw new Exception("uh oh"); }),
                 Task.Factory.StartNew<int>(() => { throw new Exception("uh oh"); }),
                 Task.WhenAll(Task.Run(() => { throw new Exception("uh oh"); }), Task.Run(() => { throw new Exception("uh oh"); })),
-                Task.WhenAll<int>(Task.Run(new Func<int>(() => { throw new Exception("uh oh"); })), Task.Run(new Func<int>(() => { throw new Exception("uh oh"); }))),
+                Task.WhenAll<int>(Task.Run(new Func2<int>(() => { throw new Exception("uh oh"); })), Task.Run(new Func2<int>(() => { throw new Exception("uh oh"); }))),
                 Task.WhenAny(twa1, twa2).Unwrap(),
-                Task.WhenAny<int>(Task.Run(new Func<Task<int>>(() => { throw new Exception("uh oh"); }))).Unwrap(),
+                Task.WhenAny<int>(Task.Run(new Func2<Task<int>>(() => { throw new Exception("uh oh"); }))).Unwrap(),
                 Task.Factory.StartNew(() => Task.Factory.StartNew(() => { throw new Exception("uh oh"); })).Unwrap(),
                 Task.Factory.StartNew<Task<int>>(() => Task.Factory.StartNew<int>(() => { throw new Exception("uh oh"); })).Unwrap(),
                 Task.Run(() => Task.Run(() => { throw new Exception("uh oh"); })),
-                Task.Run(() => Task.Run(new Func<int>(() => { throw new Exception("uh oh"); }))),
-                Task.Run(new Func<Task>(() => { throw new Exception("uh oh"); })),
-                Task.Run(new Func<Task<int>>(() => { throw new Exception("uh oh"); }))
+                Task.Run(() => Task.Run(new Func2<int>(() => { throw new Exception("uh oh"); }))),
+                Task.Run(new Func2<Task>(() => { throw new Exception("uh oh"); })),
+                Task.Run(new Func2<Task<int>>(() => { throw new Exception("uh oh"); }))
             };
 
             for (int i = 0; i < tasks.Length; i++)
@@ -494,7 +494,6 @@ namespace Tests.Runtime.CompilerServices
             ignored = twa2.Exception;
         }
 
-        // TODO: Implement Barrier class
         // Test that OCEs don't result in the unobserved event firing
         [TestMethod]
         public void CancellationDoesntResultInEventFiring()

@@ -17,7 +17,7 @@ namespace Tests
         /// </summary>
         private static void ResultTestHelper<TResult>(TResult expected)
         {
-            Func<TResult> action = () => expected;
+            Func2<TResult> action = () => expected;
             Task<TResult> target = new Task<TResult>(action);
             target.Start();
             target.Wait();
@@ -42,11 +42,11 @@ namespace Tests
         [TestMethod]
         public void Future_IsFaultedTest()
         {
-            Func<int> action = () => 1;
+            Func2<int> action = () => 1;
             Task<int> target = new Task<int>(action);
             target.Start();
 
-            Func<int> actionEx = () => { throw new Exception(); };
+            Func2<int> actionEx = () => { throw new Exception(); };
             Task<int> targetEx = new Task<int>(actionEx);
             targetEx.Start();
 
@@ -64,7 +64,7 @@ namespace Tests
         [TestMethod]
         public void Future_IsCompletedTest()
         {
-            Func<int> action = () => { Thread.Sleep(100); return 1; };
+            Func2<int> action = () => { Thread.Sleep(100); return 1; };
             Task<int> target = new Task<int>(action);
             target.Start();
             Assert.IsFalse(target.IsCompleted);
@@ -78,7 +78,7 @@ namespace Tests
         [TestMethod]
         public void Future_ExceptionTest()
         {
-            Func<int> action = () => { throw new ArgumentNullException("none"); };
+            Func2<int> action = () => { throw new ArgumentNullException("none"); };
             Task<int> target = new Task<int>(action);
             target.Start();
             try { target.Wait(); }
@@ -96,7 +96,7 @@ namespace Tests
         public void Future_CompletedSynchronouslyTest()
         {
             int counter = 0;
-            Func<int> action = () => Interlocked.Increment(ref counter);
+            Func2<int> action = () => Interlocked.Increment(ref counter);
             Task<int> target = new Task<int>(action);
             target.Start();
             target.Wait();
@@ -117,7 +117,7 @@ namespace Tests
         public void Future_AsyncWaitHandleTest()
         {
             int counter = 0;
-            Func<int> action = () => Interlocked.Increment(ref counter);
+            Func2<int> action = () => Interlocked.Increment(ref counter);
             Task<int> target = new Task<int>(action);
             target.Start();
             Assert.IsTrue(((IAsyncResult)target).AsyncWaitHandle.WaitOne());
@@ -132,7 +132,7 @@ namespace Tests
         {
             object refobj = new object();
             int counter = 0;
-            Func<object, int> action = state =>
+            Func2<object, int> action = state =>
             {
                 Assert.AreEqual(refobj, state);
                 return Interlocked.Increment(ref counter);
@@ -149,7 +149,7 @@ namespace Tests
         [TestMethod]
         public void Future_WaitTest_Int32()
         {
-            Func<int> action = () => { Thread.Sleep(100); return 1; };
+            Func2<int> action = () => { Thread.Sleep(100); return 1; };
             Task<int> target = new Task<int>(action);
             target.Start();
             Assert.IsFalse(target.Wait(0));
@@ -162,7 +162,7 @@ namespace Tests
         [TestMethod]
         public void Future_WaitTest_TimeSpan()
         {
-            Func<int> action = () => { Thread.Sleep(100); return 1; };
+            Func2<int> action = () => { Thread.Sleep(100); return 1; };
             Task<int> target = new Task<int>(action);
             target.Start();
             Assert.IsFalse(target.Wait(new TimeSpan(0)));
@@ -176,7 +176,7 @@ namespace Tests
         public void Future_WaitTest()
         {
             int counter = 0;
-            Func<int> action = () => Interlocked.Increment(ref counter);
+            Func2<int> action = () => Interlocked.Increment(ref counter);
             Task<int> target = new Task<int>(action);
             target.Start();
             target.Wait();
@@ -190,7 +190,7 @@ namespace Tests
         public void Future_TaskStartActionTest()
         {
             int counter = 0;
-            Func<int> action = () => Interlocked.Increment(ref counter);
+            Func2<int> action = () => Interlocked.Increment(ref counter);
             Task<int> target = new Task<int>(action);
             PrivateObject pvTarget = new PrivateObject(target);
             pvTarget.Invoke("TaskStartAction", new[] { typeof(object) }, new object[] { null });
@@ -204,7 +204,7 @@ namespace Tests
         public void Future_StartTest()
         {
             int counter = 0;
-            Func<int> action = () => Interlocked.Increment(ref counter);
+            Func2<int> action = () => Interlocked.Increment(ref counter);
             Task<int> target = new Task<int>(action);
             target.Start();
             Thread.Sleep(50);
@@ -218,7 +218,7 @@ namespace Tests
         public void Future_RunSynchronouslyTest()
         {
             int counter = 0;
-            Func<int> action = () => Interlocked.Increment(ref counter);
+            Func2<int> action = () => Interlocked.Increment(ref counter);
             Task<int> target = new Task<int>(action);
             target.RunSynchronously();
             var result = target.Result;
@@ -233,7 +233,7 @@ namespace Tests
         [ExpectedException(typeof(InvalidOperationException))]
         public void Future_EnsureStartOnceTest()
         {
-            Func<int> action = () => 1;
+            Func2<int> action = () => 1;
             Task<int> target = new Task<int>(action);
             PrivateObject pvTarget = new PrivateObject(target);
             pvTarget.Invoke("EnsureStartOnce");
@@ -246,7 +246,7 @@ namespace Tests
         [TestMethod]
         public void Future_DisposeTest()
         {
-            Func<int> action = () => 1;
+            Func2<int> action = () => 1;
             Task<int> target = new Task<int>(action);
 
             bool throwException = false;
@@ -269,10 +269,10 @@ namespace Tests
         public void Future_ContinueWithTest()
         {
             int value = 1;
-            Func<int> action = () => Interlocked.CompareExchange(ref value, 2, 1);
+            Func2<int> action = () => Interlocked.CompareExchange(ref value, 2, 1);
             Task<int> target = new Task<int>(action);
             target.Start();
-            Func<Task, int> continueFunction = t =>
+            Func2<Task, int> continueFunction = t =>
             {
                 Assert.IsNotNull(t);
                 Assert.IsFalse(t.IsFaulted);
@@ -294,7 +294,7 @@ namespace Tests
         public void Future_ConstructorTest_Action()
         {
             int counter = 0;
-            Func<int> action = () => Interlocked.Increment(ref counter);
+            Func2<int> action = () => Interlocked.Increment(ref counter);
             Task<int> target = new Task<int>(action);
             target.Start();
             target.Wait();
@@ -308,7 +308,7 @@ namespace Tests
         public void Future_ConstructorTest_Action_State()
         {
             int[] values = new int[] { 0 };
-            Func<object, int> action = obj =>
+            Func2<object, int> action = obj =>
             {
                 int[] v = obj as int[];
                 Assert.IsNotNull(v);
@@ -324,11 +324,11 @@ namespace Tests
         public void FutureDeepNesting()
         {
             int counter = 0;
-            Func<int> action = () => Interlocked.Increment(ref counter);
+            Func2<int> action = () => Interlocked.Increment(ref counter);
             var task = new Task<int>(action);
             task.Start();
 
-            Func<Task, int> continueFunction = t => Interlocked.Increment(ref counter);
+            Func2<Task, int> continueFunction = t => Interlocked.Increment(ref counter);
             for (int i = 0; i < TaskMembersTest.NestingCount; i++)
             {
                 task = task.ContinueWith(continueFunction);
