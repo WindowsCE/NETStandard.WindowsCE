@@ -1,12 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
-#if NET35_CF
 namespace System.Linq
-#else
-namespace Mock.System.Linq
-#endif
 {
     public static partial class Enumerable2
     {
