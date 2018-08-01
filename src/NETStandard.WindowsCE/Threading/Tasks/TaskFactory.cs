@@ -14,6 +14,8 @@ namespace System.Threading.Tasks
         /// </summary>
         public TaskFactory() { }
 
+        public TaskFactory(TaskScheduler scheduler) { }
+
         #region StartNew Task
 
         /// <summary>
