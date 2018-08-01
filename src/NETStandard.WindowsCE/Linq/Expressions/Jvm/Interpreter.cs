@@ -1,6 +1,11 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 
+#if NET35_CF
 namespace System.Linq.Expressions.Jvm
+#else
+namespace Mock.System.Linq.Expressions.Jvm
+#endif
 {
     public class Interpreter
     {

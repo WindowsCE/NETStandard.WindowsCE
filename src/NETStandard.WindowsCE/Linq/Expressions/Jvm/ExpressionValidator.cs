@@ -1,4 +1,10 @@
-﻿namespace System.Linq.Expressions.Jvm
+﻿using System;
+
+#if NET35_CF
+namespace System.Linq.Expressions.Jvm
+#else
+namespace Mock.System.Linq.Expressions.Jvm
+#endif
 {
     internal class ExpressionValidator : ExpressionVisitor
     {

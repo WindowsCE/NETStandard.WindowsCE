@@ -27,10 +27,20 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System;
 using System.Collections.ObjectModel;
-using System.Linq.Expressions.Jvm;
 
+#if NET35_CF
+using System.Linq.Expressions.Jvm;
+#else
+using Mock.System.Linq.Expressions.Jvm;
+#endif
+
+#if NET35_CF
 namespace System.Linq.Expressions
+#else
+namespace Mock.System.Linq.Expressions
+#endif
 {
     public class LambdaExpression : Expression
     {

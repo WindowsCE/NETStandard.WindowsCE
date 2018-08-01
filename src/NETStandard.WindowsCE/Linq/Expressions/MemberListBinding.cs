@@ -29,7 +29,11 @@
 using System.Collections.ObjectModel;
 using System.Reflection;
 
+#if NET35_CF
 namespace System.Linq.Expressions
+#else
+namespace Mock.System.Linq.Expressions
+#endif
 {
     public sealed class MemberListBinding : MemberBinding
     {

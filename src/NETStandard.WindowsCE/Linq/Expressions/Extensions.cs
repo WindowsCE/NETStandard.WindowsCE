@@ -26,12 +26,19 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text;
 
+#if NET35_CF
 namespace System.Linq.Expressions
+#else
+namespace Mock.System.Linq.Expressions
+#endif
 {
     internal static class Extensions
     {
@@ -169,7 +176,7 @@ namespace System.Linq.Expressions
 
         public static Type MakeArrayType(this Type self, int rank)
         {
-            var builder = new Text.StringBuilder();
+            var builder = new StringBuilder();
             for (int i = 1; i < rank; i++)
                 builder.Append(",");
 

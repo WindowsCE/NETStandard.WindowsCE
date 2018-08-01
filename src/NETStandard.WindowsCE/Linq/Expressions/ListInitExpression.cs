@@ -28,7 +28,11 @@
 
 using System.Collections.ObjectModel;
 
+#if NET35_CF
 namespace System.Linq.Expressions
+#else
+namespace Mock.System.Linq.Expressions
+#endif
 {
     public sealed class ListInitExpression : Expression
     {

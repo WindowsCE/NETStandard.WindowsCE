@@ -1,6 +1,13 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
+using System.Linq;
+using SystemMath = System.Math;
 
+#if NET35_CF
 namespace System.Linq.Expressions.Jvm
+#else
+namespace Mock.System.Linq.Expressions.Jvm
+#endif
 {
     internal class Math
     {
@@ -379,7 +386,7 @@ namespace System.Linq.Expressions.Jvm
                 case ExpressionType.Modulo:
                     return a % b;
                 case ExpressionType.Power:
-                    return System.Math.Pow(a, b);
+                    return SystemMath.Pow(a, b);
             }
 
             throw new NotImplementedException($"Expression with Node type {et}");

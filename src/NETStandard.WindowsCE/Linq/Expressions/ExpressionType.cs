@@ -26,7 +26,11 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
+#if NET35_CF
 namespace System.Linq.Expressions
+#else
+namespace Mock.System.Linq.Expressions
+#endif
 {
     public enum ExpressionType
     {
