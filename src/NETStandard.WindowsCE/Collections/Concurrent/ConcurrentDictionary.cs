@@ -1009,7 +1009,7 @@ namespace Mock.System.Collections.Concurrent
         /// <returns>The value for the key.  This will be either the existing value for the key if the
         /// key is already in the dictionary, or the new value for the key as returned by valueFactory
         /// if the key was not in the dictionary.</returns>
-        public TValue GetOrAdd(TKey key, Func<TKey, TValue> valueFactory)
+        public TValue GetOrAdd(TKey key, Func2<TKey, TValue> valueFactory)
         {
             if (key == null) throw new ArgumentNullException(nameof(key));
             if (valueFactory == null) throw new ArgumentNullException(nameof(valueFactory));
@@ -1063,7 +1063,7 @@ namespace Mock.System.Collections.Concurrent
         /// elements.</exception>
         /// <returns>The new value for the key.  This will be either be the result of addValueFactory (if the key was 
         /// absent) or the result of updateValueFactory (if the key was present).</returns>
-        public TValue AddOrUpdate(TKey key, Func<TKey, TValue> addValueFactory, Func<TKey, TValue, TValue> updateValueFactory)
+        public TValue AddOrUpdate(TKey key, Func2<TKey, TValue> addValueFactory, Func2<TKey, TValue, TValue> updateValueFactory)
         {
             if (key == null) throw new ArgumentNullException(nameof(key));
             if (addValueFactory == null) throw new ArgumentNullException(nameof(addValueFactory));
@@ -1110,7 +1110,7 @@ namespace Mock.System.Collections.Concurrent
         /// elements.</exception>
         /// <returns>The new value for the key.  This will be either be the result of addValueFactory (if the key was 
         /// absent) or the result of updateValueFactory (if the key was present).</returns>
-        public TValue AddOrUpdate(TKey key, TValue addValue, Func<TKey, TValue, TValue> updateValueFactory)
+        public TValue AddOrUpdate(TKey key, TValue addValue, Func2<TKey, TValue, TValue> updateValueFactory)
         {
             if (key == null) throw new ArgumentNullException(nameof(key));
             if (updateValueFactory == null) throw new ArgumentNullException(nameof(updateValueFactory));

@@ -28,7 +28,7 @@ namespace Mock.System
         /// <summary>The synchronization context captured upon construction.  This will never be null.</summary>
         private readonly SynchronizationContext _synchronizationContext;
         /// <summary>The handler specified to the constructor.  This may be null.</summary>
-        private readonly Action<T> _handler;
+        private readonly Action2<T> _handler;
         /// <summary>A cached delegate used to post invocation to the synchronization context.</summary>
         private readonly SendOrPostCallback _invokeHandlers;
 
@@ -51,7 +51,7 @@ namespace Mock.System
         /// could be invoked concurrently with itself.
         /// </param>
         /// <exception cref="ArgumentNullException">The <paramref name="handler"/> is null (Nothing in Visual Basic).</exception>
-        public Progress(Action<T> handler) : this()
+        public Progress(Action2<T> handler) : this()
         {
             if (handler == null) throw new ArgumentNullException(nameof(handler));
             _handler = handler;
@@ -71,7 +71,7 @@ namespace Mock.System
             // If there's no handler, don't bother going through the sync context.
             // Inside the callback, we'll need to check again, in case
             // an event handler is removed between now and then.
-            Action<T> handler = _handler;
+            Action2<T> handler = _handler;
             EventHandler2<T> changedEvent = ProgressChanged;
             if (handler != null || changedEvent != null)
             {
@@ -91,7 +91,7 @@ namespace Mock.System
         {
             T value = (T)state;
 
-            Action<T> handler = _handler;
+            Action2<T> handler = _handler;
             EventHandler2<T> changedEvent = ProgressChanged;
 
             if (handler != null) handler(value);

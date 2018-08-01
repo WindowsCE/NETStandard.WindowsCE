@@ -313,7 +313,7 @@ namespace System.Linq.Expressions
             Print("}");
         }
 
-        protected override void VisitList<T>(ReadOnlyCollection<T> list, Action<T> visitor)
+        protected override void VisitList<T>(ReadOnlyCollection<T> list, Action2<T> visitor)
         {
             for (int i = 0; i < list.Count; i++)
             {

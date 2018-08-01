@@ -127,7 +127,7 @@ namespace Mock.System.Threading
         /// if an object was not used and to then dispose of the object appropriately.
         /// </para>
         /// </remarks>
-        public static T EnsureInitialized<T>(ref T target, Func<T> valueFactory) where T : class
+        public static T EnsureInitialized<T>(ref T target, Func2<T> valueFactory) where T : class
         {
             // Fast path.
             if (Volatile.Read<T>(ref target) != null)
@@ -145,7 +145,7 @@ namespace Mock.System.Threading
         /// <param name="target">The variable that need to be initialized</param>
         /// <param name="valueFactory">The delegate that will be executed to initialize the target</param>
         /// <returns>The initialized variable</returns>
-        private static T EnsureInitializedCore<T>(ref T target, Func<T> valueFactory) where T : class
+        private static T EnsureInitializedCore<T>(ref T target, Func2<T> valueFactory) where T : class
         {
             T value = valueFactory();
             if (value == null)
@@ -196,7 +196,7 @@ namespace Mock.System.Threading
         /// <param name="valueFactory">The <see cref="T:System.Func{T}"/> invoked to initialize the
         /// reference or value.</param>
         /// <returns>The initialized value of type <typeparamref name="T"/>.</returns>
-        public static T EnsureInitialized<T>(ref T target, ref bool initialized, ref object syncLock, Func<T> valueFactory)
+        public static T EnsureInitialized<T>(ref T target, ref bool initialized, ref object syncLock, Func2<T> valueFactory)
         {
             // Fast path.
             if (Volatile.Read(ref initialized))
@@ -221,7 +221,7 @@ namespace Mock.System.Threading
         /// The <see cref="T:System.Func{T}"/> to invoke in order to produce the lazily-initialized value.
         /// </param>
         /// <returns>The initialized object.</returns>
-        private static T EnsureInitializedCore<T>(ref T target, ref bool initialized, ref object syncLock, Func<T> valueFactory)
+        private static T EnsureInitializedCore<T>(ref T target, ref bool initialized, ref object syncLock, Func2<T> valueFactory)
         {
             // Lazily initialize the lock if necessary.
             object slock = syncLock;
@@ -253,7 +253,7 @@ namespace Mock.System.Threading
     // Caches the activation selector function to avoid delegate allocations.
     static class LazyHelpers<T>
     {
-        internal static Func<T> s_activatorFactorySelector = new Func<T>(ActivatorFactorySelector);
+        internal static Func2<T> s_activatorFactorySelector = ActivatorFactorySelector;
 
         private static T ActivatorFactorySelector()
         {

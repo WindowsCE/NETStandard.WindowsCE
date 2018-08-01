@@ -86,7 +86,7 @@ namespace System.Threading.Tasks
         /// <exception cref="ArgumentException">
         /// The <paramref name="function"/> argument is null.
         /// </exception>
-        public Task(Func<TResult> function)
+        public Task(Func2<TResult> function)
             : this(function, null, default(CancellationToken), TaskCreationOptions.None, null)
         { }
 
@@ -104,7 +104,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
-        public Task(Func<TResult> function, CancellationToken cancellationToken)
+        public Task(Func2<TResult> function, CancellationToken cancellationToken)
             : this(function, null, cancellationToken, TaskCreationOptions.None, null)
         { }
 
@@ -126,7 +126,7 @@ namespace System.Threading.Tasks
         /// The <paramref name="creationOptions"/> argument specifies an invalid value for <see
         /// cref="T:System.Threading.Tasks.TaskCreationOptions"/>.
         /// </exception>
-        public Task(Func<TResult> function, TaskCreationOptions creationOptions)
+        public Task(Func2<TResult> function, TaskCreationOptions creationOptions)
             : this(function, null, default(CancellationToken), creationOptions, null)
         {
         }
@@ -153,7 +153,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
-        public Task(Func<TResult> function, CancellationToken cancellationToken, TaskCreationOptions creationOptions)
+        public Task(Func2<TResult> function, CancellationToken cancellationToken, TaskCreationOptions creationOptions)
             : this(function, null, cancellationToken, creationOptions, null)
         {
         }
@@ -169,7 +169,7 @@ namespace System.Threading.Tasks
         /// <exception cref="ArgumentException">
         /// The <paramref name="function"/> argument is null.
         /// </exception>
-        public Task(Func<object, TResult> function, object state)
+        public Task(Func2<object, TResult> function, object state)
             : base(function, state, default(CancellationToken), TaskCreationOptions.None, null)
         { }
 
@@ -188,7 +188,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
-        public Task(Func<object, TResult> function, object state, CancellationToken cancellationToken)
+        public Task(Func2<object, TResult> function, object state, CancellationToken cancellationToken)
             : base(function, state, cancellationToken, TaskCreationOptions.None, null)
         { }
 
@@ -211,7 +211,7 @@ namespace System.Threading.Tasks
         /// The <paramref name="creationOptions"/> argument specifies an invalid value for <see
         /// cref="T:System.Threading.Tasks.TaskCreationOptions"/>.
         /// </exception>
-        public Task(Func<object, TResult> function, object state, TaskCreationOptions creationOptions)
+        public Task(Func2<object, TResult> function, object state, TaskCreationOptions creationOptions)
             : this(function, state, default(CancellationToken), creationOptions, null)
         {
         }
@@ -239,7 +239,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
-        public Task(Func<object, TResult> function, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions)
+        public Task(Func2<object, TResult> function, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions)
             : this(function, state, cancellationToken, creationOptions, null)
         {
         }
@@ -279,29 +279,22 @@ namespace System.Threading.Tasks
             var uncastAction = cp.m_action;
             var parent = cp.m_parent;
 
-            if (uncastAction is Func<TResult>)
+            switch (uncastAction)
             {
-                var userWork = (Func<TResult>)uncastAction;
-                _result = userWork();
-            }
-            else if (uncastAction is Func<object, TResult>)
-            {
-                var userWork = (Func<object, TResult>)uncastAction;
-                _result = userWork(m_stateObject);
-            }
-            else if (uncastAction is Func<Task, TResult>)
-            {
-                Func<Task, TResult> userWork = (Func<Task, TResult>)uncastAction;
-                _result = userWork(parent);
-            }
-            else if (uncastAction is Func<Task, object, TResult>)
-            {
-                Func<Task, object, TResult> userWork = (Func<Task, object, TResult>)uncastAction;
-                _result = userWork(parent, m_stateObject);
-            }
-            else
-            {
-                throw new InvalidOperationException("Unexpected action type");
+                case Func2<TResult> func0:
+                    _result = func0();
+                    break;
+                case Func2<object, TResult> funcObj:
+                    _result = funcObj(m_stateObject);
+                    break;
+                case Func2<Task, TResult> funcTask:
+                    _result = funcTask(parent);
+                    break;
+                case Func2<Task, object, TResult> funcTaskObj:
+                    _result = funcTaskObj(parent, m_stateObject);
+                    break;
+                default:
+                    throw new InvalidOperationException("Unexpected action type");
             }
         }
 

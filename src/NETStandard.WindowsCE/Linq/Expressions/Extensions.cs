@@ -112,7 +112,7 @@ namespace System.Linq.Expressions
         }
 
         public static void OnFieldOrProperty(
-            this MemberInfo self, Action<FieldInfo> onfield, Action<PropertyInfo> onprop)
+            this MemberInfo self, Action2<FieldInfo> onfield, Action2<PropertyInfo> onprop)
         {
             switch (self.MemberType)
             {

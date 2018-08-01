@@ -20,7 +20,7 @@ namespace Mock.System
             _metadata = metadata;
         }
 
-        public Lazy(Func<T> valueFactory, TMetadata metadata)
+        public Lazy(Func2<T> valueFactory, TMetadata metadata)
             : base(valueFactory)
         {
             _metadata = metadata;
@@ -38,13 +38,13 @@ namespace Mock.System
             _metadata = metadata;
         }
 
-        public Lazy(Func<T> valueFactory, TMetadata metadata, bool isThreadSafe)
+        public Lazy(Func2<T> valueFactory, TMetadata metadata, bool isThreadSafe)
             : base(valueFactory, isThreadSafe)
         {
             _metadata = metadata;
         }
 
-        public Lazy(Func<T> valueFactory, TMetadata metadata, LazyThreadSafetyMode mode)
+        public Lazy(Func2<T> valueFactory, TMetadata metadata, LazyThreadSafetyMode mode)
             : base(valueFactory, mode)
         {
             _metadata = metadata;

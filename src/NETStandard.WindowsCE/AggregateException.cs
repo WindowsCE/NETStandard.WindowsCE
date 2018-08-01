@@ -248,7 +248,7 @@ namespace System
         /// cref="AggregateException"/> was not handled.</exception>
         /// <exception cref="T:System.ArgumentNullException">The <paramref name="predicate"/> argument is
         /// null.</exception>
-        public void Handle(Func<Exception, bool> predicate)
+        public void Handle(Func2<Exception, bool> predicate)
         {
             if (predicate == null)
                 throw new ArgumentNullException(nameof(predicate));

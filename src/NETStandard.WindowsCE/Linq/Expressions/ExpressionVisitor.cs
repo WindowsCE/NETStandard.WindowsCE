@@ -184,7 +184,7 @@ namespace System.Linq.Expressions
             VisitExpressionList(methodCall.Arguments);
         }
 
-        protected virtual void VisitList<T>(ReadOnlyCollection<T> list, Action<T> visitor)
+        protected virtual void VisitList<T>(ReadOnlyCollection<T> list, Action2<T> visitor)
         {
             foreach (T element in list)
             {

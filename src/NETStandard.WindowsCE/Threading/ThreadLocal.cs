@@ -36,7 +36,7 @@ namespace System.Threading
     public class ThreadLocal<T> : IDisposable
     {
         // a delegate that returns the created value, if null the created value will be default(T)
-        private Func<T> m_valueFactory;
+        private Func2<T> m_valueFactory;
 
         //
         // ts_slotArray is a table of thread-local values for all ThreadLocal<T> instances
@@ -112,7 +112,7 @@ namespace System.Threading
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="valueFactory"/> is a null reference (Nothing in Visual Basic).
         /// </exception>
-        public ThreadLocal(Func<T> valueFactory)
+        public ThreadLocal(Func2<T> valueFactory)
         {
             if (valueFactory == null)
                 throw new ArgumentNullException(nameof(valueFactory));
@@ -132,7 +132,7 @@ namespace System.Threading
         /// <exception cref="T:System.ArgumentNullException">
         /// <paramref name="valueFactory"/> is a null reference (Nothing in Visual Basic).
         /// </exception>
-        public ThreadLocal(Func<T> valueFactory, bool trackAllValues)
+        public ThreadLocal(Func2<T> valueFactory, bool trackAllValues)
         {
             if (valueFactory == null)
                 throw new ArgumentNullException(nameof(valueFactory));
@@ -140,7 +140,7 @@ namespace System.Threading
             Initialize(valueFactory, trackAllValues);
         }
 
-        private void Initialize(Func<T> valueFactory, bool trackAllValues)
+        private void Initialize(Func2<T> valueFactory, bool trackAllValues)
         {
             m_valueFactory = valueFactory;
             m_trackAllValues = trackAllValues;

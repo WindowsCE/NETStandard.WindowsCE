@@ -90,7 +90,7 @@ namespace System.Threading
         private static SendOrPostCallback s_invokePostPhaseAction;
 
         // Post phase action after each phase
-        private Action<Barrier> _postPhaseAction;
+        private Action2<Barrier> _postPhaseAction;
 
         // In case the post phase action throws an exception, wraps it in BarrierPostPhaseException
         private Exception _exception;
@@ -168,7 +168,7 @@ namespace System.Threading
         /// will not be released to the next phase until the postPhaseAction delegate
         /// has completed execution.
         /// </remarks>
-        public Barrier(int participantCount, Action<Barrier> postPhaseAction)
+        public Barrier(int participantCount, Action2<Barrier> postPhaseAction)
         {
             // the count must be non negative value
             if (participantCount < 0 || participantCount > MAX_PARTICIPANTS)

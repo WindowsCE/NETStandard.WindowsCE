@@ -91,7 +91,7 @@ namespace Mock.System
         // A dummy delegate used as a  :
         // 1- Flag to avoid recursive call to Value in None and ExecutionAndPublication modes in m_valueFactory
         // 2- Flag to m_threadSafeObj if ExecutionAndPublication mode and the value is known to be initialized
-        static readonly Func<T> ALREADY_INVOKED_SENTINEL = delegate
+        static readonly Func2<T> ALREADY_INVOKED_SENTINEL = delegate
         {
             Debug.Assert(false, "ALREADY_INVOKED_SENTINEL should never be invoked.");
             return default(T);
@@ -105,7 +105,7 @@ namespace Mock.System
         // The factory delegate that returns the value.
         // In None and ExecutionAndPublication modes, this will be set to ALREADY_INVOKED_SENTINEL as a flag to avoid recursive calls
         [NonSerialized]
-        private Func<T> m_valueFactory;
+        private Func2<T> m_valueFactory;
 
         // null if it is not thread safe mode
         // LazyHelpers.PUBLICATION_ONLY_SENTINEL if PublicationOnly mode
@@ -151,7 +151,7 @@ namespace Mock.System
         /// <remarks>
         /// An instance created with this constructor may be used concurrently from multiple threads.
         /// </remarks>
-        public Lazy(Func<T> valueFactory)
+        public Lazy(Func2<T> valueFactory)
             : this(valueFactory, LazyThreadSafetyMode.ExecutionAndPublication)
         { }
 
@@ -188,7 +188,7 @@ namespace Mock.System
         /// </param>
         /// <exception cref="ArgumentNullException"><paramref name="valueFactory"/> is
         /// a null reference (Nothing in Visual Basic).</exception>
-        public Lazy(Func<T> valueFactory, bool isThreadSafe)
+        public Lazy(Func2<T> valueFactory, bool isThreadSafe)
             : this(valueFactory, isThreadSafe ? LazyThreadSafetyMode.ExecutionAndPublication : LazyThreadSafetyMode.None)
         { }
 
@@ -203,7 +203,7 @@ namespace Mock.System
         /// <exception cref="ArgumentNullException"><paramref name="valueFactory"/> is
         /// a null reference (Nothing in Visual Basic).</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="mode"/> mode contains an invalid value.</exception>
-        public Lazy(Func<T> valueFactory, LazyThreadSafetyMode mode)
+        public Lazy(Func2<T> valueFactory, LazyThreadSafetyMode mode)
         {
             if (valueFactory == null)
                 throw new ArgumentNullException(nameof(valueFactory));
@@ -430,7 +430,7 @@ namespace Mock.System
                     if (mode != LazyThreadSafetyMode.PublicationOnly && m_valueFactory == ALREADY_INVOKED_SENTINEL)
                         throw new InvalidOperationException("Should not try to create the value more than once");
 
-                    Func<T> factory = m_valueFactory;
+                    Func2<T> factory = m_valueFactory;
                     if (mode != LazyThreadSafetyMode.PublicationOnly) // only detect recursion on None and ExecutionAndPublication modes
                     {
                         m_valueFactory = ALREADY_INVOKED_SENTINEL;

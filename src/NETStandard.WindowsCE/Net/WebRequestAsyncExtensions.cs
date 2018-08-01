@@ -18,8 +18,8 @@ namespace System.Net
         public static Task<Stream> GetRequestStreamAsync(this WebRequest source)
         {
             var function = source.Timeout > 0
-                ? (Func<object, Task<Stream>>)ExecuteGetRequestStreamAsyncWithTimeout
-                : (Func<object, Task<Stream>>)ExecuteGetRequestStreamAsync;
+                ? (Func2<object, Task<Stream>>)ExecuteGetRequestStreamAsyncWithTimeout
+                : (Func2<object, Task<Stream>>)ExecuteGetRequestStreamAsync;
             
             // Offload to a different thread to avoid blocking the caller during request submission.
             return Task.Factory.StartNew(function, source).Unwrap();
@@ -33,8 +33,8 @@ namespace System.Net
         public static Task<WebResponse> GetResponseAsync(this WebRequest source)
         {
             var function = source.Timeout > 0
-                ? (Func<object, Task<WebResponse>>)ExecuteGetResponseAsyncWithTimeout
-                : (Func<object, Task<WebResponse>>)ExecuteGetResponseAsync;
+                ? (Func2<object, Task<WebResponse>>)ExecuteGetResponseAsyncWithTimeout
+                : (Func2<object, Task<WebResponse>>)ExecuteGetResponseAsync;
             
             // See comment in GetRequestStreamAsync().  Same logic applies here.
             return Task.Factory.StartNew(function, source).Unwrap();

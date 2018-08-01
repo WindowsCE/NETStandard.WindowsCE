@@ -197,7 +197,7 @@ namespace System.Threading.Tasks
         /// </param>
         /// <returns>The started <see cref="Task{TResult}"/>.</returns>
         /// <exception cref="ArgumentNullException">The exception that is thrown when the <paramref name="function"/> argument is null.</exception>
-        public Task<TResult> StartNew<TResult>(Func<TResult> function)
+        public Task<TResult> StartNew<TResult>(Func2<TResult> function)
             => StartNew(function, default, TaskCreationOptions.None, TaskScheduler.Default);
 
         /// <summary>
@@ -216,7 +216,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
-        public Task<TResult> StartNew<TResult>(Func<TResult> function, CancellationToken cancellationToken)
+        public Task<TResult> StartNew<TResult>(Func2<TResult> function, CancellationToken cancellationToken)
             => StartNew(function, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
 
         /// <summary>
@@ -237,7 +237,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentOutOfRangeException">The exception that is thrown when the
         /// <paramref name="creationOptions"/> argument specifies an invalid TaskCreationOptions
         /// value.</exception>
-        public Task<TResult> StartNew<TResult>(Func<TResult> function, TaskCreationOptions creationOptions)
+        public Task<TResult> StartNew<TResult>(Func2<TResult> function, TaskCreationOptions creationOptions)
             => StartNew(function, default, creationOptions, TaskScheduler.Default);
 
         /// <summary>
@@ -270,7 +270,7 @@ namespace System.Threading.Tasks
         /// has already been disposed.
         /// </exception>
         public Task<TResult> StartNew<TResult>(
-            Func<TResult> function,
+            Func2<TResult> function,
             CancellationToken cancellationToken,
             TaskCreationOptions creationOptions,
             TaskScheduler scheduler)
@@ -298,7 +298,7 @@ namespace System.Threading.Tasks
         /// </param>
         /// <returns>The started <see cref="Task{TResult}"/>.</returns>
         /// <exception cref="ArgumentNullException">The exception that is thrown when the <paramref name="function"/> argument is null.</exception>
-        public Task<TResult> StartNew<TResult>(Func<object, TResult> function, object state)
+        public Task<TResult> StartNew<TResult>(Func2<object, TResult> function, object state)
             => StartNew(function, state, default, TaskCreationOptions.None, TaskScheduler.Default);
 
         /// <summary>
@@ -319,7 +319,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ObjectDisposedException">The provided <see cref="System.Threading.CancellationToken">CancellationToken</see>
         /// has already been disposed.
         /// </exception>
-        public Task<TResult> StartNew<TResult>(Func<object, TResult> function, object state, CancellationToken cancellationToken)
+        public Task<TResult> StartNew<TResult>(Func2<object, TResult> function, object state, CancellationToken cancellationToken)
             => StartNew(function, state, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
 
         /// <summary>
@@ -342,7 +342,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentOutOfRangeException">The exception that is thrown when the
         /// <paramref name="creationOptions"/> argument specifies an invalid TaskCreationOptions
         /// value.</exception>
-        public Task<TResult> StartNew<TResult>(Func<Object, TResult> function, Object state, TaskCreationOptions creationOptions)
+        public Task<TResult> StartNew<TResult>(Func2<Object, TResult> function, Object state, TaskCreationOptions creationOptions)
             => StartNew(function, state, default, creationOptions, TaskScheduler.Default);
 
         /// <summary>
@@ -377,7 +377,7 @@ namespace System.Threading.Tasks
         /// has already been disposed.
         /// </exception>
         public Task<TResult> StartNew<TResult>(
-            Func<Object, TResult> function,
+            Func2<Object, TResult> function,
             Object state,
             CancellationToken cancellationToken,
             TaskCreationOptions creationOptions,
@@ -396,8 +396,8 @@ namespace System.Threading.Tasks
         #region FromAsync Task
 
         public Task FromAsync(
-            Func<AsyncCallback, object, IAsyncResult> beginMethod,
-            Action<IAsyncResult> endMethod,
+            Func2<AsyncCallback, object, IAsyncResult> beginMethod,
+            Action2<IAsyncResult> endMethod,
             object state)
         {
             if (beginMethod == null)
@@ -413,7 +413,7 @@ namespace System.Threading.Tasks
 
         public Task FromAsync(
             IAsyncResult asyncResult,
-            Action<IAsyncResult> endMethod)
+            Action2<IAsyncResult> endMethod)
         {
             if (asyncResult == null)
                 throw new ArgumentNullException(nameof(asyncResult));
@@ -430,8 +430,8 @@ namespace System.Threading.Tasks
         }
 
         public Task FromAsync<TArg1>(
-            Func<TArg1, AsyncCallback, object, IAsyncResult> beginMethod,
-            Action<IAsyncResult> endMethod,
+            Func2<TArg1, AsyncCallback, object, IAsyncResult> beginMethod,
+            Action2<IAsyncResult> endMethod,
             TArg1 arg1,
             object state)
         {
@@ -447,8 +447,8 @@ namespace System.Threading.Tasks
         }
 
         public Task FromAsync<TArg1, TArg2>(
-            Func<TArg1, TArg2, AsyncCallback, object, IAsyncResult> beginMethod,
-            Action<IAsyncResult> endMethod,
+            Func2<TArg1, TArg2, AsyncCallback, object, IAsyncResult> beginMethod,
+            Action2<IAsyncResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             object state)
@@ -466,7 +466,7 @@ namespace System.Threading.Tasks
 
         public Task FromAsync<TArg1, TArg2, TArg3>(
             Func<TArg1, TArg2, TArg3, AsyncCallback, object, IAsyncResult> beginMethod,
-            Action<IAsyncResult> endMethod,
+            Action2<IAsyncResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
@@ -483,7 +483,7 @@ namespace System.Threading.Tasks
             return wrapper;
         }
 
-        private AsyncCallback CreateBeginCallback(Task wrapper, Action<IAsyncResult> endMethod)
+        private AsyncCallback CreateBeginCallback(Task wrapper, Action2<IAsyncResult> endMethod)
         {
             return ar =>
             {
@@ -512,8 +512,8 @@ namespace System.Threading.Tasks
         #region FromAsync Task<TResult>
 
         public Task<TResult> FromAsync<TResult>(
-            Func<AsyncCallback, object, IAsyncResult> beginMethod,
-            Func<IAsyncResult, TResult> endMethod,
+            Func2<AsyncCallback, object, IAsyncResult> beginMethod,
+            Func2<IAsyncResult, TResult> endMethod,
             object state)
         {
             if (beginMethod == null)
@@ -529,7 +529,7 @@ namespace System.Threading.Tasks
 
         public Task<TResult> FromAsync<TResult>(
             IAsyncResult asyncResult,
-            Func<IAsyncResult, TResult> endMethod)
+            Func2<IAsyncResult, TResult> endMethod)
         {
             if (asyncResult == null)
                 throw new ArgumentNullException(nameof(asyncResult));
@@ -546,8 +546,8 @@ namespace System.Threading.Tasks
         }
 
         public Task<TResult> FromAsync<TArg1, TResult>(
-            Func<TArg1, AsyncCallback, object, IAsyncResult> beginMethod,
-            Func<IAsyncResult, TResult> endMethod,
+            Func2<TArg1, AsyncCallback, object, IAsyncResult> beginMethod,
+            Func2<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             object state)
         {
@@ -563,8 +563,8 @@ namespace System.Threading.Tasks
         }
 
         public Task<TResult> FromAsync<TArg1, TArg2, TResult>(
-            Func<TArg1, TArg2, AsyncCallback, object, IAsyncResult> beginMethod,
-            Func<IAsyncResult, TResult> endMethod,
+            Func2<TArg1, TArg2, AsyncCallback, object, IAsyncResult> beginMethod,
+            Func2<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             object state)
@@ -582,7 +582,7 @@ namespace System.Threading.Tasks
 
         public Task<TResult> FromAsync<TArg1, TArg2, TArg3, TResult>(
             Func<TArg1, TArg2, TArg3, AsyncCallback, object, IAsyncResult> beginMethod,
-            Func<IAsyncResult, TResult> endMethod,
+            Func2<IAsyncResult, TResult> endMethod,
             TArg1 arg1,
             TArg2 arg2,
             TArg3 arg3,
@@ -599,7 +599,7 @@ namespace System.Threading.Tasks
             return wrapper;
         }
 
-        private AsyncCallback CreateBeginCallback<TResult>(Task<TResult> wrapper, Func<IAsyncResult, TResult> endMethod)
+        private AsyncCallback CreateBeginCallback<TResult>(Task<TResult> wrapper, Func2<IAsyncResult, TResult> endMethod)
         {
             return ar =>
             {

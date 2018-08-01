@@ -18,7 +18,7 @@ namespace Mock.System.Threading
     public static class Monitor2
     {
         private static ConcurrentDictionary<WeakReference, Condition> s_conditionTable = new ConcurrentDictionary<WeakReference, Condition>(new WeakReferenceComparer());
-        private static Func<WeakReference, Condition> s_createCondition = (o) => new Condition(o);
+        private static Func2<WeakReference, Condition> s_createCondition = (o) => new Condition(o);
 
         private static Condition GetCondition(object obj)
         {

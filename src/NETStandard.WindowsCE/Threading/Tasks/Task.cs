@@ -744,29 +744,22 @@ namespace System.Threading.Tasks
             var uncastAction = cp.m_action;
             var parent = cp.m_parent;
 
-            if (uncastAction is Action)
+            switch (uncastAction)
             {
-                Action action = (Action)uncastAction;
-                action();
-            }
-            else if (uncastAction is Action<object>)
-            {
-                Action<object> action = (Action<object>)uncastAction;
-                action(m_stateObject);
-            }
-            else if (uncastAction is Action<Task>)
-            {
-                Action<Task> action = (Action<Task>)uncastAction;
-                action(parent);
-            }
-            else if (uncastAction is Action<Task, object>)
-            {
-                Action<Task, object> action = (Action<Task, object>)uncastAction;
-                action(parent, m_stateObject);
-            }
-            else
-            {
-                throw new InvalidOperationException("Unexpected action type");
+                case Action action0:
+                    action0();
+                    break;
+                case Action<object> actionObj:
+                    actionObj(m_stateObject);
+                    break;
+                case Action2<Task> actionTask:
+                    actionTask(parent);
+                    break;
+                case Action2<Task, object> actionTaskObj:
+                    actionTaskObj(parent, m_stateObject);
+                    break;
+                default:
+                    throw new InvalidOperationException("Unexpected action type");
             }
         }
 
@@ -1068,10 +1061,10 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="continuationAction"/> argument is null.
         /// </exception>
-        public Task ContinueWith(Action<Task> continuationAction)
-            => InternalContinueWith(continuationAction, null, default(CancellationToken));
+        public Task ContinueWith(Action2<Task> continuationAction)
+            => InternalContinueWith(continuationAction, null, default);
 
-        public Task ContinueWith(Action<Task> continuationAction, CancellationToken cancellationToken)
+        public Task ContinueWith(Action2<Task> continuationAction, CancellationToken cancellationToken)
             => InternalContinueWith(continuationAction, null, cancellationToken);
 
         /// <summary>
@@ -1091,10 +1084,10 @@ namespace System.Threading.Tasks
         /// <exception cref="ArgumentNullException">
         /// The <paramref name="continuationAction"/> argument is null.
         /// </exception>
-        public Task ContinueWith(Action<Task, object> continuationAction, object state)
+        public Task ContinueWith(Action2<Task, object> continuationAction, object state)
             => InternalContinueWith(continuationAction, state, default(CancellationToken));
 
-        public Task ContinueWith(Action<Task, object> continuationAction, object state, CancellationToken cancellationToken)
+        public Task ContinueWith(Action2<Task, object> continuationAction, object state, CancellationToken cancellationToken)
             => InternalContinueWith(continuationAction, state, cancellationToken);
 
         private Task<TResult> InternalContinueWith<TResult>(Delegate continuationFunction, object state, CancellationToken cancellationToken)
@@ -1125,10 +1118,10 @@ namespace System.Threading.Tasks
         /// <exception cref="ArgumentNullException">
         /// The <paramref name="continuationFunction"/> argument is null.
         /// </exception>
-        public Task<TResult> ContinueWith<TResult>(Func<Task, TResult> continuationFunction)
+        public Task<TResult> ContinueWith<TResult>(Func2<Task, TResult> continuationFunction)
             => InternalContinueWith<TResult>(continuationFunction, null, default(CancellationToken));
 
-        public Task<TResult> ContinueWith<TResult>(Func<Task, TResult> continuationFunction, CancellationToken cancellationToken)
+        public Task<TResult> ContinueWith<TResult>(Func2<Task, TResult> continuationFunction, CancellationToken cancellationToken)
             => InternalContinueWith<TResult>(continuationFunction, null, cancellationToken);
 
         /// <summary>
@@ -1151,10 +1144,10 @@ namespace System.Threading.Tasks
         /// <exception cref="ArgumentNullException">
         /// The <paramref name="continuationFunction"/> argument is null.
         /// </exception>
-        public Task<TResult> ContinueWith<TResult>(Func<Task, object, TResult> continuationFunction, object state)
+        public Task<TResult> ContinueWith<TResult>(Func2<Task, object, TResult> continuationFunction, object state)
             => InternalContinueWith<TResult>(continuationFunction, state, default(CancellationToken));
 
-        public Task<TResult> ContinueWith<TResult>(Func<Task, object, TResult> continuationFunction, object state, CancellationToken cancellationToken)
+        public Task<TResult> ContinueWith<TResult>(Func2<Task, object, TResult> continuationFunction, object state, CancellationToken cancellationToken)
             => InternalContinueWith<TResult>(continuationFunction, state, cancellationToken);
 
         #endregion
@@ -1514,7 +1507,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="function"/> parameter was null.
         /// </exception>
-        public static Task Run(Func<Task> function)
+        public static Task Run(Func2<Task> function)
         {
             return Factory.StartNew(function).Unwrap();
         }
@@ -1524,7 +1517,7 @@ namespace System.Threading.Tasks
             return Factory.StartNew(action, cancellationToken);
         }
 
-        public static Task Run(Func<Task> function, CancellationToken cancellationToken)
+        public static Task Run(Func2<Task> function, CancellationToken cancellationToken)
         {
             return Factory.StartNew(function, cancellationToken).Unwrap();
         }
@@ -1537,7 +1530,7 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="function"/> parameter was null.
         /// </exception>
-        public static Task<TResult> Run<TResult>(Func<TResult> function)
+        public static Task<TResult> Run<TResult>(Func2<TResult> function)
         {
             return Factory.StartNew(function);
         }
@@ -1552,17 +1545,17 @@ namespace System.Threading.Tasks
         /// <exception cref="T:System.ArgumentNullException">
         /// The <paramref name="function"/> parameter was null.
         /// </exception>
-        public static Task<TResult> Run<TResult>(Func<Task<TResult>> function)
+        public static Task<TResult> Run<TResult>(Func2<Task<TResult>> function)
         {
             return Factory.StartNew(function).Unwrap();
         }
 
-        public static Task<TResult> Run<TResult>(Func<Task<TResult>> function, CancellationToken cancellationToken)
+        public static Task<TResult> Run<TResult>(Func2<Task<TResult>> function, CancellationToken cancellationToken)
         {
             return Factory.StartNew(function, cancellationToken).Unwrap();
         }
 
-        public static Task<TResult> Run<TResult>(Func<TResult> function, CancellationToken cancellationToken)
+        public static Task<TResult> Run<TResult>(Func2<TResult> function, CancellationToken cancellationToken)
         {
             return Factory.StartNew(function, cancellationToken);
         }
