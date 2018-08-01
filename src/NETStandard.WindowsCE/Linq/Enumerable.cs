@@ -18,7 +18,7 @@ namespace System.Linq
 namespace Mock.System.Linq
 #endif
 {
-    public static class Enumerable2
+    public static partial class Enumerable2
     {
 #if DISABLED
         public static TSource Aggregate<TSource>(this IEnumerable<TSource> source, Func<TSource, TSource, TSource> func)
