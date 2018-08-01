@@ -543,40 +543,5 @@ namespace Mock.System.Linq
         public static IEnumerable<TSource> Where<TSource>(this IEnumerable<TSource> source, Func<TSource, int, bool> predicate)
             => Enumerable.Where(source, predicate);
 #endif
-
-        /// <summary>
-        /// Merges two sequences by using the specified predicate function.
-        /// </summary>
-        /// <typeparam name="TFirst">The type of the elements of the first input sequence.</typeparam>
-        /// <typeparam name="TSecond">The type of the elements of the second input sequence.</typeparam>
-        /// <typeparam name="TResult">The type of the elements of the result sequence.</typeparam>
-        /// <param name="first">The first sequence to merge.</param>
-        /// <param name="second">The second sequence to merge.</param>
-        /// <param name="resultSelector">
-        /// A function that specifies how to merge the elements from the two sequences.
-        /// </param>
-        /// <returns>
-        /// An <see cref="IEnumerable{T}"/> that contains merged elements of two input sequences.
-        /// </returns>
-        /// <exception cref="ArgumentNullException"><paramref name="first"/>, <paramref name="second"/> or <paramref name="resultSelector"/> is null.</exception>
-        public static IEnumerable<TResult> Zip<TFirst, TSecond, TResult>(this IEnumerable<TFirst> first, IEnumerable<TSecond> second, Func<TFirst, TSecond, TResult> resultSelector)
-        {
-            // Ref: http://www.blackwasp.co.uk/LinqZip35.aspx
-            if (first == null)
-                throw new ArgumentNullException(nameof(first));
-            if (second == null)
-                throw new ArgumentNullException(nameof(second));
-            if (resultSelector == null)
-                throw new ArgumentNullException(nameof(resultSelector));
-
-            using (var firstIterator = first.GetEnumerator())
-            using (var secondIterator = second.GetEnumerator())
-            {
-                while (firstIterator.MoveNext() && secondIterator.MoveNext())
-                {
-                    yield return resultSelector(firstIterator.Current, secondIterator.Current);
-                }
-            }
-        }
     }
 }
