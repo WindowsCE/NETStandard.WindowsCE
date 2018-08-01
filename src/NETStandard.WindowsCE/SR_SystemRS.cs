@@ -113,7 +113,7 @@ partial class SR
     //public const string InvalidRegion = "The region directive '{0}' contains invalid characters.  RegionText cannot contain any new line characters.";
     //public const string Provider_does_not_support_options = "This CodeDomProvider type does not have a constructor that takes providerOptions - \"{0}\"";
     //public const string MetaExtenderName = "{0} on {1}";
-    //public const string InvalidEnumArgument = "The value of argument '{0}' ({1}) is invalid for Enum type '{2}'.";
+    public const string InvalidEnumArgument = "The value of argument '{0}' ({1}) is invalid for Enum type '{2}'.";
     //public const string InvalidArgument = "'{1}' is not a valid value for '{0}'.";
     //public const string InvalidNullArgument = "Null is not a valid value for {0}.";
     //public const string LicExceptionTypeOnly = "A valid license cannot be granted for the type {0}. Contact the manufacturer of the component for more information.";
