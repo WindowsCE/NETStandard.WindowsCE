@@ -20,6 +20,8 @@ namespace Mock.System
 
     public static class String2
     {
+        public static readonly string Empty = string.Empty;
+
         private static readonly CultureInfo InvariantCulture = CultureInfo.InvariantCulture;
 
         public static int Compare(string strA, int indexA, string strB, int indexB, int length)
