@@ -272,7 +272,7 @@ partial class SR
     //public const string ArgumentOutOfRange_MonthParam = "The Month parameter must be in the range 1 through 12.";
     //public const string ArgumentOutOfRange_MustBeNonNegInt32 = "Value must be non-negative and less than or equal to Int32.MaxValue.";
     //public const string ArgumentOutOfRange_MustBeNonNegNum = "'{0}' must be non-negative.";
-    //public const string ArgumentOutOfRange_MustBePositive = "'{0}' must be greater than zero.";
+    public const string ArgumentOutOfRange_MustBePositive = "'{0}' must be greater than zero.";
     public const string ArgumentOutOfRange_NeedNonNegOrNegative1 = "Number must be either non-negative and less than or equal to Int32.MaxValue or -1.";
     public const string ArgumentOutOfRange_NeedPosNum = "Positive number required.";
     //public const string ArgumentOutOfRange_NegativeCapacity = "Capacity must be positive.";
@@ -613,7 +613,7 @@ partial class SR
     //public const string NotSupported_Reading = "Accessor does not support reading.";
     //public const string NotSupported_UmsSafeBuffer = "This operation is not supported for an UnmanagedMemoryStream created from a SafeBuffer.";
     //public const string NotSupported_Writing = "Accessor does not support writing.";
-    //public const string NotSupported_UnseekableStream = "Stream does not support seeking.";
+    public const string NotSupported_UnseekableStream = "Stream does not support seeking.";
     //public const string IndexOutOfRange_UMSPosition = "Unmanaged memory stream position was beyond the capacity of the stream.";
     //public const string ObjectDisposed_StreamIsClosed = "Cannot access a closed Stream.";
     //public const string ObjectDisposed_ViewAccessorClosed = "Cannot access a closed accessor.";

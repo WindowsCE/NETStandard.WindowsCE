@@ -8,6 +8,8 @@ partial class SR
 
     public const string AggregateException_ToString = "{0}{1}---> (Inner Exception #{2}) {3}{4}{5}";
 
+    public const string NotSupported_CannotWriteToBufferedStreamIfReadBufferCannotBeFlushed = "Cannot write to a BufferedStream while the read buffer is not empty if the underlying stream is not seekable. Ensure that the stream underlying this BufferedStream can seek or avoid interleaving read and write operations on this BufferedStream.";
+
     public static string Format(string format, params object[] args)
     {
         return string.Format(format, args);
