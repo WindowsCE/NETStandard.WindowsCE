@@ -216,7 +216,7 @@ partial class SR
     //public const string Argument_TransitionTimesAreIdentical = "The DaylightTransitionStart property must not equal the DaylightTransitionEnd property.";
     //public const string Argument_UTCOutOfRange = "The UTC time represented when the offset is applied must be between year 0 and 10,000.";
     //public const string Argument_WaitHandleNameTooLong = "The name can be no more than {0} characters in length.";
-    //public const string ArgumentException_OtherNotArrayOfCorrectLength = "Object is not a array with the same number of elements as the array to compare it to.";
+    public const string ArgumentException_OtherNotArrayOfCorrectLength = "Object is not a array with the same number of elements as the array to compare it to.";
     public const string ArgumentException_TupleIncorrectType = "Argument must be of type {0}.";
     public const string ArgumentException_TupleLastArgumentNotATuple = "The last element of an eight element tuple must be a Tuple.";
     public const string ArgumentException_ValueTupleIncorrectType = "Argument must be of type {0}.";

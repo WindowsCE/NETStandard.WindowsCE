@@ -13,6 +13,22 @@ namespace System
         internal const int MaxArrayLength = 0X7FEFFFFF;
         internal const int MaxByteArrayLength = 0x7FFFFFC7;
 
+        public static IStructuralComparable AsStructuralComparable(this Array array)
+        {
+            if (array == null)
+                throw new ArgumentNullException(nameof(array));
+
+            return new StructuralArray(array);
+        }
+
+        public static IStructuralEquatable AsStructuralEquatable(this Array array)
+        {
+            if (array == null)
+                throw new ArgumentNullException(nameof(array));
+
+            return new StructuralArray(array);
+        }
+
         public static int BinarySearch<T>(T[] array, T value) =>
             Array.BinarySearch(array, value);
 
