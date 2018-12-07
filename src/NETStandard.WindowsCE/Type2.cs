@@ -88,6 +88,11 @@ namespace Mock.System
             return fMInfos?.ToArray() ?? mInfos;
         }
 
+        public static bool IsConstructedGenericType(this Type type)
+        {
+            return type.IsGenericType && !type.IsGenericTypeDefinition;
+        }
+
         internal static bool IsIntegerNumber(Type type)
         {
             var typeCode = Type.GetTypeCode(type);
