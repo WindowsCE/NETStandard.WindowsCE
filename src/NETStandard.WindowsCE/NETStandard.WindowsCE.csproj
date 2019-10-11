@@ -13,7 +13,7 @@
     <PackageId>NETStandard.WindowsCE</PackageId>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <RootNamespace>System</RootNamespace>
-    <LangVersion>7.2</LangVersion>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net35-cf'">
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
@@ -46,7 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Net.Compilers" Version="2.6.1">
+    <PackageReference Include="Microsoft.Net.Compilers" Version="3.3.1">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
   </ItemGroup>
