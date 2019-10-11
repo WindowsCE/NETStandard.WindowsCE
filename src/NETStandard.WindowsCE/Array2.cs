@@ -53,6 +53,27 @@ namespace System
         public static int BinarySearch(Array array, object value, IComparer comparer) =>
             Array.BinarySearch(array, 0, array?.Length ?? -1, value, comparer);
 
+        public static TOutput[] ConvertAll<TInput, TOutput>(TInput[] array, Converter<TInput, TOutput> converter)
+        {
+            if (array == null)
+            {
+                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.array);
+            }
+
+            if (converter == null)
+            {
+                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.converter);
+            }
+
+            TOutput[] newArray = new TOutput[array.Length];
+            for (int i = 0; i < array.Length; i++)
+            {
+                newArray[i] = converter(array[i]);
+            }
+
+            return newArray;
+        }
+
         public static void Clear(Array array, int index, int length) =>
             Array.Clear(array, index, length);
 
