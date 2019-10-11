@@ -378,6 +378,7 @@ partial class SR
     //public const string Lazy_Value_RecursiveCallsToValue = "ValueFactory attempted to access the Value property of this instance.";
     //public const string MissingConstructor_Name = "Constructor on type '{0}' not found.";
     public const string MustUseCCRewrite = "An assembly (probably '{1}') must be rewritten using the code contracts binary rewriter (CCRewrite) because it is calling Contract.{0} and the CONTRACTS_FULL symbol is defined.  Remove any explicit definitions of the CONTRACTS_FULL symbol from your project and rebuild.  CCRewrite can be downloaded from http://go.microsoft.com/fwlink/?LinkID=169180. \\r\\nAfter the rewriter is installed, it can be enabled in Visual Studio from the project's Properties page on the Code Contracts pane.  Ensure that 'Perform Runtime Contract Checking' is enabled, which will define CONTRACTS_FULL.";
+    public const string NotSupported_ActivAttr = "Activation Attributes are not supported.";
     //public const string NotSupported_FixedSizeCollection = "Collection was of a fixed size.";
     //public const string NotSupported_MaxWaitHandles = "The number of WaitHandles must be less than or equal to 64.";
     //public const string NotSupported_NoCodepageData = "No data is available for encoding {0}. For information on defining a custom encoding, see the documentation for the Encoding.RegisterProvider method.";

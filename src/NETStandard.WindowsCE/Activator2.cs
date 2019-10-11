@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Globalization;
 using System.Reflection;
+
+#nullable enable
 
 #if NET35_CF
 namespace System
@@ -9,37 +12,58 @@ namespace Mock.System
 {
     public static class Activator2
     {
+        private const BindingFlags ConstructorDefault = BindingFlags.Instance | BindingFlags.Public | BindingFlags.CreateInstance;
         private static readonly Type NullableType = typeof(Nullable<>);
 
-        public static object CreateInstance(Type type)
+        public static object? CreateInstance(Type type)
             => Activator.CreateInstance(type);
 
-        public static object CreateInstance(Type type, params object[] args)
+        public static object? CreateInstance(Type type, bool nonPublic) =>
+            CreateInstance(type, ConstructorDefault | BindingFlags.NonPublic, null, null, null, null);
+
+        public static object? CreateInstance(Type type, BindingFlags bindingAttr, Binder? binder, object?[]? args, CultureInfo? culture) =>
+            CreateInstance(type, bindingAttr, binder, args, culture, null);
+
+        public static object? CreateInstance(Type type, params object?[]? args) =>
+            CreateInstance(type, ConstructorDefault, null, args, null, null);
+
+        public static object? CreateInstance(Type type, object?[]? args, object?[]? activationAttributes) =>
+            CreateInstance(type, ConstructorDefault, null, args, null, activationAttributes);
+
+        public static object? CreateInstance(Type type, BindingFlags bindingAttr, Binder? binder, object?[]? args, CultureInfo? culture, object?[]? activationAttributes)
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
 
-            Type[] argsType;
-            if (args == null || args.Length == 0)
-                return Activator.CreateInstance(type);
+            // If they didn't specify a lookup, then we will provide the default lookup.
+            const int LookupMask = 0x000000FF;
+            if ((bindingAttr & (BindingFlags)LookupMask) == 0)
+                bindingAttr |= ConstructorDefault;
 
-            argsType = new Type[args.Length];
-            for (int i = 0; i < args.Length; i++)
-                argsType[i] = args[i]?.GetType();
+            if (activationAttributes?.Length > 0)
+                throw new PlatformNotSupportedException(SR.NotSupported_ActivAttr);
 
-            BindingFlags bindingAttr = BindingFlags.Instance | BindingFlags.Public;
-            ConstructorInfo foundMatch = null;
+            Type?[] argsType = args != null ? new Type?[args.Length] : Type2.EmptyTypes;
+            if (args != null)
+            {
+                for (int i = 0; i < args.Length; i++)
+                    argsType[i] = args[i]?.GetType();
+            }
+
+            ConstructorInfo? foundMatch = null;
             bool foundMatchIsVarArgs = false;
-            ParameterInfo[] foundMatchParameters = null;
+            ParameterInfo[]? foundMatchParameters = null;
             foreach (var ctor in type.GetConstructors(bindingAttr))
             {
                 var parameters = ctor.GetParameters();
-                if (parameters.Length == 0)
-                    continue;
 
-                bool isVarArgs = parameters[parameters.Length - 1]
-                    .GetCustomAttributes(typeof(ParamArrayAttribute), false)
-                    .Length > 0;
+                bool isVarArgs = false;
+                if (parameters.Length > 0)
+                {
+                    isVarArgs = parameters[parameters.Length - 1]
+                        .GetCustomAttributes(typeof(ParamArrayAttribute), false)
+                        .Length > 0;
+                }
 
                 bool isMatch;
                 if (!isVarArgs)
@@ -54,8 +78,7 @@ namespace Mock.System
 
                     foundMatch = ctor;
                     foundMatchIsVarArgs = isVarArgs;
-                    if (isVarArgs)
-                        foundMatchParameters = parameters;
+                    foundMatchParameters = isVarArgs ? parameters : null;
                 }
             }
 
@@ -63,12 +86,12 @@ namespace Mock.System
                 throw new MissingMethodException("No matching constructor was found for specified parameters");
 
             if (!foundMatchIsVarArgs)
-                return foundMatch.Invoke(args);
+                return foundMatch.Invoke(bindingAttr, binder, args, culture);
             else
-                return foundMatch.Invoke(FlattenVarArgs(args, foundMatchParameters));
+                return foundMatch.Invoke(bindingAttr, binder, FlattenVarArgs(args, foundMatchParameters!), culture);
         }
 
-        private static bool ParametersMatch(ParameterInfo[] parameters, Type[] argsType)
+        private static bool ParametersMatch(ParameterInfo[] parameters, Type?[] argsType)
         {
             if (parameters.Length != argsType.Length)
                 return false;
@@ -82,7 +105,7 @@ namespace Mock.System
             return true;
         }
 
-        private static bool VariableParametersMatch(ParameterInfo[] parameters, Type[] argsType)
+        private static bool VariableParametersMatch(ParameterInfo[] parameters, Type?[] argsType)
         {
             if (argsType.Length < parameters.Length - 1)
                 return false;
@@ -111,7 +134,7 @@ namespace Mock.System
             return true;
         }
 
-        private static bool IsTypeAssignableFrom(Type refType, Type instanceType)
+        private static bool IsTypeAssignableFrom(Type refType, Type? instanceType)
         {
             if (refType == instanceType)
                 return true;
@@ -179,14 +202,18 @@ namespace Mock.System
             }
         }
 
-        private static object[] FlattenVarArgs(object[] args, ParameterInfo[] parameters)
+        private static object?[]? FlattenVarArgs(object?[]? args, ParameterInfo[] parameters)
         {
+            if (args == null)
+                return null;
+
             var result = new object[parameters.Length];
             Array.Copy(args, result, result.Length - 1);
             int varArgsIndex = parameters.Length - 1;
             var varArgElementType = parameters[parameters.Length - 1]
                 .ParameterType
                 .GetElementType();
+
             int varArgsLength = args.Length - (parameters.Length - 1);
             if (varArgsLength == -1)
                 varArgsLength = 0;
