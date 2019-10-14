@@ -6,7 +6,7 @@
     <title>NETStandard implementation on WindowsCE platform</title>
     <authors>Fabricio Godoy</authors>
     <owners>skarllot</owners>
-    <licenseUrl>https://github.com/WindowsCE/NETStandard.WindowsCE/blob/master/LICENSE.txt</licenseUrl>
+    <license type="expression">Apache-2.0</license>
     <projectUrl>https://github.com/WindowsCE/NETStandard.WindowsCE</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <copyright>Copyright © Fabrício Godoy</copyright>
