@@ -6,6 +6,9 @@ set AssemblyName=NETStandard.WindowsCE
 set PackageName=%AssemblyName%
 set SourceCodePath=%SolutionDir%\src
 
+mkdir %SolutionDir%Output
+xcopy %SourceCodePath%\NETStandard.WindowsCE\bin\Release %SolutionDir%Output /sy > nul
+
 echo Copying source files...
 CALL %SolutionDir%tools\nuget_source.bat %SolutionDir% %PackageName% %SourceCodePath% || EXIT /B 1
 

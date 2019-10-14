@@ -1,14 +1,9 @@
 @echo off
 
 set SolutionDir=%~dp0
-set SolutionName=netstandard-net35cf
-set Project=src\NETStandard.WindowsCE
+set MSBuild=%SolutionDir%tools\MSBuild.cmd
+set MainProject=%SolutionDir%src\NETStandard.WindowsCE\NETStandard.WindowsCE.csproj
 
-REM Cleanup output directory
-rmdir /s/q "%SolutionDir%Output" 2> nul
-mkdir "%SolutionDir%Output"
-
-CALL %SolutionDir%tools\build.bat %SolutionDir% %SolutionName% %Project% net35-cf || EXIT /B 1
-CALL %SolutionDir%tools\build.bat %SolutionDir% %SolutionName% %Project% net35 || EXIT /B 1
-
-EXIT /B %ERRORLEVEL%
+call %MSBuild% /t:Restore %MainProject% || EXIT /B 1
+call %MSBuild% /p:Configuration=Debug %MainProject% || EXIT /B 1
+call %MSBuild% /p:Configuration=Release %MainProject% || EXIT /B 1
