@@ -298,7 +298,7 @@ namespace System.Threading.Tasks
         /// <param name="cancellationToken">The <see cref="CancellationToken" /> that will be assigned to the new task.</param>
         /// <param name="creationOptions">The <see cref="TaskCreationOptions"/> used to customize the Task's behavior.</param>
         /// <param name="continueSource">The task that run before current one.</param>
-        protected Task(Delegate action, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, Task continueSource)
+        internal Task(Delegate action, object state, CancellationToken cancellationToken, TaskCreationOptions creationOptions, Task continueSource)
         {
             if (action == null)
                 throw new ArgumentNullException(nameof(action));
@@ -616,6 +616,62 @@ namespace System.Threading.Tasks
             }
         }
 
+        /// <summary>
+        /// Converts TaskContinuationOptions to TaskCreationOptions, and also does
+        /// some validity checking along the way.
+        /// </summary>
+        /// <param name="continuationOptions">Incoming TaskContinuationOptions</param>
+        /// <param name="creationOptions">Outgoing TaskCreationOptions</param>
+        /// <param name="internalOptions">Outgoing InternalTaskOptions</param>
+        internal static void CreationOptionsFromContinuationOptions(
+            TaskContinuationOptions continuationOptions,
+            out TaskCreationOptions creationOptions,
+            out InternalTaskOptions internalOptions)
+        {
+            // This is used a couple of times below
+            const TaskContinuationOptions NotOnAnything =
+                TaskContinuationOptions.NotOnCanceled |
+                TaskContinuationOptions.NotOnFaulted |
+                TaskContinuationOptions.NotOnRanToCompletion;
+
+            const TaskContinuationOptions CreationOptionsMask =
+                TaskContinuationOptions.PreferFairness |
+                TaskContinuationOptions.LongRunning |
+                TaskContinuationOptions.DenyChildAttach |
+                TaskContinuationOptions.HideScheduler |
+                TaskContinuationOptions.AttachedToParent |
+                TaskContinuationOptions.RunContinuationsAsynchronously;
+
+            // Check that LongRunning and ExecuteSynchronously are not specified together
+            const TaskContinuationOptions IllegalMask = TaskContinuationOptions.ExecuteSynchronously | TaskContinuationOptions.LongRunning;
+            if ((continuationOptions & IllegalMask) == IllegalMask)
+            {
+                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.continuationOptions, ExceptionResource.Task_ContinueWith_ESandLR);
+            }
+
+            // Check that no illegal options were specified
+            if ((continuationOptions &
+                ~(CreationOptionsMask | NotOnAnything |
+                    TaskContinuationOptions.LazyCancellation | TaskContinuationOptions.ExecuteSynchronously)) != 0)
+            {
+                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.continuationOptions);
+            }
+
+            // Check that we didn't specify "not on anything"
+            if ((continuationOptions & NotOnAnything) == NotOnAnything)
+            {
+                ThrowHelper.ThrowArgumentOutOfRangeException(ExceptionArgument.continuationOptions, ExceptionResource.Task_ContinueWith_NotOnAnything);
+            }
+
+            // This passes over all but LazyCancellation, which has no representation in TaskCreationOptions
+            creationOptions = (TaskCreationOptions)(continuationOptions & CreationOptionsMask);
+
+            // internalOptions has at least ContinuationTask and possibly LazyCancellation
+            internalOptions = (continuationOptions & TaskContinuationOptions.LazyCancellation) != 0 ?
+                InternalTaskOptions.ContinuationTask | InternalTaskOptions.LazyCancellation :
+                InternalTaskOptions.ContinuationTask;
+        }
+
         #endregion
 
         #region Start method
@@ -709,7 +765,7 @@ namespace System.Threading.Tasks
                     return;
 
                 // Execute provided action
-                ExecuteTaskAction();
+                InnerInvoke();
             }
             catch (InternalOCE ex)
             when (ex.CancellationToken == m_cancellationToken)
@@ -736,7 +792,7 @@ namespace System.Threading.Tasks
         /// <summary>
         /// Unbox task action and execute it.
         /// </summary>
-        protected virtual void ExecuteTaskAction()
+        protected virtual void InnerInvoke()
         {
             var cp = m_contingentProperties;
             if (cp == null)
@@ -1036,119 +1092,145 @@ namespace System.Threading.Tasks
 
         #region Continuation Methods
 
-        private Task InternalContinueWith(Delegate continuationAction, object state, CancellationToken cancellationToken)
-        {
-            // Throw on continuation with null action
-            if (continuationAction == null)
-                throw new ArgumentNullException(nameof(continuationAction));
-
-            return new Task(continuationAction, state, cancellationToken, TaskCreationOptions.None, this);
-        }
-
-        /// <summary>
-        /// Creates a continuation that executes when the target <see cref="Task"/> completes.
-        /// </summary>
-        /// <param name="continuationAction">
-        /// An action to run when the <see cref="Task"/> completes. When run, the delegate will be
-        /// passed the completed task as an argument.
-        /// </param>
-        /// <returns>A new continuation <see cref="Task"/>.</returns>
-        /// <remarks>
-        /// The returned <see cref="Task"/> will not be scheduled for execution until the current task has
-        /// completed, whether it completes due to running to completion successfully, faulting due to an
-        /// unhandled exception, or exiting out early due to being canceled.
-        /// </remarks>
-        /// <exception cref="T:System.ArgumentNullException">
-        /// The <paramref name="continuationAction"/> argument is null.
-        /// </exception>
-        public Task ContinueWith(Action2<Task> continuationAction)
-            => InternalContinueWith(continuationAction, null, default);
-
-        public Task ContinueWith(Action2<Task> continuationAction, CancellationToken cancellationToken)
-            => InternalContinueWith(continuationAction, null, cancellationToken);
-
-        /// <summary>
-        /// Creates a continuation that executes when the target <see cref="Task"/> completes.
-        /// </summary>
-        /// <param name="continuationAction">
-        /// An action to run when the <see cref="Task"/> completes. When run, the delegate will be
-        /// passed the completed task as and the caller-supplied state object as arguments.
-        /// </param>
-        /// <param name="state">An object representing data to be used by the continuation action.</param>
-        /// <returns>A new continuation <see cref="Task"/>.</returns>
-        /// <remarks>
-        /// The returned <see cref="Task"/> will not be scheduled for execution until the current task has
-        /// completed, whether it completes due to running to completion successfully, faulting due to an
-        /// unhandled exception, or exiting out early due to being canceled.
-        /// </remarks>
-        /// <exception cref="ArgumentNullException">
-        /// The <paramref name="continuationAction"/> argument is null.
-        /// </exception>
         public Task ContinueWith(Action2<Task, object> continuationAction, object state)
-            => InternalContinueWith(continuationAction, state, default(CancellationToken));
+        {
+            return InternalContinueWith(continuationAction, state, TaskScheduler.Current, default, TaskContinuationOptions.None);
+        }
 
         public Task ContinueWith(Action2<Task, object> continuationAction, object state, CancellationToken cancellationToken)
-            => InternalContinueWith(continuationAction, state, cancellationToken);
-
-        private Task<TResult> InternalContinueWith<TResult>(Delegate continuationFunction, object state, CancellationToken cancellationToken)
         {
-            // Throw on continuation with null action
-            if (continuationFunction == null)
-                throw new ArgumentNullException(nameof(continuationFunction));
-
-            return new Task<TResult>(continuationFunction, state, cancellationToken, TaskCreationOptions.None, this);
+            return InternalContinueWith(continuationAction, state, TaskScheduler.Current, cancellationToken, TaskContinuationOptions.None);
         }
 
-        /// <summary>
-        /// Creates a continuation that executes when the target <see cref="Task"/> completes.
-        /// </summary>
-        /// <typeparam name="TResult">
-        /// The type of the result produced by the continuation.
-        /// </typeparam>
-        /// <param name="continuationFunction">
-        /// A function to run when the <see cref="Task"/> completes. When run, the delegate will be
-        /// passed the completed task as an argument.
-        /// </param>
-        /// <returns>A new continuation <see cref="Task{TResult}"/>.</returns>
-        /// <remarks>
-        /// The returned <see cref="Task{TResult}"/> will not be scheduled for execution until the current task has
-        /// completed, whether it completes due to running to completion successfully, faulting due to an
-        /// unhandled exception, or exiting out early due to being canceled.
-        /// </remarks>
-        /// <exception cref="ArgumentNullException">
-        /// The <paramref name="continuationFunction"/> argument is null.
-        /// </exception>
-        public Task<TResult> ContinueWith<TResult>(Func2<Task, TResult> continuationFunction)
-            => InternalContinueWith<TResult>(continuationFunction, null, default(CancellationToken));
+        public Task ContinueWith(Action2<Task, object> continuationAction, object state, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
+        {
+            return InternalContinueWith(continuationAction, state, scheduler, cancellationToken, continuationOptions);
+        }
 
-        public Task<TResult> ContinueWith<TResult>(Func2<Task, TResult> continuationFunction, CancellationToken cancellationToken)
-            => InternalContinueWith<TResult>(continuationFunction, null, cancellationToken);
+        public Task ContinueWith(Action2<Task, object> continuationAction, object state, TaskContinuationOptions continuationOptions)
+        {
+            return InternalContinueWith(continuationAction, state, TaskScheduler.Current, default, continuationOptions);
+        }
 
-        /// <summary>
-        /// Creates a continuation that executes when the target <see cref="Task"/> completes.
-        /// </summary>
-        /// <typeparam name="TResult">
-        /// The type of the result produced by the continuation.
-        /// </typeparam>
-        /// <param name="continuationFunction">
-        /// A function to run when the <see cref="Task"/> completes. When run, the delegate will be
-        /// passed the completed task and the caller-supplied state object as arguments.
-        /// </param>
-        /// <param name="state">An object representing data to be used by the continuation function.</param>
-        /// <returns>A new continuation <see cref="Task{TResult}"/>.</returns>
-        /// <remarks>
-        /// The returned <see cref="Task{TResult}"/> will not be scheduled for execution until the current task has
-        /// completed, whether it completes due to running to completion successfully, faulting due to an
-        /// unhandled exception, or exiting out early due to being canceled.
-        /// </remarks>
-        /// <exception cref="ArgumentNullException">
-        /// The <paramref name="continuationFunction"/> argument is null.
-        /// </exception>
+        public Task ContinueWith(Action2<Task, object> continuationAction, object state, TaskScheduler scheduler)
+        {
+            return InternalContinueWith(continuationAction, state, scheduler, default, TaskContinuationOptions.None);
+        }
+
+        public Task ContinueWith(Action2<Task> continuationAction)
+        {
+            return InternalContinueWith(continuationAction, null, TaskScheduler.Current, default, TaskContinuationOptions.None);
+        }
+
+        public Task ContinueWith(Action2<Task> continuationAction, CancellationToken cancellationToken)
+        {
+            return InternalContinueWith(continuationAction, null, TaskScheduler.Current, cancellationToken, TaskContinuationOptions.None);
+        }
+
+        public Task ContinueWith(Action2<Task> continuationAction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
+        {
+            return InternalContinueWith(continuationAction, null, scheduler, cancellationToken, continuationOptions);
+        }
+
+        public Task ContinueWith(Action2<Task> continuationAction, TaskContinuationOptions continuationOptions)
+        {
+            return InternalContinueWith(continuationAction, null, TaskScheduler.Current, default, continuationOptions);
+        }
+
+        public Task ContinueWith(Action2<Task> continuationAction, TaskScheduler scheduler)
+        {
+            return InternalContinueWith(continuationAction, null, scheduler, default, TaskContinuationOptions.None);
+        }
+
         public Task<TResult> ContinueWith<TResult>(Func2<Task, object, TResult> continuationFunction, object state)
-            => InternalContinueWith<TResult>(continuationFunction, state, default(CancellationToken));
+        {
+            return InternalContinueWith<TResult>(continuationFunction, state, TaskScheduler.Current, default, TaskContinuationOptions.None);
+        }
 
         public Task<TResult> ContinueWith<TResult>(Func2<Task, object, TResult> continuationFunction, object state, CancellationToken cancellationToken)
-            => InternalContinueWith<TResult>(continuationFunction, state, cancellationToken);
+        {
+            return InternalContinueWith<TResult>(continuationFunction, state, TaskScheduler.Current, cancellationToken, TaskContinuationOptions.None);
+        }
+
+        public Task<TResult> ContinueWith<TResult>(Func2<Task, object, TResult> continuationFunction, object state, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
+        {
+            return InternalContinueWith<TResult>(continuationFunction, state, scheduler, cancellationToken, continuationOptions);
+        }
+
+        public Task<TResult> ContinueWith<TResult>(Func2<Task, object, TResult> continuationFunction, object state, TaskContinuationOptions continuationOptions)
+        {
+            return InternalContinueWith<TResult>(continuationFunction, state, TaskScheduler.Current, default, continuationOptions);
+        }
+
+        public Task<TResult> ContinueWith<TResult>(Func2<Task, object, TResult> continuationFunction, object state, TaskScheduler scheduler)
+        {
+            return InternalContinueWith<TResult>(continuationFunction, state, scheduler, default, TaskContinuationOptions.None);
+        }
+
+        public Task<TResult> ContinueWith<TResult>(Func2<Task, TResult> continuationFunction)
+        {
+            return InternalContinueWith<TResult>(continuationFunction, null, TaskScheduler.Current, default, TaskContinuationOptions.None);
+        }
+
+        public Task<TResult> ContinueWith<TResult>(Func2<Task, TResult> continuationFunction, CancellationToken cancellationToken)
+        {
+            return InternalContinueWith<TResult>(continuationFunction, null, TaskScheduler.Current, cancellationToken, TaskContinuationOptions.None);
+        }
+
+        public Task<TResult> ContinueWith<TResult>(Func2<Task, TResult> continuationFunction, CancellationToken cancellationToken, TaskContinuationOptions continuationOptions, TaskScheduler scheduler)
+        {
+            return InternalContinueWith<TResult>(continuationFunction, null, TaskScheduler.Current, cancellationToken, continuationOptions);
+        }
+
+        public Task<TResult> ContinueWith<TResult>(Func2<Task, TResult> continuationFunction, TaskContinuationOptions continuationOptions)
+        {
+            return InternalContinueWith<TResult>(continuationFunction, null, TaskScheduler.Current, default, continuationOptions);
+        }
+
+        public Task<TResult> ContinueWith<TResult>(Func2<Task, TResult> continuationFunction, TaskScheduler scheduler)
+        {
+            return InternalContinueWith<TResult>(continuationFunction, null, scheduler, default, TaskContinuationOptions.None);
+        }
+
+        private Task InternalContinueWith(
+            Delegate continuationAction,
+            object state,
+            TaskScheduler scheduler,
+            CancellationToken cancellationToken,
+            TaskContinuationOptions continuationOptions)
+        {
+            if (continuationAction == null)
+            {
+                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.continuationAction);
+            }
+
+            CreationOptionsFromContinuationOptions(
+                continuationOptions,
+                out TaskCreationOptions creationOptions,
+                out InternalTaskOptions _);
+
+            return new Task(continuationAction, state, cancellationToken, creationOptions, this);
+        }
+
+        private Task<TResult> InternalContinueWith<TResult>(
+            Delegate continuationFunction,
+            object state,
+            TaskScheduler scheduler,
+            CancellationToken cancellationToken,
+            TaskContinuationOptions continuationOptions)
+        {
+            if (continuationFunction == null)
+            {
+                ThrowHelper.ThrowArgumentNullException(ExceptionArgument.continuationFunction);
+            }
+
+            CreationOptionsFromContinuationOptions(
+                continuationOptions,
+                out TaskCreationOptions creationOptions,
+                out InternalTaskOptions _);
+
+            return new Task<TResult>(continuationFunction, state, cancellationToken, creationOptions, this);
+        }
 
         #endregion
 

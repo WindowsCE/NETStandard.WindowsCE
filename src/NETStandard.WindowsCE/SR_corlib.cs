@@ -484,7 +484,7 @@ partial class SR
     //public const string TaskScheduler_InconsistentStateAfterTryExecuteTaskInline = "The TryExecuteTaskInline call to the underlying scheduler succeeded, but the task body was not invoked.";
     //public const string TaskSchedulerException_ctor_DefaultMessage = "An exception was thrown by a TaskScheduler.";
     //public const string Task_MultiTaskContinuation_FireOptions = "It is invalid to exclude specific continuation kinds for continuations off of multiple tasks.";
-    //public const string Task_ContinueWith_ESandLR = "The specified TaskContinuationOptions combined LongRunning and ExecuteSynchronously.  Synchronous continuations should not be long running.";
+    public const string Task_ContinueWith_ESandLR = "The specified TaskContinuationOptions combined LongRunning and ExecuteSynchronously.  Synchronous continuations should not be long running.";
     public const string Task_MultiTaskContinuation_EmptyTaskList = "The tasks argument contains no tasks.";
     public const string Task_MultiTaskContinuation_NullTask = "The tasks argument included a null value.";
     //public const string Task_FromAsync_PreferFairness = "It is invalid to specify TaskCreationOptions.PreferFairness in calls to FromAsync.";
@@ -502,7 +502,7 @@ partial class SR
     //public const string Task_Delay_InvalidDelay = "The value needs to translate in milliseconds to -1 (signifying an infinite timeout), 0 or a positive integer less than or equal to Int32.MaxValue.";
     //public const string Task_Dispose_NotCompleted = "A task may only be disposed if it is in a completion state (RanToCompletion, Faulted or Canceled).";
     //public const string Task_WaitMulti_NullTask = "The tasks array included at least one null element.";
-    //public const string Task_ContinueWith_NotOnAnything = "The specified TaskContinuationOptions excluded all continuation kinds.";
+    public const string Task_ContinueWith_NotOnAnything = "The specified TaskContinuationOptions excluded all continuation kinds.";
     //public const string Task_RunSynchronously_AlreadyStarted = "RunSynchronously may not be called on a task that was already started.";
     //public const string Task_ThrowIfDisposed = "The task has been disposed.";
     //public const string Task_RunSynchronously_TaskCompleted = "RunSynchronously may not be called on a task that has already completed.";

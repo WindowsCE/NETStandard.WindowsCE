@@ -35,10 +35,9 @@
 // multiple times for different instantiation. 
 // 
 
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace System
 {
@@ -144,6 +143,7 @@ namespace System
             return new ArgumentNullException(GetArgumentName(argument));
         }
 
+        [DoesNotReturn]
         internal static void ThrowArgumentNullException(ExceptionArgument argument)
         {
             throw GetArgumentNullException(argument);
@@ -159,15 +159,15 @@ namespace System
         //    throw new ArgumentNullException(GetArgumentName(argument), GetResourceString(resource));
         //}
 
-        //internal static void ThrowArgumentOutOfRangeException(ExceptionArgument argument)
-        //{
-        //    throw new ArgumentOutOfRangeException(GetArgumentName(argument));
-        //}
+        internal static void ThrowArgumentOutOfRangeException(ExceptionArgument argument)
+        {
+            throw new ArgumentOutOfRangeException(GetArgumentName(argument));
+        }
 
-        //internal static void ThrowArgumentOutOfRangeException(ExceptionArgument argument, ExceptionResource resource)
-        //{
-        //    throw GetArgumentOutOfRangeException(argument, resource);
-        //}
+        internal static void ThrowArgumentOutOfRangeException(ExceptionArgument argument, ExceptionResource resource)
+        {
+            throw GetArgumentOutOfRangeException(argument, resource);
+        }
 
         //internal static void ThrowArgumentOutOfRangeException(ExceptionArgument argument, int paramNumber, ExceptionResource resource)
         //{
@@ -312,10 +312,10 @@ namespace System
         //    return new KeyNotFoundException(SR.Format(SR.Arg_KeyNotFoundWithKey, key.ToString()));
         //}
 
-        //internal static ArgumentOutOfRangeException GetArgumentOutOfRangeException(ExceptionArgument argument, ExceptionResource resource)
-        //{
-        //    return new ArgumentOutOfRangeException(GetArgumentName(argument), GetResourceString(resource));
-        //}
+        internal static ArgumentOutOfRangeException GetArgumentOutOfRangeException(ExceptionArgument argument, ExceptionResource resource)
+        {
+            return new ArgumentOutOfRangeException(GetArgumentName(argument), GetResourceString(resource));
+        }
 
         //private static ArgumentException GetArgumentException(ExceptionResource resource, ExceptionArgument argument)
         //{
@@ -356,15 +356,15 @@ namespace System
             return argument.ToString();
         }
 
-        //// This function will convert an ExceptionResource enum value to the resource string.
-        //[MethodImpl(MethodImplOptions.NoInlining)]
-        //private static string GetResourceString(ExceptionResource resource)
-        //{
-        //    Debug.Assert(Enum.IsDefined(typeof(ExceptionResource), resource),
-        //        "The enum value is not defined, please check the ExceptionResource Enum.");
+        // This function will convert an ExceptionResource enum value to the resource string.
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static string GetResourceString(ExceptionResource resource)
+        {
+            Debug.Assert(Enum.IsDefined(typeof(ExceptionResource), resource),
+                "The enum value is not defined, please check the ExceptionResource Enum.");
 
-        //    return SR.GetResourceString(resource.ToString());
-        //}
+            return SR.GetResourceString(resource.ToString());
+        }
 
         //internal static void ThrowNotSupportedExceptionIfNonNumericType<T>()
         //{
