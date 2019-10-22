@@ -257,11 +257,7 @@ namespace System.Threading.Tasks
 
         internal bool TrySetResult(TResult result)
         {
-            if (!TrySetCompleted())
-                return false;
-
-            _result = result;
-            return true;
+            return TrySetCompleted(() => _result = result);
         }
 
         #endregion
