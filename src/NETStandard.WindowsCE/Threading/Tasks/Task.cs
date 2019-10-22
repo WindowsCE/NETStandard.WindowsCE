@@ -541,11 +541,12 @@ namespace System.Threading.Tasks
         }
 
         // Atomically mark a Task as completed while making sure that it is not already completed.
-        internal bool TrySetCompleted()
+        internal bool TrySetCompleted(Action action = null)
         {
             if (!AtomicStateUpdate(TASK_STATE_STARTED | TASK_STATE_RAN_TO_COMPLETION, TASK_STATE_COMPLETED_MASK))
                 return false;
-
+            
+            action?.Invoke();
             SendCompletedSignal();
             return true;
         }
