@@ -257,7 +257,12 @@ namespace System.Threading.Tasks
 
         internal bool TrySetResult(TResult result)
         {
-            return TrySetCompleted(() => _result = result);
+            if (!AtomicStateUpdate(TASK_STATE_STARTED | TASK_STATE_RAN_TO_COMPLETION, TASK_STATE_COMPLETED_MASK))
+                return false;
+
+            _result = result;
+            SendCompletedSignal();
+            return true;
         }
 
         #endregion
