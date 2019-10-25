@@ -2,24 +2,10 @@
 {
     public const string PlatformNotSupportedDescription = "This member is not supported for current platform";
 
-    public const string Product = "NETStandard.WindowsCE";
-    public const string Description = "This library includes most of the APIs from the NETStandard specification built on top of Windows CE platform.";
-    public const string AssemblyVersion = "1.0.0.0";
-    public const string FileVersion = "1.7.0.0";
-    public const string ProductVersion = "1.7.0";
-    public const string Copyright = "© Fabrício Godoy. All rights reserved.";
-    public const string Company = "Fabrício Godoy";
-
 #if NET35_CF
     public const string TargetFramework = ".NETFramework,Version=v3.5,Profile=CompactFramework";
 #else
     public const string TargetFramework = ".NETFramework,Version=v3.5";
-#endif
-
-#if DEBUG
-    public const string Configuration = "Debug";
-#else
-    public const string Configuration = "Release";
 #endif
 
     public const string SkarllotPublicKey =
@@ -40,7 +26,4 @@
         "9ac82d634437958694391ef159ee19588846c5dafdd9669d337f8394ee1aa0042e9" +
         "d6baae88d279ecb2e9007d4e078c2b8763cea6ec8a47030eb2cf4db12462071d854" +
         "2d1c51e2256543e4";
-
-    public static System.Type GetTypeInfo(this System.Type type)
-        => type;
 }

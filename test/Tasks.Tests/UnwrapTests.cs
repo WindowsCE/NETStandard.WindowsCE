@@ -616,7 +616,7 @@ namespace Tests
             AssertTasksAreEqual((Task)expected, actual);
             if (expected.Status == TaskStatus.RanToCompletion)
             {
-                if (typeof(T).GetTypeInfo().IsValueType)
+                if (typeof(T).IsValueType)
                     Assert.AreEqual(expected.Result, actual.Result);
                 else
                     Assert.AreSame(expected.Result, actual.Result);
