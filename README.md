@@ -1,4 +1,7 @@
 # NETStandard.WindowsCE
+
+[![Nuget version (NETStandard.WindowsCE)](https://img.shields.io/nuget/v/NETStandard.WindowsCE?style=flat-square)](https://www.nuget.org/packages/NETStandard.WindowsCE/)
+
 A library that implements the API of .NET Standard specification on Microsoft Windows CE platform.
 
 ## Getting Started
