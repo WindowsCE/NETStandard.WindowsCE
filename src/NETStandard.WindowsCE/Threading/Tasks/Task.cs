@@ -61,7 +61,7 @@ namespace System.Threading.Tasks
         internal const int TASK_STATE_WAITINGFORACTIVATION = 0x2000000;                        //bin: 0000 0010 0000 0000 0000 0000 0000 0000
 
         // A mask for all of the final states a task may be in
-        private const int TASK_STATE_COMPLETED_MASK = TASK_STATE_CANCELED | TASK_STATE_FAULTED | TASK_STATE_RAN_TO_COMPLETION;
+        private protected const int TASK_STATE_COMPLETED_MASK = TASK_STATE_CANCELED | TASK_STATE_FAULTED | TASK_STATE_RAN_TO_COMPLETION;
 
         #region Properties
 
@@ -497,7 +497,7 @@ namespace System.Threading.Tasks
 
         // Atomically OR-in newBits to _stateFlags, while making sure that
         // no illegalBits are set.  Returns true on success, false on failure.
-        private bool AtomicStateUpdate(int newBits, int illegalBits)
+        private protected bool AtomicStateUpdate(int newBits, int illegalBits)
         {
             SpinWait sw = new SpinWait();
             do
@@ -545,7 +545,7 @@ namespace System.Threading.Tasks
         {
             if (!AtomicStateUpdate(TASK_STATE_STARTED | TASK_STATE_RAN_TO_COMPLETION, TASK_STATE_COMPLETED_MASK))
                 return false;
-
+            
             SendCompletedSignal();
             return true;
         }
@@ -601,7 +601,7 @@ namespace System.Threading.Tasks
         }
 
         // Send signal to completed event handler and execute callback
-        private void SendCompletedSignal()
+        private protected void SendCompletedSignal()
         {
             // TODO: Avoid initialization race
             var contingentProperties = m_contingentProperties;
