@@ -13,13 +13,13 @@
     <PackageId>NETStandard.WindowsCE</PackageId>
     <RootNamespace>System</RootNamespace>
     <LangVersion>8.0</LangVersion>
-    <VersionPrefix>1.7.1</VersionPrefix>
+    <VersionPrefix>1.8.0</VersionPrefix>
     <InformationalVersion>$(Version)</InformationalVersion>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.7.1.0</FileVersion>
+    <FileVersion>1.8.0.0</FileVersion>
     <Description>This library includes most of the APIs from the .NET Standard specification built on top of Windows CE platform.</Description>
     <Title>.NET Standard API for Windows CE</Title>
-    <PackageTags>net35-cf;windowsce;wince;netstandard;netstandard1.0;backport</PackageTags>
+    <PackageTags>net35-cf;windowsce;wince;netstandard;backport</PackageTags>
     <AssemblyTitle>$(Title) ($(TargetFramework))</AssemblyTitle>
     <Product>$(Title)</Product>
     <PackageOutputPath>$(SolutionDir)artifacts</PackageOutputPath>
