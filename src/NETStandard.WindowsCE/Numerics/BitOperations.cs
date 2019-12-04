@@ -20,7 +20,7 @@ namespace System.Numerics
         // C# no-alloc optimization that directly wraps the data section of the dll (similar to string constants)
         // https://github.com/dotnet/roslyn/pull/24621
 
-        private static byte[] TrailingZeroCountDeBruijn => new byte[32]
+        private static ReadOnlySpan<byte> TrailingZeroCountDeBruijn => new byte[32]
         {
             00, 01, 28, 02, 29, 14, 24, 03,
             30, 22, 20, 15, 25, 17, 04, 08,
@@ -28,7 +28,7 @@ namespace System.Numerics
             26, 12, 18, 06, 11, 05, 10, 09
         };
 
-        private static byte[] Log2DeBruijn => new byte[32]
+        private static ReadOnlySpan<byte> Log2DeBruijn => new byte[32]
         {
             00, 09, 01, 10, 13, 21, 02, 29,
             11, 14, 16, 18, 22, 25, 03, 30,
