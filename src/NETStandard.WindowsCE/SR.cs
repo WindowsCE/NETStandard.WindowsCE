@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Threading;
 
-partial class SR
+internal partial class SR
 {
     private static Dictionary<string, string> ResourceNameDictionary;
 
@@ -13,6 +13,8 @@ partial class SR
     public const string HashCode_HashCodeNotSupported = "HashCode is a mutable struct and should not be compared with other HashCodes. Use ToHashCode to retrieve the computed hash code.";
 
     public const string HashCode_EqualityNotSupported = "HashCode is a mutable struct and should not be compared with other HashCodes.";
+
+    public const string Argument_OverlapAlignmentMismatch = "Overlapping spans have mismatching alignment.";
 
     public static string Format(string format, params object[] args)
     {

@@ -5,11 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 
-#if NET35_CF
 namespace System
-#else
-namespace Mock.System
-#endif
 {
     [Flags]
     public enum StringSplitOptions

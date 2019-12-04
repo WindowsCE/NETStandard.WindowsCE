@@ -44,30 +44,30 @@ namespace System
     [StackTraceHidden]
     internal static class ThrowHelper
     {
-        //internal static void ThrowArrayTypeMismatchException()
-        //{
-        //    throw new ArrayTypeMismatchException();
-        //}
+        internal static void ThrowArrayTypeMismatchException()
+        {
+            throw new ArrayTypeMismatchException();
+        }
 
         //internal static void ThrowInvalidTypeWithPointersNotSupported(Type targetType)
         //{
         //    throw new ArgumentException(SR.Format(SR.Argument_InvalidTypeWithPointersNotSupported, targetType));
         //}
 
-        //internal static void ThrowIndexOutOfRangeException()
-        //{
-        //    throw new IndexOutOfRangeException();
-        //}
+        internal static void ThrowIndexOutOfRangeException()
+        {
+            throw new IndexOutOfRangeException();
+        }
 
-        //internal static void ThrowArgumentOutOfRangeException()
-        //{
-        //    throw new ArgumentOutOfRangeException();
-        //}
+        internal static void ThrowArgumentOutOfRangeException()
+        {
+            throw new ArgumentOutOfRangeException();
+        }
 
-        //internal static void ThrowArgumentException_DestinationTooShort()
-        //{
-        //    throw new ArgumentException(SR.Argument_DestinationTooShort);
-        //}
+        internal static void ThrowArgumentException_DestinationTooShort()
+        {
+            throw new ArgumentException(SR.Argument_DestinationTooShort);
+        }
 
         //internal static void ThrowArgumentOutOfRange_IndexException()
         //{
@@ -128,15 +128,15 @@ namespace System
         //    throw GetKeyNotFoundException((object)key);
         //}
 
-        //internal static void ThrowArgumentException(ExceptionResource resource)
-        //{
-        //    throw GetArgumentException(resource);
-        //}
+        internal static void ThrowArgumentException(ExceptionResource resource)
+        {
+            throw GetArgumentException(resource);
+        }
 
-        //internal static void ThrowArgumentException(ExceptionResource resource, ExceptionArgument argument)
-        //{
-        //    throw GetArgumentException(resource, argument);
-        //}
+        internal static void ThrowArgumentException(ExceptionResource resource, ExceptionArgument argument)
+        {
+            throw GetArgumentException(resource, argument);
+        }
 
         private static ArgumentNullException GetArgumentNullException(ExceptionArgument argument)
         {
@@ -287,10 +287,10 @@ namespace System
         //    return GetArgumentException(ExceptionResource.Argument_InvalidOffLen);
         //}
 
-        //private static ArgumentException GetArgumentException(ExceptionResource resource)
-        //{
-        //    return new ArgumentException(GetResourceString(resource));
-        //}
+        private static ArgumentException GetArgumentException(ExceptionResource resource)
+        {
+            return new ArgumentException(GetResourceString(resource));
+        }
 
         //internal static InvalidOperationException GetInvalidOperationException(ExceptionResource resource)
         //{
@@ -317,10 +317,10 @@ namespace System
             return new ArgumentOutOfRangeException(GetArgumentName(argument), GetResourceString(resource));
         }
 
-        //private static ArgumentException GetArgumentException(ExceptionResource resource, ExceptionArgument argument)
-        //{
-        //    return new ArgumentException(GetResourceString(resource), GetArgumentName(argument));
-        //}
+        private static ArgumentException GetArgumentException(ExceptionResource resource, ExceptionArgument argument)
+        {
+            return new ArgumentException(GetResourceString(resource), GetArgumentName(argument));
+        }
 
         //private static ArgumentOutOfRangeException GetArgumentOutOfRangeException(ExceptionArgument argument, int paramNumber, ExceptionResource resource)
         //{
@@ -377,6 +377,28 @@ namespace System
         //        throw new NotSupportedException(SR.Arg_TypeNotSupported);
         //    }
         //}
+
+        internal static void ThrowArgumentException_InvalidTypeWithPointersNotSupported(Type type)
+        {
+            throw CreateArgumentException_InvalidTypeWithPointersNotSupported(type);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static Exception CreateArgumentException_InvalidTypeWithPointersNotSupported(Type type)
+        {
+            return new ArgumentException(SR.Format(SR.Argument_InvalidTypeWithPointersNotSupported, type));
+        }
+
+        internal static void ThrowArgumentException_OverlapAlignmentMismatch()
+        {
+            throw CreateArgumentException_OverlapAlignmentMismatch();
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static Exception CreateArgumentException_OverlapAlignmentMismatch()
+        {
+            return new ArgumentException(SR.Argument_OverlapAlignmentMismatch);
+        }
     }
 
     //
@@ -460,7 +482,10 @@ namespace System
         ownedMemory,
         pointer,
         start,
-        format
+        format,
+        comparable,
+        culture,
+        comparisonType
     }
 
     //
@@ -570,5 +595,6 @@ namespace System
         InvalidOperation_HandleIsNotInitialized,
         AsyncMethodBuilder_InstanceNotInitialized,
         ArgumentNull_SafeHandle,
+        NotSupported_StringComparison
     }
 }
