@@ -3,11 +3,7 @@ using System.Globalization;
 using System.Linq;
 using SystemMath = System.Math;
 
-#if NET35_CF
 namespace System.Linq.Expressions.Jvm
-#else
-namespace Mock.System.Linq.Expressions.Jvm
-#endif
 {
     internal class Math
     {

@@ -1,10 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-#if !WindowsCE
-using Mock.System;
-#endif
-
 namespace System.IO
 {
     public static class Stream2

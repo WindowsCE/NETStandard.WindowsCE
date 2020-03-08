@@ -17,11 +17,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
-#if NET35_CF
 namespace System.Runtime.Serialization
-#else
-namespace Mock.System.Runtime.Serialization
-#endif
 {
     /// <summary>
     /// Stores all the data needed to serialize or deserialize an object.

@@ -17,11 +17,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-#if NET35_CF
 namespace System.Runtime.Serialization
-#else
-namespace Mock.System.Runtime.Serialization
-#endif
 {
     /// <summary>
     /// Provides the connection between an instance of <see cref="SerializationInfo"/>

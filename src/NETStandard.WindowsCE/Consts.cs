@@ -2,11 +2,7 @@
 {
     public const string PlatformNotSupportedDescription = "This member is not supported for current platform";
 
-#if NET35_CF
     public const string TargetFramework = ".NETFramework,Version=v3.5,Profile=CompactFramework";
-#else
-    public const string TargetFramework = ".NETFramework,Version=v3.5";
-#endif
 
     public const string SkarllotPublicKey =
         "00240000048000001402000006020000002400005253413100100000010001002d0" +

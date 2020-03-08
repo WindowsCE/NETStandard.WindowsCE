@@ -9,13 +9,9 @@
 // - https://github.com/dotnet/coreclr/blob/54891e0650e69f08832f75a40dc102efc6115d38/src/classlibnative/bcltype/number.cpp
 // - https://gist.github.com/pieceofsummer/a555baa83a3c6f71925dac9f2d8b2d86
 
-#if NET35_CF
 // Windows CE supports little-endian format only
 // Ref: https://msdn.microsoft.com/en-us/library/ms905093.aspx
 #define LITTLEENDIAN
-#else
-#define BIGENDIAN
-#endif
 
 using System.Diagnostics;
 

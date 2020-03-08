@@ -1,8 +1,4 @@
-﻿#if NET35_CF
-using InternalOperationCanceledException = System.OperationCanceledException;
-#else
-using InternalOperationCanceledException = Mock.System.OperationCanceledException;
-#endif
+﻿using InternalOperationCanceledException = System.OperationCanceledException;
 
 namespace System.Threading
 {

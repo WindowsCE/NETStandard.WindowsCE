@@ -6,11 +6,7 @@ using System;
 using System.Threading;
 using System.Diagnostics;
 
-#if NET35_CF
 namespace System
-#else
-namespace Mock.System
-#endif
 {
     /// <summary>
     /// Provides an IProgress{T} that invokes callbacks for each reported progress value.

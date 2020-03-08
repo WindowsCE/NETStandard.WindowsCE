@@ -13,13 +13,6 @@
 
 using System.Diagnostics;
 
-#if NET35_CF
-using InternalOCE = System.OperationCanceledException;
-#else
-using Mock.System;
-using InternalOCE = Mock.System.OperationCanceledException;
-#endif
-
 namespace System.Threading
 {
     /// <summary>
@@ -692,7 +685,7 @@ namespace System.Threading
                         //or return false if it was the timeout that woke the wait.
                         //
                         if (waitWasCanceled)
-                            throw new InternalOCE(SR.Common_OperationCanceled, cancellationToken);
+                            throw new OperationCanceledException(SR.Common_OperationCanceled, cancellationToken);
                         else
                             return false;
                     }

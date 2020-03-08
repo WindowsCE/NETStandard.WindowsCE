@@ -1,10 +1,6 @@
 ﻿using System.Diagnostics;
 
-#if NET35_CF
 using HashSetOfInt32 = System.Collections.Generic.HashSet<int>;
-#else
-using HashSetOfInt32 = Mock.System.Collections.Generic.HashSet<int>;
-#endif
 
 namespace System.Threading
 {

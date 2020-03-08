@@ -7,11 +7,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 using Interlocked = System.Threading.Interlocked;
 
-#if !NET35_CF
-using Mock.System;
-using Mock.System.Collections.Generic;
-#endif
-
 namespace System.Collections.Generic
 {
     // A binary search tree is a red-black tree if it satisfies the following red-black properties:

@@ -5,11 +5,7 @@
 using System;
 using System.Threading;
 
-#if NET35_CF
 namespace System.Threading
-#else
-namespace Mock.System.Threading
-#endif
 {
     //
     // Methods for accessing memory with volatile semantics.  These are preferred over Thread.VolatileRead

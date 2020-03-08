@@ -5,11 +5,7 @@ using System.Threading;
 
 #pragma warning disable CS0618
 
-#if NET35_CF
 namespace System.Threading
-#else
-namespace Mock.System.Threading
-#endif
 {
     /// <summary>
     /// Limits the number of threads that can access a resource, or a particular type of resource, concurrently.

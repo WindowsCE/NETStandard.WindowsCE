@@ -4,11 +4,7 @@
 
 using  System;
 
-#if NET35_CF
 namespace System.Runtime.CompilerServices
-#else
-namespace Mock.System.Runtime.CompilerServices
-#endif
 {
     /// IMPORTANT: Keep this in sync with corhdr.h
     [Flags]

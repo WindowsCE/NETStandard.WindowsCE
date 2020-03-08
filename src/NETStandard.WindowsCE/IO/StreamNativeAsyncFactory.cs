@@ -1,23 +1,17 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 
-#if !WindowsCE
-using Mock.System;
-#endif
-
 namespace System.IO
 {
     // Creates asynchronous methods for Stream class based upon native implementation
     internal sealed class StreamNativeAsyncFactory
     {
-#if WindowsCE
         private static readonly Type ChunkedReadStreamType = Type.GetType("System.Net.ChunkedReadStream, " + Type2.SystemQualifiedName, true, false);
         private static readonly Type CloseReadStreamType = Type.GetType("System.Net.CloseReadStream, " + Type2.SystemQualifiedName, true, false);
         private static readonly Type ContentLengthReadStreamType = Type.GetType("System.Net.ContentLengthReadStream, " + Type2.SystemQualifiedName, true, false);
         private static readonly Type BufferConnectStreamType = Type.GetType("System.Net.HttpWebRequest+BufferConnectStream, " + Type2.SystemQualifiedName, true, false);
         private static readonly Type WriteConnectStreamType = Type.GetType("System.Net.HttpWebRequest+WriteConnectStream, " + Type2.SystemQualifiedName, true, false);
         private static readonly Type SerialStreamType = Type.GetType("System.IO.Ports.SerialStream, " + Type2.SystemQualifiedName, true, false);
-#endif
 
         private readonly Stream stream;
         private readonly bool isApmSupported;
@@ -74,7 +68,6 @@ namespace System.IO
             if (stream is Net.Sockets.NetworkStream)
                 return true;
 
-#if WindowsCE
             // TODO: Sort by usage
             Type streamType = stream.GetType();
             return streamType == ChunkedReadStreamType
@@ -83,9 +76,6 @@ namespace System.IO
                 || streamType == BufferConnectStreamType
                 || streamType == WriteConnectStreamType
                 || streamType == SerialStreamType;
-#else
-            return false;
-#endif
         }
 
         private Task<int> ReadAsyncUsingApm(byte[] buffer, int offset, int count, CancellationToken cancellationToken)

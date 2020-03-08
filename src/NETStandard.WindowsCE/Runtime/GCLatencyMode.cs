@@ -1,8 +1,4 @@
-﻿#if NET35_CF
-namespace System.Runtime
-#else
-namespace Mock.System.Runtime
-#endif
+﻿namespace System.Runtime
 {
     public enum GCLatencyMode
     {

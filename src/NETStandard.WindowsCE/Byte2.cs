@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-#if NET35_CF
 namespace System
-#else
-namespace Mock.System
-#endif
 {
     public static class Byte2
     {

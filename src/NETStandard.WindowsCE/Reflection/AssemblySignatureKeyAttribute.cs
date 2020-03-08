@@ -1,10 +1,6 @@
 ﻿using System;
 
-#if NET35_CF
 namespace System.Reflection
-#else
-namespace Mock.System.Reflection
-#endif
 {
     [AttributeUsage(AttributeTargets.Assembly, Inherited = false, AllowMultiple = false)]
     public sealed class AssemblySignatureKeyAttribute : Attribute

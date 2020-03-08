@@ -7,10 +7,6 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-#if !NET35_CF
-using Mock.System.Collections.Generic;
-#endif
-
 namespace System.Collections.Concurrent
 {
     /// <summary>

@@ -5,17 +5,9 @@
 using System;
 using System.Runtime.Serialization;
 
-#if NET35_CF
 using System.Runtime.ExceptionServices;
-#else
-using Mock.System.Runtime.ExceptionServices;
-#endif
 
-#if NET35_CF
 namespace System
-#else
-namespace Mock.System
-#endif
 {
     [Serializable]
     public class InvalidTimeZoneException : Exception, ISerializable

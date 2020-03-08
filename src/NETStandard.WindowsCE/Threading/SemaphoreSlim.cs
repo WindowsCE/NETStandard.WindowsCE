@@ -16,10 +16,6 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
-#if !WindowsCE
-using Mock.System;
-#endif
-
 // The class will be part of the current System.Threading namespace
 
 namespace System.Threading

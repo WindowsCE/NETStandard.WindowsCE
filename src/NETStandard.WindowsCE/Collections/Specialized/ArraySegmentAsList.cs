@@ -1,10 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 
-#if !NET35_CF
-using Mock.System.Collections.Generic;
-#endif
-
 namespace System.Collections.Specialized
 {
     internal sealed class ArraySegmentAsList<T> : IList<T>, IReadOnlyList<T>

@@ -18,18 +18,6 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-#if NET35_CF
-using InternalOCE = System.OperationCanceledException;
-#else
-using Mock.System;
-using Mock.System.Collections.Generic;
-using OperationCanceledException = Mock.System.OperationCanceledException;
-using InternalOCE = Mock.System.OperationCanceledException;
-#endif
-
-#if !NET35_CF
-#endif
-
 namespace System.Collections.Concurrent
 {
     /// <summary> 
@@ -410,7 +398,7 @@ namespace System.Collections.Concurrent
             CheckDisposed();
 
             if (cancellationToken.IsCancellationRequested)
-                throw new InternalOCE(SR.Common_OperationCanceled, cancellationToken);
+                throw new OperationCanceledException(SR.Common_OperationCanceled, cancellationToken);
 
             if (IsAddingCompleted)
             {
@@ -438,7 +426,7 @@ namespace System.Collections.Concurrent
                 {
                     //if cancellation was via external token, throw an OCE
                     if (cancellationToken.IsCancellationRequested)
-                        throw new InternalOCE(SR.Common_OperationCanceled, cancellationToken);
+                        throw new OperationCanceledException(SR.Common_OperationCanceled, cancellationToken);
 
                     //if cancellation was via internal token, this indicates invalid use, hence InvalidOpEx.
                     //Debug.Assert(_ProducersCancellationTokenSource.Token.IsCancellationRequested);
@@ -687,7 +675,7 @@ namespace System.Collections.Concurrent
             item = default(T);
 
             if (cancellationToken.IsCancellationRequested)
-                throw new InternalOCE(SR.Common_OperationCanceled, cancellationToken);
+                throw new OperationCanceledException(SR.Common_OperationCanceled, cancellationToken);
 
             //If the collection is completed then there is no need to wait.
             if (IsCompleted)
@@ -714,7 +702,7 @@ namespace System.Collections.Concurrent
             catch (OperationCanceledException)
             {
                 if (cancellationToken.IsCancellationRequested)
-                    throw new InternalOCE(SR.Common_OperationCanceled, cancellationToken);
+                    throw new OperationCanceledException(SR.Common_OperationCanceled, cancellationToken);
 
                 return false;
             }
@@ -1035,7 +1023,7 @@ namespace System.Collections.Concurrent
                     if (linkedTokenSource.IsCancellationRequested)
                     {
                         if (externalCancellationToken.IsCancellationRequested) //case#3
-                            throw new InternalOCE(SR.Common_OperationCanceled, externalCancellationToken);
+                            throw new OperationCanceledException(SR.Common_OperationCanceled, externalCancellationToken);
                         else //case#4
                             throw new ArgumentException(SR.BlockingCollection_CantAddAnyWhenCompleted, nameof(collections));
                     }
@@ -1433,7 +1421,7 @@ namespace System.Collections.Concurrent
                     int index = WaitHandle2.WaitAny(handles.ToArray(), timeout);
 
                     if (linkedTokenSource.IsCancellationRequested && externalCancellationToken.IsCancellationRequested)//case#3
-                        throw new InternalOCE(SR.Common_OperationCanceled, externalCancellationToken);
+                        throw new OperationCanceledException(SR.Common_OperationCanceled, externalCancellationToken);
 
 
                     else if (!linkedTokenSource.IsCancellationRequested) // if neither internal nor external cancellation requested

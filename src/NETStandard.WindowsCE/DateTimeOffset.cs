@@ -6,11 +6,7 @@ using System.Runtime.Serialization;
 using System;
 using System.Text.RegularExpressions;
 
-#if NET35_CF
 namespace System
-#else
-namespace Mock.System
-#endif
 {
     [Serializable]
     public struct DateTimeOffset

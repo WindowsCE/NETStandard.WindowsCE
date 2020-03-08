@@ -1,13 +1,6 @@
-﻿using System.Threading;
+﻿using System.Runtime.ExceptionServices;
+using System.Threading;
 using System.Threading.Tasks;
-
-#if NET35_CF
-using System.Runtime.ExceptionServices;
-using InternalOCE = System.OperationCanceledException;
-#else
-using Mock.System.Runtime.ExceptionServices;
-using InternalOCE = Mock.System.OperationCanceledException;
-#endif
 
 namespace System.Runtime.CompilerServices
 {
@@ -49,7 +42,7 @@ namespace System.Runtime.CompilerServices
                     if (task.CancellationToken.IsCancellationRequested)
                         throw new TaskCanceledException(task);
                     else
-                        throw new InternalOCE(task.CancellationToken);
+                        throw new OperationCanceledException(task.CancellationToken);
                 case TaskStatus.Faulted:
                     ExceptionDispatchInfo.Capture(task.Exception.InnerExceptions[0]).Throw();
                     break;

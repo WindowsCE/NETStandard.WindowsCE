@@ -10,10 +10,6 @@
 
 using System.Diagnostics;
 
-#if !NET35_CF
-using Mock.System;
-#endif
-
 namespace System.Threading
 {
     // SpinWait is just a little value type that encapsulates some common spinning

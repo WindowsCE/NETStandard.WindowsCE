@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-
-#if NET35_CF
 using System.Collections.Concurrent;
-#else
-using Mock.System.Collections.Concurrent;
-using Mock.System.Threading;
-#endif
+using System.Collections.Generic;
 
 namespace System.Threading
 {

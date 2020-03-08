@@ -12,11 +12,7 @@
 **
 **
 ===========================================================*/
-#if NET35_CF
 namespace System.Runtime.Serialization
-#else
-namespace Mock.System.Runtime.Serialization
-#endif
 {
     /// <summary>
     /// Indicates that a class is to be notified when deserialization of the

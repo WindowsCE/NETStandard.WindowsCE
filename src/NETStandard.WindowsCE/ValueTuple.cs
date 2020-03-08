@@ -9,10 +9,6 @@ using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using HashHelpers = System.Numerics.Hashing.HashHelpers;
 
-#if !NET35_CF
-using Mock.System.Collections;
-#endif
-
 namespace System
 {
     /// <summary>

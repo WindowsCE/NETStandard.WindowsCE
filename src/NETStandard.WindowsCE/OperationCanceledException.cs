@@ -2,18 +2,10 @@
 using System.Threading;
 using NativeOperationCanceledException = System.OperationCanceledException;
 
-#if NET35_CF
 namespace System
-#else
-namespace Mock.System
-#endif
 {
     public class OperationCanceledException
-#if NET35_CF
         : SystemException
-#else
-        : NativeOperationCanceledException
-#endif
     {
         private readonly CancellationToken token;
 

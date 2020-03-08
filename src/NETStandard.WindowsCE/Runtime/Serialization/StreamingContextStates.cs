@@ -1,10 +1,6 @@
 ﻿using System;
 
-#if NET35_CF
 namespace System.Runtime.Serialization
-#else
-namespace Mock.System.Runtime.Serialization
-#endif
 {
     /// <summary>
     /// Defines a set of flags that specifies the source or destination context for the stream during serialization.

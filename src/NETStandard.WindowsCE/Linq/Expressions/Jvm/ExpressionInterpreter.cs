@@ -4,11 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
 
-#if NET35_CF
 namespace System.Linq.Expressions.Jvm
-#else
-namespace Mock.System.Linq.Expressions.Jvm
-#endif
 {
     internal class ExpressionInterpreter : ExpressionVisitor
     {

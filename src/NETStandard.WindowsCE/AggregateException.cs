@@ -5,11 +5,7 @@ using System.Globalization;
 using System.Runtime.Serialization;
 using System.Text;
 
-#if NET35_CF
 using System.Runtime.ExceptionServices;
-#else
-using Mock.System.Runtime.ExceptionServices;
-#endif
 
 namespace System
 {

@@ -16,11 +16,7 @@
 
 using System;
 
-#if NET35_CF
 namespace System
-#else
-namespace Mock.System
-#endif
 {
     /// <summary>
     /// Interface for exposing an Observer in the

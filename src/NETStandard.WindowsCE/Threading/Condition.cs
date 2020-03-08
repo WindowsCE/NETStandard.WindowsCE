@@ -4,10 +4,6 @@
 
 using System.Diagnostics;
 
-#if !NET35_CF
-using Mock.System.Threading;
-#endif
-
 namespace System.Threading
 {
     internal sealed class Condition

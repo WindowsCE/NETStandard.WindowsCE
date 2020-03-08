@@ -17,11 +17,7 @@ using System;
 using System.Collections;
 using System.Runtime.InteropServices;
 
-#if NET35_CF
 namespace System.Runtime.Serialization
-#else
-namespace Mock.System.Runtime.Serialization
-#endif
 {
     //
     // A simple enumerator over the values stored in the SerializationInfo.

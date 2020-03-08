@@ -7,10 +7,6 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
-#if !NET35_CF
-using Mock.System.Threading;
-#endif
-
 namespace System.IO
 {
     /// <summary>

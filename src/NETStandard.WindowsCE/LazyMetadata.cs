@@ -1,15 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-#if !NET35_CF
-using Mock.System.Threading;
-#endif
-
-#if NET35_CF
 namespace System
-#else
-namespace Mock.System
-#endif
 {
     public class Lazy<T, TMetadata> : Lazy<T>
     {

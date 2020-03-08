@@ -1,10 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 
-#if !NET35_CF
-using Mock.System;
-#endif
-
 namespace System.Reflection
 {
     [EditorBrowsable(EditorBrowsableState.Never)]

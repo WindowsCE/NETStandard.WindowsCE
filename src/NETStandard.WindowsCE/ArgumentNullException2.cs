@@ -2,17 +2,9 @@
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
-#if NET35_CF
 using System.Runtime.ExceptionServices;
-#else
-using Mock.System.Runtime.ExceptionServices;
-#endif
 
-#if NET35_CF
 namespace System
-#else
-namespace Mock.System
-#endif
 {
     /// <summary>
     /// The ArgumentException is thrown when an argument

@@ -15,11 +15,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-#if NET35_CF
 namespace System.Collections.Generic
-#else
-namespace Mock.System.Collections.Generic
-#endif
 {
     /// <summary>
     /// Provides a read-only, view of a generic list.

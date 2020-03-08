@@ -1,11 +1,4 @@
-﻿#if NET35_CF
-namespace System.Threading
-#else
-using System;
-using System.Threading;
-
-namespace Mock.System.Threading
-#endif
+﻿namespace System.Threading
 {
     /// <summary>
     /// Represents a method to be called when a message is to be dispatched to
@@ -20,8 +13,7 @@ namespace Mock.System.Threading
     /// </summary>
     public class SynchronizationContext
     {
-        private static readonly LocalDataStoreSlot _syncContextSlot
-            = Thread.AllocateDataSlot();
+        private static readonly LocalDataStoreSlot _syncContextSlot = Thread.AllocateDataSlot();
 
         /// <summary>
         /// Initializes a new instance of <see cref="SynchronizationContext"/> class.

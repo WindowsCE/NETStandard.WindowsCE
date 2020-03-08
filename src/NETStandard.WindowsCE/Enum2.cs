@@ -6,11 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-#if NET35_CF
 namespace System
-#else
-namespace Mock.System
-#endif
 {
     public static class Enum2
     {

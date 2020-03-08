@@ -3,11 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-#if NET35_CF
 namespace System
-#else
-namespace Mock.System
-#endif
 {
     public static class Type2
     {

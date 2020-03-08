@@ -5,17 +5,9 @@
 using System;
 using System.Runtime.Serialization;
 
-#if NET35_CF
 using System.Runtime.ExceptionServices;
-#else
-using Mock.System.Runtime.ExceptionServices;
-#endif
 
-#if NET35_CF
 namespace System
-#else
-namespace Mock.System
-#endif
 {
     // TypeAccessException derives from TypeLoadException rather than MemberAccessException because in
     // pre-v4 releases of the runtime TypeLoadException was used in lieu of a TypeAccessException.

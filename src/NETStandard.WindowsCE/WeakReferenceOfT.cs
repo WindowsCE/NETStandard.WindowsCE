@@ -3,11 +3,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 
-#if NET35_CF
 namespace System
-#else
-namespace Mock.System
-#endif
 {
     [Serializable]
     public sealed class WeakReference<T> : ISerializable

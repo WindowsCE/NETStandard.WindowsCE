@@ -6,11 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 
-#if !NET35_CF
-using Mock.System.Collections.Generic;
-using Mock.System.Threading;
-#endif
-
 namespace System.Collections.Concurrent
 {
     /// <summary>

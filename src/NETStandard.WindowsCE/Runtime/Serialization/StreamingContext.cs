@@ -14,11 +14,7 @@
 
 using System;
 
-#if NET35_CF
 namespace System.Runtime.Serialization
-#else
-namespace Mock.System.Runtime.Serialization
-#endif
 {
     /// <summary>
     /// Describes the source and destination of a given serialized stream, and

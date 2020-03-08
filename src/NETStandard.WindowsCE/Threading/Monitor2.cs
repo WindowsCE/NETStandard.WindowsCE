@@ -4,16 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 
-#if !NET35_CF
-using Mock.System.Collections.Concurrent;
-using NativeSynchronizationLockException = System.Threading.SynchronizationLockException;
-#endif
-
-#if NET35_CF
 namespace System.Threading
-#else
-namespace Mock.System.Threading
-#endif
 {
     public static class Monitor2
     {
@@ -192,11 +183,7 @@ namespace Mock.System.Threading
                     Monitor.Exit(obj);
                     recursionCount++;
                 }
-#if NET35_CF
                 catch (ArgumentException)
-#else
-                catch (NativeSynchronizationLockException)
-#endif
                 {
                     return recursionCount;
                 }

@@ -1,10 +1,6 @@
 ﻿using System;
 
-#if NET35_CF
 namespace System.Runtime.Serialization
-#else
-namespace Mock.System.Runtime.Serialization
-#endif
 {
     public class InvalidDataContractException : Exception
     {

@@ -14,11 +14,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-#if NET35_CF
 namespace System.Diagnostics
-#else
-namespace Mock.System.Diagnostics
-#endif
 {
     //  DebuggerBrowsableState states are defined as follows:
     //      Never       never show this element

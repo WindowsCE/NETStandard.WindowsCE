@@ -4,11 +4,7 @@
 
 using System.Collections.Generic;
 
-#if NET35_CF
 namespace System.Collections.Generic
-#else
-namespace Mock.System.Collections.Generic
-#endif
 {
     /// <summary>
     /// Equality comparer for hashsets of hashsets

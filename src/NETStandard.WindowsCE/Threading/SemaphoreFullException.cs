@@ -5,17 +5,9 @@
 using System;
 using System.Runtime.Serialization;
 
-#if NET35_CF
 using System.Runtime.ExceptionServices;
-#else
-using Mock.System.Runtime.ExceptionServices;
-#endif
 
-#if NET35_CF
 namespace System.Threading
-#else
-namespace Mock.System.Threading
-#endif
 {
     [Serializable]
     public class SemaphoreFullException : SystemException, ISerializable

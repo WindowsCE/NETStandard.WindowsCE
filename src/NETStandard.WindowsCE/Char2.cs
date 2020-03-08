@@ -1,16 +1,8 @@
 ﻿using System;
 
-#if NET35_CF
 using System.Globalization;
-#else
-using Mock.System.Globalization;
-#endif
 
-#if NET35_CF
 namespace System
-#else
-namespace Mock.System
-#endif
 {
     public static class Char2
     {

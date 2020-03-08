@@ -7,11 +7,7 @@ using System.Diagnostics; // for TraceInformation
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-#if NET35_CF
 namespace System.Threading
-#else
-namespace Mock.System.Threading
-#endif
 {
     public enum LockRecursionPolicy
     {

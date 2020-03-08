@@ -15,11 +15,7 @@
 
 using System;
 
-#if NET35_CF
 namespace System.Runtime.Serialization
-#else
-namespace Mock.System.Runtime.Serialization
-#endif
 {
     /// <summary>
     /// Holds the value, <see cref="Type" />, and name of a serialized object.

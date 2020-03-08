@@ -17,21 +17,11 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using System.Runtime.ExceptionServices;
 using System.Runtime.Serialization;
 using System.Threading;
 
-#if NET35_CF
-using System.Runtime.ExceptionServices;
-#else
-using Mock.System.Runtime.ExceptionServices;
-using Mock.System.Threading;
-#endif
-
-#if NET35_CF
 namespace System
-#else
-namespace Mock.System
-#endif
 {
     // Lazy<T> is generic, but not all of its state needs to be generic.  Avoid creating duplicate
     // objects per instantiation by putting them here.

@@ -5,10 +5,6 @@
 using System.Globalization;
 using System.Runtime.Serialization;
 
-#if !NET35_CF
-using Mock.System;
-#endif
-
 namespace System.ComponentModel
 {
     /// <summary>

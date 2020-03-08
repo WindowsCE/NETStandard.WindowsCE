@@ -24,16 +24,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Threading;
 
-#if !NET35_CF
-using Mock.System.Collections.Generic;
-using Mock.System.Threading;
-#endif
-
-#if NET35_CF
 namespace System.Collections.Concurrent
-#else
-namespace Mock.System.Collections.Concurrent
-#endif
 {
     /// <summary>
     /// Represents a thread-safe collection of keys and values.

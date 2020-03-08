@@ -4,11 +4,7 @@ using System.Reflection;
 
 #nullable enable
 
-#if NET35_CF
 namespace System
-#else
-namespace Mock.System
-#endif
 {
     public static class Activator2
     {

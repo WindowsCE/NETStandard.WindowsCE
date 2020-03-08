@@ -14,11 +14,7 @@
 
 using System;
 
-#if NET35_CF
 namespace System.Globalization
-#else
-namespace Mock.System.Globalization
-#endif
 {
     internal class CharUnicodeInfo2
     {

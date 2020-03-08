@@ -4,11 +4,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
 
-#if NET35_CF
 namespace System.Runtime.ExceptionServices
-#else
-namespace Mock.System.Runtime.ExceptionServices
-#endif
 {
     /// <summary>
     /// Provides methods to help serialization of <see cref="Exception"/> instance.

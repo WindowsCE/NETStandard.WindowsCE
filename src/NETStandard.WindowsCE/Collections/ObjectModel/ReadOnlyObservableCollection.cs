@@ -7,10 +7,6 @@ using System.Diagnostics;
 using System.ComponentModel;
 using System.Collections.Generic;
 
-#if !NET35_CF
-using Mock.System.Collections.Generic;
-#endif
-
 namespace System.Collections.ObjectModel
 {
     /// <summary>

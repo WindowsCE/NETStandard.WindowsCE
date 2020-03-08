@@ -1,10 +1,6 @@
 ﻿using System;
 
-#if NET35_CF
 namespace System.Runtime
-#else
-namespace Mock.System.Runtime
-#endif
 {
     public static class GCSettings
     {

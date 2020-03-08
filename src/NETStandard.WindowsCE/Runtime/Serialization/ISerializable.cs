@@ -14,11 +14,7 @@
 ===========================================================*/
 using System.Security;
 
-#if NET35_CF
 namespace System.Runtime.Serialization
-#else
-namespace Mock.System.Runtime.Serialization
-#endif
 {
     /// <summary>
     /// Allows an object to control its own serialization and deserialization.

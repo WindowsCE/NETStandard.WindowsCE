@@ -6,11 +6,6 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
-#if !NET35_CF
-using Mock.System;
-using Mock.System.Collections.Generic;
-#endif
-
 namespace System.Collections.Generic
 {
     [DebuggerTypeProxy(typeof(IDictionaryDebugView<,>))]

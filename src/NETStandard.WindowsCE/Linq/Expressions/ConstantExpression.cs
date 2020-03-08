@@ -33,11 +33,7 @@
 
 using System;
 
-#if NET35_CF
 namespace System.Linq.Expressions
-#else
-namespace Mock.System.Linq.Expressions
-#endif
 {
     public sealed class ConstantExpression : Expression
     {

@@ -14,10 +14,6 @@
 
 using System.Diagnostics;
 
-#if !NET35_CF
-using Mock.System.Threading;
-#endif
-
 namespace System.Threading
 {
     // ManualResetEventSlim wraps a manual-reset event internally with a little bit of

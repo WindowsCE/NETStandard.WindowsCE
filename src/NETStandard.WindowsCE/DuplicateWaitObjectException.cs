@@ -14,11 +14,7 @@
 using System;
 using System.Runtime.Serialization;
 
-#if NET35_CF
 namespace System
-#else
-namespace Mock.System
-#endif
 {
     // The DuplicateWaitObjectException is thrown when an object 
     // appears more than once in the list of objects to WaitAll or WaitAny.

@@ -8,10 +8,6 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-#if !NET35_CF
-using Mock.System.Collections;
-#endif
-
 //
 // Note: F# compiler depends on the exact tuple hashing algorithm. Do not ever change it.
 //

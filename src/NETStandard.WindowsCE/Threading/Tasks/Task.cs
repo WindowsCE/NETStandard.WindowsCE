@@ -1,14 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-
-#if NET35_CF
 using System.Runtime.ExceptionServices;
-using InternalOCE = System.OperationCanceledException;
-#else
-using Mock.System.Runtime.ExceptionServices;
-using InternalOCE = Mock.System.OperationCanceledException;
-#endif
 
 namespace System.Threading.Tasks
 {
@@ -278,10 +271,10 @@ namespace System.Threading.Tasks
                     m_cancellationToken = cancellationToken;
                 }
             }
-            else if (ex is InternalOCE)
+            else if (ex is OperationCanceledException)
             {
                 _stateFlags = TASK_STATE_CANCELED;
-                m_cancellationToken = ((InternalOCE)ex).CancellationToken;
+                m_cancellationToken = ((OperationCanceledException)ex).CancellationToken;
             }
             else
             {
@@ -767,7 +760,7 @@ namespace System.Threading.Tasks
                 // Execute provided action
                 InnerInvoke();
             }
-            catch (InternalOCE ex)
+            catch (OperationCanceledException ex)
             when (ex.CancellationToken == m_cancellationToken)
             {
                 AtomicStateUpdate(TASK_STATE_CANCELED, TASK_STATE_COMPLETED_MASK);

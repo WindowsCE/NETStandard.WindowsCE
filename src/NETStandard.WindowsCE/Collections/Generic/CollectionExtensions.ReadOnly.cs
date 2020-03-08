@@ -1,10 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
-#if !NET35_CF
-using Mock.System.Collections.Generic;
-#endif
-
 namespace System.Collections.Generic
 {
     public static partial class CollectionExtensions

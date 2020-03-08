@@ -17,11 +17,7 @@ using System;
 using System.Globalization;
 using SConvert = System.Convert;
 
-#if NET35_CF
 namespace System.Runtime.Serialization
-#else
-namespace Mock.System.Runtime.Serialization
-#endif
 {
     /// <summary>
     /// Represents a base implementation of the <see cref="IFormatterConverter"/>

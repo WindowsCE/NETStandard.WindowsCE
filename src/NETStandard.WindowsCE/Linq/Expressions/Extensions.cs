@@ -34,11 +34,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-#if NET35_CF
 namespace System.Linq.Expressions
-#else
-namespace Mock.System.Linq.Expressions
-#endif
 {
     internal static class Extensions
     {

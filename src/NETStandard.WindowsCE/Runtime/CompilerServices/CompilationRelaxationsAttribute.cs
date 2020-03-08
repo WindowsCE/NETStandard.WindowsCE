@@ -1,10 +1,6 @@
 ﻿using System;
 
-#if NET35_CF
 namespace System.Runtime.CompilerServices
-#else
-namespace Mock.System.Runtime.CompilerServices
-#endif
 {
     [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Module | AttributeTargets.Class | AttributeTargets.Method)]
     public class CompilationRelaxationsAttribute : Attribute

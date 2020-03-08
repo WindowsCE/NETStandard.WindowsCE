@@ -8,10 +8,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 
-#if !NET35_CF
-using Mock.System.Collections.Generic;
-#endif
-
 namespace System.Collections.ObjectModel
 {
     /// <summary>

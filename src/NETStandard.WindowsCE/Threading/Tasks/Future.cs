@@ -1,10 +1,6 @@
 ﻿using System.Diagnostics;
 
-#if NET35_CF
 using InternalOCE = System.OperationCanceledException;
-#else
-using InternalOCE = Mock.System.OperationCanceledException;
-#endif
 
 namespace System.Threading.Tasks
 {

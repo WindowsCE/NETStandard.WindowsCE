@@ -14,10 +14,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 
-#if !NET35_CF
-using Mock.System.Collections.Generic;
-#endif
-
 namespace System.Collections.Concurrent
 {
     // A stack that uses CAS operations internally to maintain thread-safety in a lock-free

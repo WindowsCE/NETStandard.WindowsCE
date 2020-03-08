@@ -15,10 +15,6 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 
-#if !NET35_CF
-using Mock.System;
-#endif
-
 namespace System.Threading
 {
     /// <summary>

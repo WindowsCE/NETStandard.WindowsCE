@@ -30,11 +30,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Text;
 
-#if NET35_CF
 namespace System.Linq.Expressions
-#else
-namespace Mock.System.Linq.Expressions
-#endif
 {
     internal class ExpressionPrinter : ExpressionVisitor
     {
