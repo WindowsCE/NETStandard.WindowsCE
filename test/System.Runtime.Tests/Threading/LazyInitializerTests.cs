@@ -29,11 +29,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
-#if WindowsCE
 using System.Threading;
-#else
-using Mock.System.Threading;
-#endif
 
 namespace MonoTests.System.Threading
 {

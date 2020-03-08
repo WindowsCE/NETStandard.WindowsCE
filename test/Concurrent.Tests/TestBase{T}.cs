@@ -43,7 +43,7 @@ namespace Tests
         {
             foreach (object[] collectionSizeArray in ValidCollectionSizes())
             {
-                foreach (EnumerableType enumerableType in Enum.GetValues(typeof(EnumerableType)))
+                foreach (EnumerableType enumerableType in Enum2.GetValues(typeof(EnumerableType)))
                 {
                     int count = (int)collectionSizeArray[0];
                     yield return new object[] { enumerableType, count, 0, 0, 0 };                       // Empty Enumerable

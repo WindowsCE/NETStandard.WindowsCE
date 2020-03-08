@@ -1,130 +1,35 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F49933B4-0985-4253-94BD-073F63E25DB2}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>net35-cf</TargetFramework>
     <RootNamespace>Tests</RootNamespace>
-    <AssemblyName>System.Runtime.Tests</AssemblyName>
+    <AssemblyOriginatorKeyFile>$(SolutionDir)tools/keypair.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile>CompactFramework</TargetFrameworkProfile>
+    <DefineConstants>NET35_CF;WindowsCE;FEATURE_PORTABLE_SPAN</DefineConstants>
+    <DisableImplicitFrameworkReferences>True</DisableImplicitFrameworkReferences>
+    <NoStdLib>True</NoStdLib>
+    <NoConfig>true</NoConfig>
     <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
-    <IsCodedUITest>False</IsCodedUITest>
-    <TestProjectType>UnitTest</TestProjectType>
-    <TargetFrameworkProfile />
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <PlatformID>E2BECB1F-8C8C-41ba-B736-9BE7D946A398</PlatformID>
+    <Optimize>False</Optimize>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="System" />
+    <ProjectReference Include="..\Common.Tests\Common.Tests.csproj" />
   </ItemGroup>
-  <Choose>
-    <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-      </ItemGroup>
-    </When>
-    <Otherwise>
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
-      </ItemGroup>
-    </Otherwise>
-  </Choose>
+
   <ItemGroup>
-    <Compile Include="ActivatorTests.cs" />
-    <Compile Include="Collections\Generic\HashSetTest_Theraot.cs" />
-    <Compile Include="Collections\ObjectModel\ObservableCollectionTest_Theraot.cs" />
-    <Compile Include="Collections\Specialized\CollectionChangedEventValidators.cs" />
-    <Compile Include="DateTimeOffsetTests.cs" />
-    <Compile Include="DecimalTests.cs" />
-    <Compile Include="DoubleTests.cs" />
-    <Compile Include="EnumTests.core.cs" />
-    <Compile Include="EnumTests.cs" />
-    <Compile Include="EnumTypes.cs" />
-    <Compile Include="Int32Tests.cs" />
-    <Compile Include="IO\Stream.AsyncTests.cs" />
-    <Compile Include="LazyOfTMetadataTests.cs" />
-    <Compile Include="LazyTests.cs" />
-    <Compile Include="LazyTestsMS.cs" />
-    <Compile Include="Linq\Expressions\ExpressionTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Runtime\CompilerServices\AsyncTaskMethodBuilderTests.cs" />
-    <Compile Include="Runtime\CompilerServices\RuntimeHelpersTests.cs" />
-    <Compile Include="Runtime\Serialization\FormatterConverterTests.cs" />
-    <Compile Include="Runtime\Serialization\SerializationInfoTests.cs" />
-    <Compile Include="SingleTests.cs" />
-    <Compile Include="StringTests.cs" />
-    <Compile Include="Threading\BarrierCancellationTests.cs" />
-    <Compile Include="Threading\BarrierTests.cs" />
-    <Compile Include="Threading\LazyInitializerTests.cs" />
-    <Compile Include="Threading\MonitorTests.cs" />
-    <Compile Include="Threading\MonitorTestsMS.cs" />
-    <Compile Include="Threading\ReaderWriterLockSlimTests.cs" />
-    <Compile Include="Threading\SpinWaitTests.cs" />
-    <Compile Include="Threading\ThreadLocalTests.cs" />
-    <Compile Include="Threading\VolatileTests.cs" />
-    <Compile Include="TypeTests.cs" />
-    <Compile Include="WeakReferenceOfTTests.cs" />
-    <Compile Include="WeakReferenceTests.cs" />
+    <Reference Include="mscorlib, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac" />
+    <Reference Include="System, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac" />
+    <Reference Include="System.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=969db8053d3322ac" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\NETStandard.WindowsCE\NETStandard.WindowsCE.csproj">
-      <Project>{24857e98-e634-4803-8cc6-172b8389d89d}</Project>
-      <Name>NETStandard.WindowsCE</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Common.Tests\Common.Tests.csproj">
-      <Project>{11362ef6-8335-4739-9ab0-2fff56589661}</Project>
-      <Name>Common.Tests</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup />
-  <Choose>
-    <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.CodedUITestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Extension, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.TestTools.UITesting, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <Private>False</Private>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

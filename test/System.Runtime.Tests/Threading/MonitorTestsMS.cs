@@ -6,11 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading;
 
-#if WindowsCE
 using Monitor = System.Threading.Monitor2;
-#else
-using Monitor = Mock.System.Threading.Monitor2;
-#endif
 
 namespace Tests
 {

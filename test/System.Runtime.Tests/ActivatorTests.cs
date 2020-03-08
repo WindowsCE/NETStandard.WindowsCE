@@ -6,12 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Globalization;
 using System.Reflection;
-
-#if WindowsCE
 using Activator = System.Activator2;
-#else
-using Activator = Mock.System.Activator2;
-#endif
 
 namespace Tests
 {

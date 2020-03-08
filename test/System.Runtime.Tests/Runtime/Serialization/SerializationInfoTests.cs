@@ -7,11 +7,7 @@ using System;
 using System.Reflection;
 using SerializationException = System.Runtime.Serialization.SerializationException;
 
-#if WindowsCE
 using System.Runtime.Serialization;
-#else
-using Mock.System.Runtime.Serialization;
-#endif
 
 namespace Tests.Runtime.Serialization
 {

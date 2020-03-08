@@ -7,12 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-
-#if WindowsCE
 using Single = System.Single2;
-#else
-using Single = Mock.System.Single2;
-#endif
 
 namespace Tests
 {
