@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tasks.Tests", "test\Tasks.T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Tests", "test\Common.Tests\Common.Tests.csproj", "{11362EF6-8335-4739-9AB0-2FFF56589661}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NETStandard.WindowsCE.IL", "src\NETStandard.WindowsCE.IL\NETStandard.WindowsCE.IL.csproj", "{C686E0DB-5AAD-4570-8AFF-A5F0F46CA00F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{11362EF6-8335-4739-9AB0-2FFF56589661}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11362EF6-8335-4739-9AB0-2FFF56589661}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11362EF6-8335-4739-9AB0-2FFF56589661}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C686E0DB-5AAD-4570-8AFF-A5F0F46CA00F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C686E0DB-5AAD-4570-8AFF-A5F0F46CA00F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C686E0DB-5AAD-4570-8AFF-A5F0F46CA00F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C686E0DB-5AAD-4570-8AFF-A5F0F46CA00F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -69,6 +75,7 @@ Global
 		{1F117C36-5B92-4EB7-9C5C-94D04BC58575} = {20BD1660-3BCE-42CF-97B3-7B0E051078DA}
 		{C7A8DFD3-937B-4B73-98E5-4FA4A3C52CF9} = {20BD1660-3BCE-42CF-97B3-7B0E051078DA}
 		{11362EF6-8335-4739-9AB0-2FFF56589661} = {20BD1660-3BCE-42CF-97B3-7B0E051078DA}
+		{C686E0DB-5AAD-4570-8AFF-A5F0F46CA00F} = {CFF33A7E-D3D2-4F7D-BAAF-82882477E893}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2096C24D-186F-4051-952C-5ADC36607846}

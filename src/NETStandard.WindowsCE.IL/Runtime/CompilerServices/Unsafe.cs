@@ -1,6 +1,5 @@
 ﻿namespace System.Runtime.CompilerServices
 {
-    [CLSCompliant(false)]
     public static class Unsafe
     {
         [MethodImpl(MethodImplOptions.ForwardRef)]
